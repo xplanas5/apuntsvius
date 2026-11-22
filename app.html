@@ -1,0 +1,1794 @@
+<meta charset="utf-8">
+<title>Apunts Vius</title>
+<style>
+/* Layout: quadern d'estudi. Barra superior amb domini i XP, pestanyes de mode, una columna de fins a 980px. Marcador fosforescent com a únic accent fort. */
+:root{
+  --paper:#f4f6fa; --sheet:#ffffff; --ink:#15203a; --muted:#5a6680; --line:#dce2ec; --line2:#c9d1df;
+  --blue:#2546c4; --blue-ink:#ffffff; --blue-soft:#e7ecfb;
+  --mark:#ffe14d; --on-mark:#1d1a05; --mark-soft:#fff5bf;
+  --ok:#147445; --ok-soft:#e1f3e8; --bad:#bd3329; --bad-soft:#fbe6e3; --warn:#9a5800; --warn-soft:#fff0d6;
+  --st-new:#d5dbe6; --st-prac:#8fb0ff; --st-cons:#3f66e0; --st-dom:#ffd21f;
+  --shadow:0 1px 2px rgba(20,32,58,.06),0 4px 14px rgba(20,32,58,.06);
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0e1321; --sheet:#161d2f; --ink:#e6ebf6; --muted:#9ba7c2; --line:#273250; --line2:#34405f;
+  --blue:#8ea5ff; --blue-ink:#0e1321; --blue-soft:#1d2849;
+  --mark:#ffd84a; --on-mark:#1d1a05; --mark-soft:#3a3412;
+  --ok:#5fd394; --ok-soft:#12301e; --bad:#ff8b80; --bad-soft:#3a1916; --warn:#ffbf5e; --warn-soft:#38290f;
+  --st-new:#2c3754; --st-prac:#3d5aa8; --st-cons:#7d98ff; --st-dom:#ffd84a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e1321; --sheet:#161d2f; --ink:#e6ebf6; --muted:#9ba7c2; --line:#273250; --line2:#34405f;
+  --blue:#8ea5ff; --blue-ink:#0e1321; --blue-soft:#1d2849;
+  --mark:#ffd84a; --on-mark:#1d1a05; --mark-soft:#3a3412;
+  --ok:#5fd394; --ok-soft:#12301e; --bad:#ff8b80; --bad-soft:#3a1916; --warn:#ffbf5e; --warn-soft:#38290f;
+  --st-new:#2c3754; --st-prac:#3d5aa8; --st-cons:#7d98ff; --st-dom:#ffd84a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* Top bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--sheet)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--sheet);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);margin-right:auto}
+.brand b{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing:-.01em}
+.brand .hl{background:linear-gradient(transparent 55%,var(--mark) 55%);padding:0 2px}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--blue);display:grid;place-items:center;color:var(--blue-ink);font-family:var(--f-display);font-weight:800}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{display:flex;align-items:center;gap:6px;font-size:.85rem;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--paper);font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat strong{font-family:var(--f-mono);font-weight:600}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+.tab{border:0;background:none;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:700;white-space:nowrap}
+.tab:hover{background:var(--paper);color:var(--ink)}
+.tab[aria-current="page"]{background:var(--blue-soft);color:var(--blue)}
+.tab[disabled]{opacity:.4;cursor:not-allowed}
+main.wrap{padding-block:22px 64px;display:grid;gap:18px}
+/* Generic */
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);min-width:0}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.eyebrow{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.stack{display:grid;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;border:1px solid var(--line2);background:var(--sheet);padding:9px 14px;border-radius:9px;cursor:pointer;font-weight:700;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--blue-ink)}
+.btn.mark{background:var(--mark);border-color:var(--mark);color:var(--on-mark)}
+.btn.ghost{border-color:transparent;background:none}
+.btn.small{padding:6px 10px;font-size:.86rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--paper);border:1px solid var(--line);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.pill.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.pill.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.pill.blue{background:var(--blue-soft);color:var(--blue);border-color:transparent}
+.pill.mark{background:var(--mark);color:var(--on-mark);border-color:transparent}
+.ai-note{font-size:.8rem;color:var(--warn);background:var(--warn-soft);padding:6px 10px;border-radius:8px}
+input[type=text],input[type=number],textarea,select{width:100%;background:var(--paper);border:1px solid var(--line2);border-radius:8px;padding:10px 12px}
+textarea{min-height:90px;resize:vertical}
+label.f{display:grid;gap:6px;font-weight:700;font-size:.92rem}
+.mono{font-family:var(--f-mono)}
+.hl{background:linear-gradient(transparent 55%,var(--mark-soft) 55%)}
+.formula{font-family:var(--f-mono);font-size:1.05rem;background:var(--paper);border:1px dashed var(--line2);border-radius:8px;padding:8px 12px;display:inline-block;overflow-x:auto;max-width:100%}
+.hero{display:grid;gap:14px;grid-template-columns:1.4fr 1fr;align-items:start}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+/* Topic cards */
+.topic{display:grid;gap:10px}
+.topic .meta{display:flex;gap:6px;flex-wrap:wrap}
+.bar{height:10px;border-radius:999px;background:var(--st-new);overflow:hidden;display:flex}
+.bar span{display:block;height:100%}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* Notes */
+.notes-layout{display:grid;gap:18px;grid-template-columns:220px 1fr;align-items:start}
+@media (max-width:800px){.notes-layout{grid-template-columns:1fr}.toc{position:static!important}}
+.toc{position:sticky;top:120px;display:grid;gap:2px}
+.toc a{color:var(--muted);text-decoration:none;padding:5px 8px;border-radius:6px;font-weight:700;font-size:.9rem}
+.toc a:hover{background:var(--sheet);color:var(--ink)}
+.gloss{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.term{border:1px solid var(--line);border-radius:9px;padding:12px;display:grid;gap:6px;background:var(--sheet)}
+.term h3 .hl{padding:0 2px}
+.term .def.covered{filter:blur(6px);user-select:none;cursor:pointer}
+.term .src{font-size:.8rem;color:var(--muted);border-left:3px solid var(--mark);padding-left:8px;font-style:italic}
+.flag{border-color:var(--warn)!important;background:var(--warn-soft)!important}
+ul.clean{margin:0;padding-left:1.1em;display:grid;gap:4px}
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:6px}
+.map-wrap{overflow-x:auto}
+.map-wrap svg{display:block;max-width:none}
+.tl{display:grid;gap:0;border-left:3px solid var(--line2);margin-left:6px}
+.tl div{padding:6px 0 6px 14px;position:relative}
+.tl div::before{content:"";position:absolute;left:-8px;top:12px;width:13px;height:13px;border-radius:50%;background:var(--blue)}
+.tl b{font-family:var(--f-mono)}
+/* Practice */
+.qcard{display:grid;gap:14px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.progress{height:6px;background:var(--line);border-radius:999px;overflow:hidden}
+.progress span{display:block;height:100%;background:var(--blue);transition:width .3s}
+.prompt{font-size:1.12rem}
+.prompt .big{font-family:var(--f-display);font-size:1.5rem;font-weight:700}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:2px solid var(--line2);background:var(--sheet);padding:11px 14px;border-radius:9px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.opt:hover{border-color:var(--blue)}
+.opt[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt .k{font-family:var(--f-mono);font-weight:600;color:var(--muted);min-width:1.2em}
+.order{display:grid;gap:6px;list-style:none;margin:0;padding:0}
+.order li{display:flex;gap:8px;align-items:center;border:2px solid var(--line2);border-radius:9px;padding:8px 10px;background:var(--sheet)}
+.order li .txt{flex:1;min-width:0}
+.order li.right{border-color:var(--ok);background:var(--ok-soft)}
+.order li.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.order button{border:1px solid var(--line2);background:var(--paper);border-radius:6px;width:34px;height:34px;cursor:pointer}
+.numin{display:flex;gap:8px;align-items:center}
+.numin input{max-width:220px;font-family:var(--f-mono);font-size:1.1rem}
+.numin .unit{font-family:var(--f-mono);color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fb{border-radius:9px;padding:12px 14px;display:grid;gap:6px}
+.fb.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb.warn{background:var(--warn-soft);border:1px solid var(--warn)}
+.fb.hint{background:var(--blue-soft);border:1px solid var(--blue)}
+.fb h3{font-size:1rem}
+.fb .src{font-size:.85rem;font-style:italic;border-left:3px solid var(--mark);padding-left:8px}
+.xp-pop{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--mark);color:var(--on-mark);font-family:var(--f-display);font-weight:800;padding:10px 16px;border-radius:12px;box-shadow:var(--shadow);z-index:20;animation:pop 1.8s ease forwards;pointer-events:none}
+@keyframes pop{0%{transform:translateY(20px);opacity:0}15%{transform:none;opacity:1}80%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+@media (prefers-reduced-motion:reduce){.xp-pop{animation:none}.progress span{transition:none}}
+.conf{display:flex;gap:8px;flex-wrap:wrap}
+/* Lab */
+.lab{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:start}
+.stack>.formula{justify-self:start}
+@media (max-width:800px){.lab{grid-template-columns:1fr}}
+.slider{display:grid;gap:4px}
+.slider .lbl{display:flex;justify-content:space-between;gap:8px;font-size:.92rem}
+.slider .lbl b{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.readout{font-family:var(--f-mono);font-size:2rem;font-weight:600;letter-spacing:-.02em}
+.readout small{font-size:1rem;color:var(--muted)}
+canvas.plot{width:100%;height:220px;display:block;background:var(--paper);border-radius:8px;border:1px solid var(--line)}
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pairs .opt{font-size:.92rem}
+/* Exam */
+.timer{font-family:var(--f-mono);font-weight:600;font-size:1.1rem;padding:4px 10px;border-radius:8px;background:var(--paper);border:1px solid var(--line)}
+.timer.low{background:var(--bad-soft);color:var(--bad)}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots button{width:30px;height:30px;border-radius:7px;border:1px solid var(--line2);background:var(--sheet);cursor:pointer;font-family:var(--f-mono);font-size:.8rem}
+.dots button.done{background:var(--blue-soft);border-color:var(--blue)}
+.dots button.cur{outline:2px solid var(--blue)}
+.score{font-family:var(--f-display);font-size:3.2rem;font-weight:800;line-height:1}
+table.t{width:100%;border-collapse:collapse;font-size:.92rem}
+table.t th,table.t td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tbl{overflow-x:auto}
+/* Progress */
+.mastery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+.cell{border-radius:7px;padding:7px 8px;font-size:.78rem;font-weight:700;line-height:1.2;min-height:46px;display:flex;align-items:flex-end;word-break:break-word}
+.cell.s0{background:var(--st-new);color:var(--ink)}
+.cell.s1{background:var(--st-prac);color:#0e1530}
+.cell.s2{background:var(--st-cons);color:#fff}
+.cell.s3{background:var(--st-dom);color:var(--on-mark)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.badge{border:1px dashed var(--line2);border-radius:10px;padding:10px;display:grid;gap:4px;text-align:center}
+.badge .ic{font-family:var(--f-display);font-weight:800;font-size:1.4rem;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;margin:0 auto;background:var(--paper);color:var(--muted)}
+.badge.on{border-style:solid;border-color:var(--mark)}
+.badge.on .ic{background:var(--mark);color:var(--on-mark)}
+.calib{display:grid;gap:8px}
+.calib .r{display:grid;grid-template-columns:110px 1fr 54px;gap:8px;align-items:center;font-size:.9rem}
+.calib .track{height:12px;background:var(--line);border-radius:999px;overflow:hidden}
+.calib .track span{display:block;height:100%;background:var(--blue)}
+/* Capture */
+.drop{border:2px dashed var(--line2);border-radius:12px;padding:22px;text-align:center;display:grid;gap:8px;background:var(--paper);cursor:pointer}
+.drop.over{border-color:var(--blue);background:var(--blue-soft)}
+.thumbs{display:flex;gap:10px;flex-wrap:wrap}
+.thumb{position:relative;width:120px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--sheet)}
+.thumb img{display:block;width:120px;height:150px;object-fit:cover}
+.thumb .tb{display:flex;justify-content:space-between;padding:4px}
+.steps-run{display:grid;gap:6px;list-style:none;padding:0;margin:0}
+.steps-run li{display:flex;gap:8px;align-items:center}
+.steps-run li::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--line2);flex:none}
+.steps-run li.on::before{background:var(--mark);box-shadow:0 0 0 3px var(--mark-soft)}
+.steps-run li.done::before{background:var(--ok)}
+details summary{cursor:pointer;font-weight:700}
+pre.code{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto;max-height:260px;font-family:var(--f-mono);font-size:.78rem;white-space:pre-wrap}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.sep{height:1px;background:var(--line);margin:4px 0}
+
+/* ---- Navegació mòbil: capçalera amb «enrere» i barra inferior ---- */
+.top .wrap{flex-wrap:nowrap}
+.iconbtn{border:0;background:none;color:var(--ink);width:40px;height:40px;border-radius:10px;display:grid;place-items:center;cursor:pointer;flex:none}
+.iconbtn:hover{background:var(--paper)}
+.top-title{font-family:var(--f-display);font-weight:800;font-size:1.1rem;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-title:empty{display:none}
+#view{padding-block:18px calc(92px + env(safe-area-inset-bottom,0px));display:grid;gap:16px}
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--sheet);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.bottom-nav .wrap{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end}
+.bottom-nav button{border:0;background:none;color:var(--muted);font:inherit;font-size:.78rem;font-weight:700;display:grid;justify-items:center;gap:2px;padding:8px 4px 10px;cursor:pointer}
+.bottom-nav button[aria-current="page"]{color:var(--blue)}
+.bottom-nav .cam{transform:translateY(-14px)}
+.bottom-nav .cam span.ic{width:56px;height:56px;border-radius:50%;background:var(--mark);color:var(--on-mark);display:grid;place-items:center;box-shadow:var(--shadow)}
+@media (min-width:900px){.stats .stat{font-size:.85rem}}
+/* ---- Fotos ---- */
+.photo-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn.big{padding:16px 12px;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:8px}
+@media (max-width:420px){.photo-btns{grid-template-columns:1fr}}
+@media (hover:none){.desk-only{display:none}}
+/* ---- Centre del tema ---- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:14px;padding:18px 14px;text-align:left;display:grid;gap:4px;cursor:pointer;box-shadow:var(--shadow);font:inherit}
+.tile b{font-family:var(--f-display);font-size:1.1rem}
+.tile:hover{border-color:var(--blue)}
+/* ---- Joc ---- */
+.stars i{font-style:normal;color:var(--line2);font-size:1.15rem;letter-spacing:1px}
+.stars i.on{color:#e8b400}
+.combo{font-family:var(--f-display);font-weight:800;color:var(--blue);animation:pop2 .5s ease}
+.pill.gold{background:#e8b400;color:#1d1a05;border-color:transparent}
+.qcard.golden{border:2px solid #e8b400}
+.gold-msg{font-weight:800;color:#a07800}
+:root[data-theme="dark"] .gold-msg{color:#ffd84a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .gold-msg{color:#ffd84a}}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+@keyframes pop2{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.combo{animation:none}}
+.xp-pop{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+[hidden]{display:none!important}
+
+</style>
+<header class="top">
+  <div class="wrap">
+    <button class="iconbtn" id="back" aria-label="Enrere" hidden><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></svg></button>
+    <a class="brand" href="#inici" aria-label="Apunts Vius, inici"><span class="logo">A</span><b>Apunts <span class="hl">Vius</span></b></a>
+    <span class="top-title" id="title"></span>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+<main class="wrap" id="view" aria-live="polite"></main>
+<nav class="bottom-nav" id="nav" aria-label="Navegació principal">
+  <div class="wrap">
+    <button data-root="inici"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M12 3 2 11h3v9h6v-6h2v6h6v-9h3z"/></svg>Inici</button>
+    <button data-root="nou" class="cam"><span class="ic"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></span>Nou tema</button>
+    <button data-root="progres"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 20V10h3v10H4zm6.5 0V4h3v16h-3zM17 20v-7h3v7h-3z"/></svg>Progrés</button>
+  </div>
+</nav>
+<script>
+"use strict";
+/* Apunts Vius · utilitats comunes */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const DAY = 864e5;
+const now = () => Date.now();
+const dayKey = (t = now()) => new Date(t).toISOString().slice(0, 10);
+function weekKey(t = now()) { const d = new Date(t); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7)); const w1 = new Date(d.getFullYear(), 0, 4); return d.getFullYear() + "-W" + String(1 + Math.round(((d - w1) / DAY - 3 + ((w1.getDay() + 6) % 7)) / 7)).padStart(2, "0"); }
+const slug = s => String(s || "x").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 30) || "x";
+const fmt = x => { if (!isFinite(x)) return "—"; const a = Math.abs(x); if (a !== 0 && (a < 1e-3 || a >= 1e7)) return x.toExponential(2).replace(".", ","); return Number(x.toPrecision(4)).toLocaleString("ca-ES", { maximumFractionDigits: 6, useGrouping: false }); };
+const parseNum = s => { let t = String(s).replace(/\s/g, ""); if (t.includes(",")) t = t.replace(/\./g, "").replace(",", "."); const m = t.match(/-?\d+(?:\.\d+)?(?:e[-+]?\d+)?/i); return m ? parseFloat(m[0]) : NaN; };
+const norm = s => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/l·l/g, "ll").replace(/[^a-z0-9 ]+/g, " ").replace(/\b(el|la|els|les|l|un|una|uns|unes|lo|de|del)\b/g, " ").replace(/\s+/g, " ").trim();
+function lev(a, b) { const m = a.length, n = b.length; if (!m) return n; if (!n) return m; let prev = Array.from({ length: n + 1 }, (_, i) => i); for (let i = 1; i <= m; i++) { const cur = [i]; for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; } return prev[n]; }
+
+
+async function copyText(text, btn) { try { await navigator.clipboard.writeText(text); if (btn) { const o = btn.textContent; btn.textContent = "Copiat"; setTimeout(() => btn.textContent = o, 1500); } } catch { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch { } ta.remove(); if (btn) btn.textContent = "Selecciona i copia manualment"; } }
+async function saveFile(name, data, type) {
+  // Dins el visor de claude.ai les descàrregues passen pel seu permís; a la web i a l'APK, enllaç normal
+  const dl = window.claude && window.claude.use ? await window.claude.use("downloads").catch(() => null) : null;
+  if (dl) { try { await dl.save({ filename: name, data: new Blob([data], { type }) }); } catch { } return; }
+  try { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); } catch { }
+}
+
+
+/* ---------------- FSRS (v4.5, paràmetres per defecte) ---------------- */
+const W = [0.4872, 1.4003, 3.7145, 13.8206, 5.1618, 1.2298, 0.8975, 0.031, 1.6474, 0.1367, 1.0461, 2.1072, 0.0793, 0.3246, 1.587, 0.2272, 2.8755];
+const DECAY = -0.5, FACTOR = 19 / 81;
+const clampD = d => Math.min(10, Math.max(1, d));
+const retr = (t, S) => Math.pow(1 + FACTOR * t / S, DECAY);
+const d0 = g => clampD(W[4] - (g - 3) * W[5]);
+function fsrs(card, g, t = now()) {
+  // g: 1 Again, 2 Hard, 3 Good, 4 Easy
+  if (!card.reps) { card.S = W[g - 1]; card.D = d0(g); }
+  else {
+    const el = Math.max(0, (t - card.last) / DAY), R = retr(el, card.S);
+    card.D = clampD(W[7] * d0(3) + (1 - W[7]) * (card.D - W[6] * (g - 3)));
+    if (g === 1) card.S = Math.min(card.S, W[11] * Math.pow(card.D, -W[12]) * (Math.pow(card.S + 1, W[13]) - 1) * Math.exp(W[14] * (1 - R)));
+    else if (el >= 0.5) card.S = card.S * (Math.exp(W[8]) * (11 - card.D) * Math.pow(card.S, -W[9]) * (Math.exp(W[10] * (1 - R)) - 1) * (g === 2 ? W[15] : 1) * (g === 4 ? W[16] : 1) + 1);
+  }
+  card.S = Math.max(0.1, card.S);
+  card.reps = (card.reps || 0) + 1; if (g === 1) card.lapses = (card.lapses || 0) + 1;
+  card.last = t;
+  card.due = g === 1 ? t + 10 * 60e3 : t + Math.max(1, Math.round(card.S)) * DAY;
+}
+
+
+/* ---------------- Estat, localStorage i migracions ----------------
+   Tot es desa al dispositiu (localStorage). Sense comptes ni servidor. */
+const STATE_KEYS = ["nou", "en pràctica", "consolidat", "dominat"];
+const STATE_VERSION = 2;
+let S = freshState();
+const COMPILED = {};
+function freshState() {
+  return { v: STATE_VERSION, topics: {}, prog: {}, xp: 0, days: {}, errors: [], calib: { segur: [0, 0], crec: [0, 0] }, badges: {}, reported: {}, labDone: {}, exams: [], active: null, fixed: 0,
+    stars: {}, bestCombo: 0, golden: { ok: 0, n: 0 }, sound: true, sessions: 0 };
+}
+const LS_KEY = "apunts-vius";
+const LS_OLD = ["apunts-vius-v1"];
+function lsGet(k = LS_KEY) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch { return null; } }
+function lsSet(o) { try { localStorage.setItem(LS_KEY, JSON.stringify(o)); return true; } catch { return false; } }
+/* Migracions: cada funció porta l'estat de la versió n a la n+1 */
+const MIGRATIONS = {
+  1: s => ({ ...s, stars: {}, bestCombo: 0, golden: { ok: 0, n: 0 }, sound: true, sessions: 0, v: 2 })
+};
+function migrate(o) {
+  if (!o || typeof o !== "object") return null;
+  let s = { ...o }; if (!s.v) s.v = 1;
+  while (s.v < STATE_VERSION && MIGRATIONS[s.v]) s = MIGRATIONS[s.v](s);
+  return { ...freshState(), ...s, v: STATE_VERSION };
+}
+function loadState() {
+  let o = lsGet();
+  if (!o) for (const k of LS_OLD) { o = lsGet(k); if (o) break; }
+  const m = migrate(o); if (m) S = m;
+}
+let saveTimer = null;
+function save() { clearTimeout(saveTimer); saveTimer = setTimeout(() => { if (!lsSet(S)) console.warn("No s'ha pogut desar (emmagatzematge ple o bloquejat)"); }, 300); }
+function saveNow() { clearTimeout(saveTimer); lsSet(S); }
+addEventListener("pagehide", saveNow);
+addEventListener("visibilitychange", () => { if (document.hidden) saveNow(); });
+
+
+/* ---------------- Normalització i compilació dels temes ---------------- */
+function arr(x) { return Array.isArray(x) ? x : []; }
+function normTopic(raw) {
+  const t = JSON.parse(JSON.stringify(raw || {}));
+  t.id = t.id ? slug(t.id) : "t" + Date.now().toString(36);
+  t.titol = String(t.titol || "Tema sense títol").slice(0, 80);
+  t.materia = String(t.materia || ""); t.curs = String(t.curs || ""); t.resum = String(t.resum || "");
+  t.seccions = arr(t.seccions).map(s => ({ titol: String(s.titol || ""), punts: arr(s.punts).map(String) }));
+  const used = new Set();
+  const uid = (x, pre) => { let b = slug(x || pre), id = b, k = 2; while (used.has(id)) id = b + "_" + k++; used.add(id); return id; };
+  t.conceptes = arr(t.conceptes).filter(c => c && c.nom && c.definicio).map(c => ({
+    id: uid(c.id || c.nom, "c"), nom: String(c.nom), definicio: String(c.definicio), exemple: String(c.exemple || ""),
+    paraules_clau: arr(c.paraules_clau).map(String), sinonims: arr(c.sinonims).map(String),
+    distractors: arr(c.distractors).map(d => typeof d === "string" ? { text: d, per_que: "" } : { text: String(d.text || ""), per_que: String(d.per_que || "") }).filter(d => d.text),
+    font: String(c.font || ""), pista_conceptual: String(c.pista_conceptual || ""), dubtos: !!c.dubtos, motiu: String(c.motiu || "") }));
+  t.formules = arr(t.formules).map(f => ({ ...f, id: uid(f.id || f.nom, "f"), variables: arr(f.variables), constants: arr(f.constants), errors: arr(f.errors), dubtos: !!f.dubtos }));
+  t.procediments = arr(t.procediments).filter(p => arr(p.passos).length >= 3).map(p => ({ id: uid(p.id || p.nom, "p"), nom: String(p.nom || "Procediment"), passos: arr(p.passos).map(String), concepte_id: p.concepte_id || "", dubtos: !!p.dubtos }));
+  t.relacions = arr(t.relacions).filter(r => r.a && r.b && r.tipus).map(r => ({ a: String(r.a), tipus: String(r.tipus), b: String(r.b) }));
+  t.cronologia = arr(t.cronologia).filter(e => e.fet && e.any !== undefined).map(e => ({ any: String(e.any), fet: String(e.fet) }));
+  t.errors_tipics = arr(t.errors_tipics).filter(e => e.afirmacio_erronia).map(e => ({ id: uid(e.id || e.afirmacio_erronia, "e"), afirmacio_erronia: String(e.afirmacio_erronia), correccio: String(e.correccio || ""), concepte_id: e.concepte_id || "", dubtos: !!e.dubtos }));
+  t.preguntes_obertes = arr(t.preguntes_obertes).filter(q => q.pregunta).map(q => ({ id: uid(q.id || q.pregunta, "o"), pregunta: String(q.pregunta), resposta_model: String(q.resposta_model || ""), criteris: arr(q.criteris).map(String), concepte_id: q.concepte_id || "" }));
+  t.creat = t.creat || now();
+  return t;
+}
+function compileFormula(f) {
+  const parts = String(f.expressio || "").split("=");
+  if (parts.length !== 2) throw new Error("Cal la forma R = expressió");
+  const lhs = parts[0].trim(); if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(lhs)) throw new Error("El resultat ha de ser un símbol");
+  const tree = parseExpr(parts[1]);
+  const consts = {}; f.constants.forEach(c => { if (c.simbol) consts[c.simbol] = Number(c.valor); });
+  const vars = f.variables.filter(v => v.simbol && isFinite(+v.min) && isFinite(+v.max) && +v.max > +v.min).map(v => ({ simbol: v.simbol, nom: v.nom || v.simbol, unitat: v.unitat || "", min: +v.min, max: +v.max, pas: +v.pas > 0 ? +v.pas : 0 }));
+  const need = varsOf(tree); for (const s of need) if (!(s in consts) && !vars.find(v => v.simbol === s)) throw new Error("Falta la variable " + s);
+  if (!vars.length) throw new Error("Cap variable");
+  const env = { ...consts }; vars.forEach(v => env[v.simbol] = (v.min + v.max) / 2);
+  if (!isFinite(evalTree(tree, env))) throw new Error("No es pot avaluar");
+  const errors = f.errors.map(e => { try { return { tree: parseExpr(e.expressio), explicacio: String(e.explicacio || "") }; } catch { return null; } }).filter(Boolean);
+  const res = f.resultat || {};
+  return { id: f.id, nom: f.nom || lhs, src: parts[1].trim(), lhs, tree, consts, constList: f.constants, vars, errors, res: { simbol: res.simbol || lhs, nom: res.nom || lhs, unitat: res.unitat || "" }, concepte_id: f.concepte_id || "", dubtos: !!f.dubtos };
+}
+function compile(t) {
+  const fs = [];
+  for (const f of t.formules) { try { fs.push(compileFormula(f)); } catch (e) { console.warn("Fórmula descartada", f.expressio, e.message); } }
+  COMPILED[t.id] = { t, formules: fs };
+  return COMPILED[t.id];
+}
+const allTopics = () => [...DEMOS.map(d => COMPILED[d.id] ? COMPILED[d.id].t : compile(normTopic(d)).t), ...Object.values(S.topics)];
+const topicById = id => (COMPILED[id] ? COMPILED[id].t : null);
+const conceptById = (t, id) => t.conceptes.find(c => c.id === id);
+
+/* ---------------- Progrés per element ---------------- */
+function topicKeys(t) {
+  const k = [];
+  t.conceptes.forEach(c => k.push("c:" + c.id));
+  COMPILED[t.id].formules.forEach(f => k.push("f:" + f.id));
+  t.procediments.forEach(p => k.push("p:" + p.id));
+  t.errors_tipics.forEach(e => k.push("e:" + e.id));
+  if (t.relacions.length >= 2) k.push("r:all");
+  if (t.cronologia.length >= 3) k.push("t:all");
+  return k.filter(x => !(S.reported[t.id] || {})[x]);
+}
+function card(tid, key) { const p = S.prog[tid] || (S.prog[tid] = {}); return p[key] || (p[key] = { reps: 0, streak: 0, okDays: [], pendingError: false }); }
+function peekCard(tid, key) { return (S.prog[tid] || {})[key] || { reps: 0, streak: 0, okDays: [] }; }
+function stateOf(c) {
+  if (!c.reps) return 0;
+  const days = (c.okDays || []).length;
+  if (c.bossOk || (c.S || 0) >= 15 || (c.streak >= 4 && days >= 2)) return 3;
+  if (c.streak >= 2 || (c.S || 0) >= 4) return 2;
+  return 1;
+}
+function topicStats(t) {
+  const keys = topicKeys(t), counts = [0, 0, 0, 0]; let due = 0;
+  keys.forEach(k => { const c = peekCard(t.id, k); counts[stateOf(c)]++; if (c.reps && c.due <= now()) due++; });
+  const n = keys.length || 1;
+  return { keys, counts, n: keys.length, due, consolidat: (counts[2] + counts[3]) / n, domini: counts[3] / n, score: (counts[1] * 0.25 + counts[2] * 0.6 + counts[3]) / n };
+}
+function globalStats() {
+  let n = 0, pts = 0, dom = 0, cons = 0;
+  for (const t of allTopics()) { const s = topicStats(t); if (!Object.keys(S.prog[t.id] || {}).length && t.demo) continue; n += s.n; pts += s.score * s.n; dom += s.counts[3]; cons += s.counts[2] + s.counts[3]; }
+  return { n, domini: n ? pts / n : 0, dom, cons };
+}
+function markDay() { const d = dayKey(); S.days[d] = (S.days[d] || 0) + 1; }
+function weekStreak() {
+  const weeks = {}; Object.keys(S.days).forEach(d => { const w = weekKey(new Date(d + "T12:00:00").getTime()); weeks[w] = (weeks[w] || 0) + 1; });
+  let streak = 0, t = now(), comodi = false; const cur = weekKey(t);
+  for (let i = 0; i < 104; i++) {
+    const w = weekKey(t - i * 7 * DAY), n = weeks[w] || 0;
+    if (n >= 3) streak++;
+    else if (w === cur) continue;
+    else if (!comodi && n >= 1) { comodi = true; streak++; }
+    else break;
+  }
+  return { streak, thisWeek: weeks[cur] || 0, comodi };
+}
+
+/* ---------------- Temes d'exemple ---------------- */
+const DEMOS = [
+{ id: "demo_forces", demo: true, titol: "Forces i moviment", materia: "Física i Química", curs: "4t ESO",
+  resum: "Una força és una interacció capaç de canviar l'estat de moviment o la forma d'un cos. La segona llei de Newton relaciona força, massa i acceleració (F = m · a). El pes és la força amb què la Terra atrau un cos (P = m · g). La velocitat mitjana és el quocient entre la distància recorreguda i el temps.",
+  seccions: [
+    { titol: "Què és una força", punts: ["Interacció entre cossos que pot canviar-ne el moviment o la forma", "Es mesura en newtons (N) amb un dinamòmetre", "És una magnitud vectorial: té mòdul, direcció i sentit"] },
+    { titol: "Lleis de Newton", punts: ["1a llei (inèrcia): sense força neta, un cos manté el repòs o el MRU", "2a llei: F = m · a", "3a llei: a tota acció li correspon una reacció igual i de sentit contrari"] },
+    { titol: "Massa i pes", punts: ["La massa (kg) mesura la quantitat de matèria i no canvia", "El pes (N) depèn de la gravetat del lloc: P = m · g", "A la Terra, g ≈ 9,8 m/s²"] },
+    { titol: "Moviment", punts: ["Velocitat mitjana: v = d / t", "Unitats SI: metres i segons, v en m/s", "Per passar de km/h a m/s, es divideix entre 3,6"] }
+  ],
+  conceptes: [
+    { id: "forca", nom: "força", definicio: "Interacció entre dos cossos capaç de modificar l'estat de moviment o la forma d'un cos.", exemple: "Empènyer un carro el posa en moviment.", paraules_clau: ["interacció", "moviment", "forma"], sinonims: [], distractors: [{ text: "energia", per_que: "L'energia és la capacitat de fer un treball, no una interacció entre cossos." }, { text: "velocitat", per_que: "La velocitat descriu com es mou un cos, no què el fa canviar." }], font: "Força: interacció que pot canviar el moviment o la forma d'un cos", pista_conceptual: "Pensa en allò que fas quan empenys o estires alguna cosa." },
+    { id: "newton", nom: "newton", definicio: "Unitat de força del Sistema Internacional: la força que dona una acceleració d'1 m/s² a una massa d'1 kg.", exemple: "Una poma pesa aproximadament 1 N.", paraules_clau: ["unitat", "força", "acceleració"], sinonims: ["n"], distractors: [{ text: "joule", per_que: "El joule és la unitat d'energia i de treball." }, { text: "quilogram", per_que: "El quilogram és la unitat de massa, no de força." }], font: "Unitat de força: newton (N)", pista_conceptual: "Porta el nom del científic de les tres lleis." },
+    { id: "massa", nom: "massa", definicio: "Quantitat de matèria d'un cos; es mesura en quilograms i no depèn del lloc on és el cos.", exemple: "Un astronauta té la mateixa massa a la Terra i a la Lluna.", paraules_clau: ["matèria", "quilograms", "lloc"], sinonims: [], distractors: [{ text: "pes", per_que: "El pes és una força i canvia segons la gravetat; la massa no." }, { text: "volum", per_que: "El volum és l'espai que ocupa un cos, no la quantitat de matèria." }], font: "La massa (kg) mesura la quantitat de matèria i no canvia", pista_conceptual: "És la magnitud que es manté igual a la Lluna." },
+    { id: "pes", nom: "pes", definicio: "Força amb què un planeta atrau un cos; es calcula com P = m · g i es mesura en newtons.", exemple: "Un cos de 10 kg pesa 98 N a la Terra.", paraules_clau: ["força", "atrau", "newtons"], sinonims: [], distractors: [{ text: "massa", per_que: "La massa és quantitat de matèria (kg); el pes és una força (N)." }, { text: "densitat", per_que: "La densitat relaciona massa i volum." }], font: "El pes (N) depèn de la gravetat del lloc: P = m · g", pista_conceptual: "És una força i a la Lluna seria unes sis vegades menor." },
+    { id: "acceleracio", nom: "acceleració", definicio: "Variació de la velocitat per unitat de temps; es mesura en m/s².", exemple: "Un cotxe que passa de 0 a 20 m/s en 10 s té una acceleració de 2 m/s².", paraules_clau: ["variació", "velocitat", "temps"], sinonims: [], distractors: [{ text: "velocitat", per_que: "La velocitat és distància per temps; l'acceleració és com canvia la velocitat." }, { text: "força", per_que: "La força causa l'acceleració, però no és el mateix." }], font: "Acceleració: canvi de velocitat en el temps (m/s²)", pista_conceptual: "Indica com de ràpid canvia la velocitat." },
+    { id: "inercia", nom: "inèrcia", definicio: "Tendència d'un cos a mantenir el seu estat de repòs o de moviment rectilini uniforme si no hi actua cap força neta.", exemple: "Quan l'autobús frena, els passatgers van cap endavant.", paraules_clau: ["tendència", "repòs", "força"], sinonims: ["principi d'inercia"], distractors: [{ text: "fregament", per_que: "El fregament és una força que s'oposa al moviment; la inèrcia no és cap força." }, { text: "pes", per_que: "El pes és la força de la gravetat." }], font: "1a llei (inèrcia): sense força neta, un cos manté el repòs o el MRU", pista_conceptual: "Explica per què et vas endavant quan l'autobús frena." },
+    { id: "fregament", nom: "fregament", definicio: "Força que apareix entre dues superfícies en contacte i que s'oposa al moviment relatiu entre elles.", exemple: "Una pilota que rodola acaba aturant-se.", paraules_clau: ["superfícies", "contacte", "oposa"], sinonims: ["friccio", "força de fregament"], distractors: [{ text: "inèrcia", per_que: "La inèrcia és una tendència, no una força entre superfícies." }, { text: "normal", per_que: "La normal és perpendicular a la superfície i no s'oposa al moviment." }], font: "El fregament s'oposa al moviment", pista_conceptual: "Per culpa seva una pilota que rodola s'acaba aturant." },
+    { id: "velocitat", nom: "velocitat mitjana", definicio: "Quocient entre la distància recorreguda i el temps emprat; en el SI es mesura en m/s.", exemple: "100 m en 20 s: 5 m/s.", paraules_clau: ["distància", "temps", "quocient"], sinonims: ["velocitat"], distractors: [{ text: "acceleració", per_que: "L'acceleració és el canvi de velocitat per unitat de temps." }, { text: "rapidesa instantània", per_que: "La instantània és en un moment concret, no la mitjana del recorregut." }], font: "Velocitat mitjana: v = d / t", pista_conceptual: "Es calcula dividint distància entre temps." }
+  ],
+  formules: [
+    { id: "f_newton", nom: "Segona llei de Newton", expressio: "F = m * a", concepte_id: "forca", resultat: { simbol: "F", nom: "força", unitat: "N" }, variables: [{ simbol: "m", nom: "massa", unitat: "kg", min: 0.5, max: 60, pas: 0.5 }, { simbol: "a", nom: "acceleració", unitat: "m/s²", min: 0.2, max: 10, pas: 0.1 }], constants: [], errors: [{ expressio: "m / a", explicacio: "Has dividit la massa entre l'acceleració. A la segona llei es multipliquen: F = m · a." }, { expressio: "a / m", explicacio: "Has dividit l'acceleració entre la massa. La força és el producte m · a." }, { expressio: "m + a", explicacio: "Has sumat magnituds diferents. Massa i acceleració es multipliquen." }] },
+    { id: "f_pes", nom: "Pes d'un cos", expressio: "P = m * g", concepte_id: "pes", resultat: { simbol: "P", nom: "pes", unitat: "N" }, variables: [{ simbol: "m", nom: "massa", unitat: "kg", min: 1, max: 120, pas: 1 }], constants: [{ simbol: "g", nom: "gravetat a la Terra", valor: 9.8, unitat: "m/s²" }], errors: [{ expressio: "m", explicacio: "Has donat la massa com si fos el pes. El pes és una força: cal multiplicar per g." }, { expressio: "m / g", explicacio: "Has dividit entre g. El pes es calcula multiplicant: P = m · g." }] },
+    { id: "f_vel", nom: "Velocitat mitjana", expressio: "v = d / t", concepte_id: "velocitat", resultat: { simbol: "v", nom: "velocitat", unitat: "m/s" }, variables: [{ simbol: "d", nom: "distància", unitat: "m", min: 20, max: 2000, pas: 10 }, { simbol: "t", nom: "temps", unitat: "s", min: 4, max: 300, pas: 1 }], constants: [], errors: [{ expressio: "t / d", explicacio: "Has invertit la divisió. La velocitat és distància entre temps." }, { expressio: "d * t", explicacio: "Has multiplicat. La velocitat mitjana és d / t." }] }
+  ],
+  procediments: [
+    { id: "p_dinamica", nom: "Resoldre un problema de dinàmica", concepte_id: "forca", passos: ["Llegir l'enunciat i identificar què es demana", "Anotar les dades i passar-les a unitats del SI", "Dibuixar les forces que actuen sobre el cos", "Escriure la fórmula adequada (F = m · a)", "Substituir les dades i calcular", "Revisar el resultat i escriure'n la unitat"] }
+  ],
+  relacions: [
+    { a: "força", tipus: "causa", b: "acceleració" },
+    { a: "massa", tipus: "s'oposa a", b: "acceleració" },
+    { a: "fregament", tipus: "s'oposa a", b: "moviment" },
+    { a: "pes", tipus: "és un tipus de", b: "força" },
+    { a: "newton", tipus: "és la unitat de", b: "força" }
+  ],
+  cronologia: [
+    { any: "-350", fet: "Aristòtil: els cossos necessiten una força contínua per moure's" },
+    { any: "1638", fet: "Galileu descriu la inèrcia amb plans inclinats" },
+    { any: "1687", fet: "Newton publica els Principia amb les tres lleis" },
+    { any: "1905", fet: "Einstein proposa la relativitat especial" }
+  ],
+  errors_tipics: [
+    { id: "e_massapes", afirmacio_erronia: "La massa i el pes són la mateixa magnitud.", correccio: "La massa és quantitat de matèria (kg) i no canvia; el pes és una força (N) que depèn de la gravetat.", concepte_id: "pes" },
+    { id: "e_moviment", afirmacio_erronia: "Si un cos es mou, sempre hi ha d'haver una força que l'empenyi.", correccio: "Per la inèrcia, un cos pot moure's amb velocitat constant sense força neta.", concepte_id: "inercia" },
+    { id: "e_caiguda", afirmacio_erronia: "Sense aire, un objecte pesant cau més de pressa que un de lleuger.", correccio: "Al buit tots els cossos cauen amb la mateixa acceleració, g.", concepte_id: "pes" }
+  ],
+  preguntes_obertes: [
+    { id: "o_lluna", pregunta: "Un astronauta de 70 kg viatja a la Lluna. Explica què passa amb la seva massa i amb el seu pes.", resposta_model: "La massa continua sent 70 kg, perquè és la quantitat de matèria. El pes disminueix, perquè la gravetat de la Lluna és més petita (unes sis vegades menor).", criteris: ["Diu que la massa no canvia", "Diu que el pes disminueix", "Ho justifica per la gravetat menor de la Lluna"], concepte_id: "pes" },
+    { id: "o_bus", pregunta: "Per què ens anem cap endavant quan un autobús frena de cop?", resposta_model: "Per la inèrcia: el nostre cos tendeix a mantenir la velocitat que portava, mentre l'autobús s'atura.", criteris: ["Esmenta la inèrcia", "Explica que el cos tendeix a mantenir el moviment"], concepte_id: "inercia" }
+  ] },
+{ id: "demo_cel", demo: true, titol: "La cèl·lula", materia: "Biologia i Geologia", curs: "1r ESO",
+  resum: "La cèl·lula és la unitat estructural i funcional dels éssers vius. Totes tenen membrana, citoplasma i material genètic. Les procariotes no tenen nucli; les eucariotes sí. Les cèl·lules vegetals tenen paret cel·lular i cloroplasts. Per observar-les fem servir el microscopi òptic.",
+  seccions: [
+    { titol: "Teoria cel·lular", punts: ["Tots els éssers vius estan formats per cèl·lules", "La cèl·lula és la unitat de vida més petita", "Tota cèl·lula prové d'una altra cèl·lula"] },
+    { titol: "Parts de la cèl·lula", punts: ["Membrana plasmàtica: envolta i controla el pas de substàncies", "Citoplasma: medi intern on hi ha els orgànuls", "Material genètic (ADN): conté la informació"] },
+    { titol: "Tipus de cèl·lules", punts: ["Procariota: sense nucli (bacteris)", "Eucariota: amb nucli (animals, plantes, fongs)", "La vegetal té paret cel·lular, cloroplasts i un vacúol gran"] },
+    { titol: "El microscopi", punts: ["Augment total = augment de l'ocular × augment de l'objectiu", "Sempre es comença enfocant amb l'objectiu de menys augments"] }
+  ],
+  conceptes: [
+    { id: "cellula", nom: "cèl·lula", definicio: "Unitat estructural i funcional més petita dels éssers vius, capaç de fer les funcions vitals.", exemple: "Una neurona, un glòbul vermell, un bacteri.", paraules_clau: ["unitat", "funcional", "vius"], sinonims: ["celula"], distractors: [{ text: "teixit", per_que: "Un teixit és un conjunt de cèl·lules semblants." }, { text: "molècula", per_que: "Una molècula no està viva ni fa funcions vitals." }], font: "La cèl·lula és la unitat de vida més petita", pista_conceptual: "És el que tenen en comú tots els éssers vius." },
+    { id: "membrana", nom: "membrana plasmàtica", definicio: "Capa fina que envolta la cèl·lula i controla el pas de substàncies entre l'interior i l'exterior.", exemple: "Deixa entrar glucosa i oxigen.", paraules_clau: ["envolta", "controla", "substàncies"], sinonims: ["membrana"], distractors: [{ text: "paret cel·lular", per_que: "La paret és una capa rígida extra que només tenen plantes, fongs i bacteris." }, { text: "citoplasma", per_que: "El citoplasma és el medi intern, no l'envolta." }], font: "Membrana plasmàtica: envolta i controla el pas de substàncies", pista_conceptual: "És la frontera de la cèl·lula, com una porta amb control." },
+    { id: "citoplasma", nom: "citoplasma", definicio: "Medi intern de la cèl·lula, entre la membrana i el nucli, on es troben els orgànuls.", exemple: "Els mitocondris floten al citoplasma.", paraules_clau: ["medi", "intern", "orgànuls"], sinonims: [], distractors: [{ text: "nucli", per_que: "El nucli conté l'ADN; el citoplasma és el medi on hi ha els orgànuls." }, { text: "vacúol", per_que: "El vacúol és un orgànul que emmagatzema substàncies." }], font: "Citoplasma: medi intern on hi ha els orgànuls", pista_conceptual: "És l'espai on 'neden' els orgànuls." },
+    { id: "nucli", nom: "nucli", definicio: "Orgànul de les cèl·lules eucariotes que conté el material genètic (ADN) i controla l'activitat cel·lular.", exemple: "El nucli d'una cèl·lula de la galta es veu tenyit amb blau de metilè.", paraules_clau: ["eucariotes", "ADN", "controla"], sinonims: [], distractors: [{ text: "mitocondri", per_que: "El mitocondri obté energia; no guarda la informació genètica principal." }, { text: "ribosoma", per_que: "El ribosoma fabrica proteïnes." }], font: "Eucariota: amb nucli", pista_conceptual: "És el centre de control i guarda l'ADN." },
+    { id: "mitocondri", nom: "mitocondri", definicio: "Orgànul on es fa la respiració cel·lular per obtenir energia dels nutrients.", exemple: "Les cèl·lules musculars en tenen molts.", paraules_clau: ["respiració", "energia", "nutrients"], sinonims: [], distractors: [{ text: "cloroplast", per_que: "El cloroplast fa la fotosíntesi; el mitocondri, la respiració." }, { text: "nucli", per_que: "El nucli guarda l'ADN, no produeix energia." }], font: "Mitocondris: respiració cel·lular", pista_conceptual: "És la 'central energètica' de la cèl·lula." },
+    { id: "cloroplast", nom: "cloroplast", definicio: "Orgànul de les cèl·lules vegetals que conté clorofil·la i on es fa la fotosíntesi.", exemple: "Les cèl·lules de les fulles en són plenes.", paraules_clau: ["vegetals", "clorofil·la", "fotosíntesi"], sinonims: [], distractors: [{ text: "mitocondri", per_que: "El mitocondri fa la respiració, i el tenen animals i plantes." }, { text: "vacúol", per_que: "El vacúol emmagatzema aigua i substàncies." }], font: "La vegetal té paret cel·lular, cloroplasts i un vacúol gran", pista_conceptual: "És verd i fabrica aliment amb la llum." },
+    { id: "paret", nom: "paret cel·lular", definicio: "Coberta rígida situada per fora de la membrana que protegeix i dona forma a les cèl·lules vegetals, dels fongs i dels bacteris.", exemple: "Fa que les cèl·lules de la ceba es vegin com rectangles.", paraules_clau: ["rígida", "membrana", "vegetals"], sinonims: ["paret"], distractors: [{ text: "membrana plasmàtica", per_que: "Totes les cèl·lules tenen membrana; la paret només algunes, i és rígida." }, { text: "citoplasma", per_que: "El citoplasma és interior i fluid." }], font: "La vegetal té paret cel·lular", pista_conceptual: "Les cèl·lules animals no en tenen i per això tenen formes variades." },
+    { id: "procariota", nom: "cèl·lula procariota", definicio: "Cèl·lula sense nucli, amb el material genètic dispers al citoplasma.", exemple: "Els bacteris.", paraules_clau: ["sense nucli", "dispers"], sinonims: ["procariota"], distractors: [{ text: "cèl·lula eucariota", per_que: "Les eucariotes sí que tenen nucli." }, { text: "cèl·lula vegetal", per_que: "La vegetal és eucariota: té nucli." }], font: "Procariota: sense nucli (bacteris)", pista_conceptual: "És el tipus de cèl·lula dels bacteris." },
+    { id: "eucariota", nom: "cèl·lula eucariota", definicio: "Cèl·lula amb nucli que envolta el material genètic i amb orgànuls envoltats de membrana.", exemple: "Cèl·lules d'animals, plantes i fongs.", paraules_clau: ["nucli", "orgànuls"], sinonims: ["eucariota"], distractors: [{ text: "cèl·lula procariota", per_que: "Les procariotes no tenen nucli." }, { text: "virus", per_que: "Els virus no són cèl·lules." }], font: "Eucariota: amb nucli (animals, plantes, fongs)", pista_conceptual: "Les teves cèl·lules són d'aquest tipus." }
+  ],
+  formules: [
+    { id: "f_augment", nom: "Augment total del microscopi", expressio: "A = Oc * Ob", concepte_id: "cellula", resultat: { simbol: "A", nom: "augment total", unitat: "×" }, variables: [{ simbol: "Oc", nom: "augment de l'ocular", unitat: "×", min: 5, max: 15, pas: 5 }, { simbol: "Ob", nom: "augment de l'objectiu", unitat: "×", min: 4, max: 100, pas: 1 }], constants: [], errors: [{ expressio: "Oc + Ob", explicacio: "Has sumat els augments. L'augment total és el producte: ocular × objectiu." }, { expressio: "Ob / Oc", explicacio: "Has dividit. Els augments es multipliquen." }] }
+  ],
+  procediments: [
+    { id: "p_ceba", nom: "Preparar una mostra de ceba per al microscopi", concepte_id: "paret", passos: ["Separar una capa de la ceba i treure'n la pel·lícula fina", "Posar la pel·lícula estesa sobre el portaobjectes", "Afegir una gota de colorant (blau de metilè)", "Tapar amb el cobreobjectes evitant bombolles", "Observar primer amb l'objectiu de menys augments", "Canviar a més augments i enfocar amb el cargol micromètric"] }
+  ],
+  relacions: [
+    { a: "cloroplast", tipus: "és part de", b: "cèl·lula vegetal" },
+    { a: "nucli", tipus: "conté", b: "ADN" },
+    { a: "mitocondri", tipus: "produeix", b: "energia" },
+    { a: "paret cel·lular", tipus: "dona forma a", b: "cèl·lula vegetal" },
+    { a: "cèl·lula procariota", tipus: "s'oposa a", b: "cèl·lula eucariota" }
+  ],
+  cronologia: [
+    { any: "1665", fet: "Robert Hooke observa cel·les en un tall de suro" },
+    { any: "1674", fet: "Van Leeuwenhoek observa microorganismes vius" },
+    { any: "1838", fet: "Schleiden: totes les plantes estan fetes de cèl·lules" },
+    { any: "1839", fet: "Schwann: també els animals estan fets de cèl·lules" },
+    { any: "1855", fet: "Virchow: tota cèl·lula prové d'una altra cèl·lula" }
+  ],
+  errors_tipics: [
+    { id: "e_paretanimal", afirmacio_erronia: "Les cèl·lules animals tenen paret cel·lular.", correccio: "Només en tenen les vegetals, els fongs i els bacteris. Les animals només tenen membrana.", concepte_id: "paret" },
+    { id: "e_bacterinucli", afirmacio_erronia: "Els bacteris tenen el material genètic dins d'un nucli.", correccio: "Els bacteris són procariotes: no tenen nucli i l'ADN és al citoplasma.", concepte_id: "procariota" },
+    { id: "e_plantamito", afirmacio_erronia: "Les plantes no tenen mitocondris perquè ja tenen cloroplasts.", correccio: "Les cèl·lules vegetals tenen cloroplasts i també mitocondris: fan fotosíntesi i respiració.", concepte_id: "mitocondri" }
+  ],
+  preguntes_obertes: [
+    { id: "o_vegani", pregunta: "Indica dues diferències entre una cèl·lula animal i una de vegetal.", resposta_model: "La vegetal té paret cel·lular i cloroplasts (i un vacúol gran); l'animal no té paret ni cloroplasts.", criteris: ["Esmenta la paret cel·lular", "Esmenta els cloroplasts o el vacúol gran"], concepte_id: "paret" },
+    { id: "o_teoria", pregunta: "Enuncia la teoria cel·lular.", resposta_model: "Tots els éssers vius estan formats per cèl·lules; la cèl·lula és la unitat de vida; tota cèl·lula prové d'una altra.", criteris: ["Tots els éssers vius estan formats per cèl·lules", "La cèl·lula és la unitat de vida", "Tota cèl·lula prové d'una altra"], concepte_id: "cellula" }
+  ] }
+];
+
+
+/* ---------------- Expressions (sense eval) ---------------- */
+const FN = { sqrt: Math.sqrt, abs: Math.abs, ln: Math.log, log: Math.log10, exp: Math.exp, sin: x => Math.sin(x * Math.PI / 180), cos: x => Math.cos(x * Math.PI / 180), tan: x => Math.tan(x * Math.PI / 180) };
+function parseExpr(src) {
+  const toks = []; let i = 0; src = String(src);
+  while (i < src.length) {
+    const c = src[i];
+    if (/\s/.test(c)) { i++; continue; }
+    if (/[0-9.]/.test(c)) { let j = i; while (j < src.length && /[0-9.]/.test(src[j])) j++; if (/[eE]/.test(src[j] || "") && /[-+0-9]/.test(src[j + 1] || "")) { j += 2; while (j < src.length && /[0-9]/.test(src[j])) j++; } toks.push({ t: "n", v: parseFloat(src.slice(i, j)) }); i = j; continue; }
+    if (/[A-Za-z_]/.test(c)) { let j = i; while (j < src.length && /[A-Za-z0-9_]/.test(src[j])) j++; toks.push({ t: "id", v: src.slice(i, j) }); i = j; continue; }
+    if ("+-*/^(),".includes(c)) { toks.push({ t: c }); i++; continue; }
+    if (c === "·" || c === "×") { toks.push({ t: "*" }); i++; continue; }
+    if (c === "÷") { toks.push({ t: "/" }); i++; continue; }
+    throw new Error("Caràcter no vàlid: " + c);
+  }
+  let p = 0;
+  const peek = () => toks[p];
+  const eat = t => { if (toks[p] && toks[p].t === t) return toks[p++]; throw new Error("S'esperava " + t); };
+  function expr() { let n = term(); while (peek() && (peek().t === "+" || peek().t === "-")) { const op = toks[p++].t; n = { op, a: n, b: term() }; } return n; }
+  function term() { let n = unary(); while (peek() && (peek().t === "*" || peek().t === "/")) { const op = toks[p++].t; n = { op, a: n, b: unary() }; } return n; }
+  function unary() { if (peek() && peek().t === "-") { p++; return { op: "neg", a: unary() }; } if (peek() && peek().t === "+") { p++; return unary(); } return power(); }
+  function power() { const b = atom(); if (peek() && peek().t === "^") { p++; return { op: "^", a: b, b: unary() }; } return b; }
+  function atom() {
+    const t = toks[p++]; if (!t) throw new Error("Expressió incompleta");
+    if (t.t === "n") return { num: t.v };
+    if (t.t === "id") { if (peek() && peek().t === "(") { p++; const args = [expr()]; while (peek() && peek().t === ",") { p++; args.push(expr()); } eat(")"); if (!FN[t.v]) throw new Error("Funció desconeguda: " + t.v); return { fn: t.v, args }; } return { v: t.v }; }
+    if (t.t === "(") { const e = expr(); eat(")"); return e; }
+    throw new Error("Símbol inesperat");
+  }
+  const tree = expr(); if (p < toks.length) throw new Error("Sobren símbols"); return tree;
+}
+function evalTree(n, env) {
+  if ("num" in n) return n.num;
+  if ("v" in n) { if (n.v in env) return env[n.v]; if (n.v === "pi") return Math.PI; throw new Error("Variable desconeguda: " + n.v); }
+  if (n.fn) return FN[n.fn](...n.args.map(a => evalTree(a, env)));
+  const a = evalTree(n.a, env); if (n.op === "neg") return -a;
+  const b = evalTree(n.b, env);
+  switch (n.op) { case "+": return a + b; case "-": return a - b; case "*": return a * b; case "/": return a / b; case "^": return Math.pow(a, b); }
+  return NaN;
+}
+function varsOf(n, s = new Set()) { if (!n) return s; if ("v" in n && n.v !== "pi") s.add(n.v); if (n.args) n.args.forEach(a => varsOf(a, s)); if (n.a) varsOf(n.a, s); if (n.b) varsOf(n.b, s); return s; }
+const prettyExpr = s => esc(String(s).replace(/\*/g, " · ").replace(/\s+/g, " ").replace(/\^(\w+|\([^)]*\))/g, "<sup>$1</sup>")).replace(/&lt;sup&gt;(.*?)&lt;\/sup&gt;/g, "<sup>$1</sup>");
+
+
+/* ============================================================
+   Generadors d'activitats (deterministes, a partir del JSON)
+   ============================================================ */
+const niceRound = (x, pas) => { if (pas) return Math.round(x / pas) * pas; if (x === 0) return 0; const p = Math.pow(10, Math.floor(Math.log10(Math.abs(x))) - 1); return Math.round(x / p) * p; };
+function randVars(f) { const env = { ...f.consts }; f.vars.forEach(v => { env[v.simbol] = Number(niceRound(v.min + Math.random() * (v.max - v.min), v.pas).toPrecision(6)); if (env[v.simbol] === 0) env[v.simbol] = v.pas || v.max / 2; }); return env; }
+const unitOf = (f, s) => s === f.lhs ? f.res.unitat : (f.vars.find(v => v.simbol === s) || {}).unitat || (f.constList.find(c => c.simbol === s) || {}).unitat || "";
+const nameOf = (f, s) => s === f.lhs ? f.res.nom : (f.vars.find(v => v.simbol === s) || {}).nom || s;
+const valU = (f, s, x) => `<b class="mono">${fmt(x)}${unitOf(f, s) ? " " + esc(unitOf(f, s)) : ""}</b>`;
+
+function diagNumber(ans, correct, extra = []) {
+  if (!isFinite(ans)) return { ok: false, diag: "Escriu un número (pots fer servir coma decimal)." };
+  const rel = x => Math.abs(ans - x) / Math.max(Math.abs(x), 1e-12);
+  if (rel(correct) <= 0.02) return { ok: true };
+  for (const e of extra) if (isFinite(e.v) && rel(e.v) <= 0.02) return { ok: false, diag: e.why, kind: "conceptual" };
+  if (Math.abs(ans + correct) / Math.abs(correct) <= 0.02) return { ok: false, diag: "Tens el valor bé però amb el signe canviat.", kind: "signe" };
+  for (const k of [1, 2, 3, 6, -1, -2, -3, -6]) if (rel(correct * Math.pow(10, k)) <= 0.02) return { ok: false, diag: `Sembla un error d'unitats: el teu resultat és ${k > 0 ? Math.pow(10, k) + " vegades més gran" : Math.pow(10, -k) + " vegades més petit"}. Revisa les conversions.`, kind: "unitats" };
+  if (rel(correct) <= 0.1) return { ok: false, diag: "Gairebé! Revisa l'arrodoniment o el valor de les constants.", kind: "calcul" };
+  return { ok: false, diag: "Revisa quina fórmula has d'aplicar i com hi substitueixes les dades.", kind: "procediment" };
+}
+function workedExample(f, target) {
+  const env = randVars(f), R = evalTree(f.tree, env);
+  const subs = f.src.replace(/[A-Za-z_][A-Za-z0-9_]*/g, s => (s in env) ? fmt(env[s]) : s);
+  const data = Object.keys(env).filter(s => !(s in f.consts) || true).map(s => `${esc(s)} = ${fmt(env[s])} ${esc(unitOf(f, s))}`).join(", ");
+  if (!target || target === f.lhs) return `<p>Exemple resolt amb altres dades: ${data}.</p><p class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)} = ${prettyExpr(subs)} = ${fmt(R)} ${esc(f.res.unitat)}</p>`;
+  return `<p>Exemple amb altres dades: si ${esc(f.lhs)} = ${fmt(R)} ${esc(f.res.unitat)} i ${f.vars.filter(v => v.simbol !== target).map(v => `${esc(v.simbol)} = ${fmt(env[v.simbol])} ${esc(v.unitat)}`).join(", ")}, busquem ${esc(target)}.</p><p>Aïllant ${esc(target)} surt ${esc(target)} = ${fmt(env[target])} ${esc(unitOf(f, target))}. Comprovació: <span class="formula">${prettyExpr(subs)} = ${fmt(R)}</span></p>`;
+}
+
+const RELTYPES = ["causa", "és part de", "s'oposa a", "és un tipus de", "produeix", "conté"];
+function makeItem(tid, key, opts = {}) {
+  const C = COMPILED[tid], t = C.t, [kind, id] = key.split(":"), c = peekCard(tid, key), lvl = c.streak || 0;
+  const base = { tid, key, topic: t.titol };
+  if (kind === "c") {
+    const co = conceptById(t, id); if (!co) return null;
+    const others = t.conceptes.filter(x => x.id !== co.id);
+    const accepted = [co.nom, ...co.sinonims];
+    const hintsC = [co.pista_conceptual || `Pensa en: ${co.paraules_clau.slice(0, 2).join(", ") || co.exemple}`, `Comença per «${co.nom.slice(0, 2)}…» i té ${co.nom.replace(/\s/g, "").length} lletres.`, co.exemple ? `Exemple: ${co.exemple}` : `Paraules clau: ${co.paraules_clau.join(", ")}`];
+    const checkText = ans => {
+      const a = norm(ans); if (!a) return { ok: false, diag: "Escriu una resposta." };
+      for (const acc of accepted) { const n = norm(acc); if (a === n) return { ok: true }; if (lev(a, n) <= Math.max(1, Math.floor(n.length * 0.2))) return { ok: true, note: `Correcte, però vigila l'ortografia: «${co.nom}».` }; }
+      const conf = others.find(o => [o.nom, ...o.sinonims].some(x => norm(x) === a || lev(norm(x), a) <= 1));
+      if (conf) return { ok: false, diag: `Has confós «${co.nom.slice(0, 1)}…» amb «${conf.nom}». ${conf.nom[0].toUpperCase() + conf.nom.slice(1)} és: ${conf.definicio}`, kind: "confusio" };
+      const dis = co.distractors.find(d => norm(d.text) === a);
+      if (dis) return { ok: false, diag: dis.per_que || `«${dis.text}» és un error habitual.`, kind: "conceptual" };
+      return { ok: false, diag: "No és el terme. Rellegeix la definició: quina paraula clau la identifica?", kind: "record" };
+    };
+    const types = lvl === 0 ? ["mcq_def", "mcq_name"] : lvl === 1 ? ["fill", "mcq_name", "short"] : ["short", "fill"];
+    let type = opts.type || pick(types);
+    const kw = co.paraules_clau.find(k => co.definicio.toLowerCase().includes(k.toLowerCase()) && k.length > 3);
+    if (type === "fill" && !kw) type = "short";
+    if (type === "mcq_name" && others.length < 2) type = "mcq_def";
+    if (type === "mcq_def") {
+      const dists = shuffle([...co.distractors.map(d => ({ text: d.text, why: d.per_que })), ...others.map(o => ({ text: o.nom, why: `«${o.nom}» és: ${o.definicio}` }))]).filter((d, i, a) => a.findIndex(x => norm(x.text) === norm(d.text)) === i && norm(d.text) !== norm(co.nom)).slice(0, 3);
+      const options = shuffle([{ text: co.nom, ok: true }, ...dists.map(d => ({ text: d.text, why: d.why }))]);
+      return { ...base, label: co.nom, type: "Reconeix", mode: "mcq", prompt: `<p class="muted small">Quin concepte correspon a aquesta definició?</p><p class="prompt">${esc(co.definicio)}</p>`, options, answerText: co.nom, explain: co.definicio, source: co.font, hints: [hintsC[0], "Descarta les opcions que són una altra magnitud o un altre element.", hintsC[2]], concept: co };
+    }
+    if (type === "mcq_name") {
+      const ds = shuffle(others).slice(0, 3).map(o => ({ text: o.definicio, why: `Aquesta és la definició de «${o.nom}».` }));
+      const options = shuffle([{ text: co.definicio, ok: true }, ...ds]);
+      return { ...base, label: co.nom, type: "Reconeix", mode: "mcq", prompt: `<p class="muted small">Quina és la definició correcta?</p><p class="prompt big">${esc(co.nom)}</p>`, options, answerText: co.definicio, explain: co.exemple ? "Exemple: " + co.exemple : "", source: co.font, hints: [hintsC[0], `Busca la definició que parla de: ${co.paraules_clau[0] || "la idea principal"}.`, hintsC[2]], concept: co };
+    }
+    if (type === "fill") {
+      const re = new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      const shown = esc(co.definicio).replace(re, '<span class="hl mono">________</span>');
+      return { ...base, label: co.nom, type: "Completa", mode: "text", prompt: `<p class="muted small">Completa la definició de <b>${esc(co.nom)}</b>:</p><p class="prompt">${shown}</p>`, check: ans => { const a = norm(ans), n = norm(kw); if (a === n || lev(a, n) <= Math.max(1, Math.floor(n.length * 0.2))) return { ok: true }; return { ok: false, diag: "Aquesta no és la paraula que falta. Pensa què fa que la definició sigui precisa.", kind: "record" }; }, answerText: kw, explain: co.definicio, source: co.font, hints: [hintsC[0], `La paraula comença per «${kw.slice(0, 2)}» i té ${kw.length} lletres.`, hintsC[2]], concept: co };
+    }
+    return { ...base, label: co.nom, type: "Recorda", mode: "text", prompt: `<p class="muted small">Escriu el nom del concepte (sense mirar els apunts):</p><p class="prompt">${esc(co.definicio)}</p>`, check: checkText, answerText: co.nom, explain: co.exemple ? "Exemple: " + co.exemple : "", source: co.font, hints: hintsC, concept: co };
+  }
+  if (kind === "f") {
+    const f = C.formules.find(x => x.id === id); if (!f) return null;
+    const co = conceptById(t, f.concepte_id);
+    const env = randVars(f), R = evalTree(f.tree, env);
+    if (!isFinite(R)) return null;
+    const canSolve = f.vars.length >= 1 && lvl >= 1 && Math.random() < 0.6;
+    if (opts.type === "predict" || (!opts.exam && lvl >= 1 && Math.random() < 0.2 && f.vars.length)) {
+      const v = pick(f.vars), e2 = { ...env, [v.simbol]: env[v.simbol] * 2 }, ratio = evalTree(f.tree, e2) / R;
+      const choices = [{ r: 2, text: "Es duplica" }, { r: 0.5, text: "Es redueix a la meitat" }, { r: 4, text: "Es multiplica per 4" }, { r: 1, text: "No canvia" }, { r: 0.25, text: "Es divideix entre 4" }];
+      let right = choices.find(ch => Math.abs(ch.r - ratio) < 0.02);
+      const options = right ? shuffle([right, ...shuffle(choices.filter(ch => ch !== right)).slice(0, 3)]).map(ch => ({ text: ch.text, ok: ch === right, why: `En realitat, si dobles ${v.simbol}, ${f.lhs} queda multiplicat per ${fmt(ratio)}.` })) : shuffle([{ text: `Augmenta (×${fmt(ratio)})`, ok: ratio > 1 }, { text: `Disminueix`, ok: ratio < 1 }, { text: "No canvia", ok: Math.abs(ratio - 1) < 0.01 }]).map(o => ({ ...o, why: `Si dobles ${v.simbol}, ${f.lhs} es multiplica per ${fmt(ratio)}.` }));
+      return { ...base, label: f.nom, type: "Prediu", mode: "mcq", prompt: `<p class="muted small">${esc(f.nom)}: <span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span></p><p class="prompt">Si dobles <b>${esc(v.nom)} (${esc(v.simbol)})</b> i la resta no canvia, què li passa a <b>${esc(f.res.nom)} (${esc(f.lhs)})</b>?</p>`, options, answerText: right ? right.text : "×" + fmt(ratio), explain: `Ho pots comprovar al laboratori movent el control de ${v.simbol}.`, source: co ? co.font : "", hints: [`Mira si ${v.simbol} multiplica, divideix o està elevat a alguna potència.`, `Prova-ho amb números: ${v.simbol} = 1 i ${v.simbol} = 2.`, workedExample(f)], formula: f };
+    }
+    if (canSolve && !opts.forceResult) {
+      const target = pick(f.vars).simbol, truth = env[target];
+      const given = [...f.vars.filter(v => v.simbol !== target).map(v => `${esc(v.nom)} (${esc(v.simbol)}) = ${valU(f, v.simbol, env[v.simbol])}`), `${esc(f.res.nom)} (${esc(f.lhs)}) = ${valU(f, f.lhs, R)}`];
+      const extra = []; f.vars.filter(v => v.simbol !== target).forEach(o => { extra.push({ v: R * env[o.simbol], why: `Has multiplicat ${f.lhs} per ${o.simbol}. Per aïllar ${target}, el que multiplica passa dividint (i al revés).` }, { v: R / env[o.simbol], why: `Has dividit ${f.lhs} entre ${o.simbol}, però en aquesta fórmula s'aïlla d'una altra manera. Revisa on és ${target}.` }, { v: env[o.simbol] / R, why: `Has invertit la divisió. Aïlla ${target} pas a pas.` }); });
+      const extraOk = extra.filter(e => Math.abs(e.v - truth) / Math.abs(truth) > 0.02);
+      return { ...base, label: f.nom, type: "Aïlla i calcula", mode: "number", unit: unitOf(f, target), prompt: `<p class="muted small">${esc(f.nom)}</p><p class="prompt">Dades: ${given.join(" · ")}${f.constList.length ? " · " + f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`).join(" · ") : ""}</p><p class="prompt">Calcula <b>${esc(nameOf(f, target))} (${esc(target)})</b>.</p>`, check: ans => { const n = parseNum(ans); const envA = { ...env, [target]: n }; const back = evalTree(f.tree, envA); if (isFinite(back) && Math.abs(back - R) / Math.abs(R) <= 0.02) return { ok: true }; return diagNumber(n, truth, extraOk); }, answerText: `${fmt(truth)} ${unitOf(f, target)}`, explain: `${esc(f.lhs)} = ${prettyExpr(f.src)} → s'aïlla ${esc(target)}.`, source: co ? co.font : "", hints: [co ? (co.pista_conceptual || "Quina magnitud et demanen?") : "Quina magnitud et demanen i quines dades tens?", `Fes servir <span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span> i aïlla ${esc(target)} abans de substituir.`, workedExample(f, target)], formula: f, raw: true };
+    }
+    const extra = f.errors.map(e => { try { return { v: evalTree(e.tree, env), why: e.explicacio }; } catch { return null; } }).filter(e => e && Math.abs(e.v - R) / Math.max(Math.abs(R), 1e-12) > 0.02);
+    const given = f.vars.map(v => `${esc(v.nom)} (${esc(v.simbol)}) = ${valU(f, v.simbol, env[v.simbol])}`);
+    return { ...base, label: f.nom, type: "Calcula", mode: "number", unit: f.res.unitat, prompt: `<p class="muted small">${esc(f.nom)}</p><p class="prompt">Dades: ${given.join(" · ")}${f.constList.length ? " · " + f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`).join(" · ") : ""}</p><p class="prompt">Calcula <b>${esc(f.res.nom)} (${esc(f.lhs)})</b>.</p>`, check: ans => diagNumber(parseNum(ans), R, extra), answerText: `${fmt(R)} ${f.res.unitat}`, explain: `${esc(f.lhs)} = ${prettyExpr(f.src)} = ${prettyExpr(f.src.replace(/[A-Za-z_][A-Za-z0-9_]*/g, s => (s in env) ? fmt(env[s]) : s))} = ${fmt(R)} ${esc(f.res.unitat)}`, source: co ? co.font : "", hints: [co ? (co.pista_conceptual || `Què és ${f.res.nom}?`) : `Què és ${f.res.nom}?`, `Fórmula: <span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span>. Comprova que les dades són en unitats del SI.`, workedExample(f)], formula: f, raw: true };
+  }
+  if (kind === "p") {
+    const p = t.procediments.find(x => x.id === id); if (!p) return null;
+    let order = shuffle(p.passos.map((s, i) => i)); if (order.every((v, i) => v === i)) order = order.reverse();
+    return { ...base, label: p.nom, type: "Ordena", mode: "order", prompt: `<p class="muted small">Ordena els passos del procediment:</p><p class="prompt big">${esc(p.nom)}</p>`, items: p.passos, order, answerText: p.passos.map((s, i) => (i + 1) + ". " + s).join(" "), explain: "", source: "", hints: ["Pensa quin pas has de fer abans de poder fer els altres.", `El primer pas és: «${p.passos[0]}».`, `L'últim pas és: «${p.passos[p.passos.length - 1]}».`] };
+  }
+  if (kind === "e") {
+    const e = t.errors_tipics.find(x => x.id === id); if (!e) return null;
+    const truths = shuffle(t.conceptes).slice(0, 3).map(c => ({ text: `${c.nom[0].toUpperCase() + c.nom.slice(1)}: ${c.definicio}`, why: "Aquesta afirmació és correcta." }));
+    const options = shuffle([{ text: e.afirmacio_erronia, ok: true }, ...truths]);
+    return { ...base, label: e.afirmacio_erronia, type: "Detecta l'error", mode: "mcq", prompt: `<p class="muted small">Només una afirmació és <b>falsa</b>. Quina?</p>`, options, answerText: e.afirmacio_erronia, explain: "Correcció: " + e.correccio, source: "", hints: ["Busca l'afirmació que confon dos conceptes o generalitza massa.", "Les definicions dels apunts són correctes: compara-les amb el que recordes.", "Pensa en un contraexemple per a cada afirmació."] };
+  }
+  if (kind === "r") {
+    const r = pick(t.relacions); const types = [...new Set([...t.relacions.map(x => x.tipus), ...RELTYPES])];
+    const options = shuffle([{ text: r.tipus, ok: true }, ...shuffle(types.filter(x => x !== r.tipus)).slice(0, 3).map(x => ({ text: x, why: `La relació correcta és «${r.a} ${r.tipus} ${r.b}».` }))]);
+    return { ...base, label: `${r.a} → ${r.b}`, type: "Relaciona", mode: "mcq", prompt: `<p class="muted small">Quina relació hi ha entre aquests dos conceptes?</p><p class="prompt"><b>${esc(r.a)}</b> <span class="muted">…?…</span> <b>${esc(r.b)}</b></p>`, options, answerText: `${r.a} ${r.tipus} ${r.b}`, explain: "", source: "", hints: ["Pregunta't: un fa que passi l'altre? Un forma part de l'altre?", "Llegeix la frase completa amb cada opció i mira quina té sentit.", "Mira el mapa conceptual de la pestanya Apunts."] };
+  }
+  if (kind === "t") {
+    const ev = shuffle(t.cronologia).slice(0, Math.min(5, t.cronologia.length));
+    const sorted = ev.slice().sort((a, b) => parseFloat(a.any) - parseFloat(b.any));
+    let order = shuffle(sorted.map((_, i) => i)); if (order.every((v, i) => v === i)) order = order.reverse();
+    return { ...base, label: "Cronologia", type: "Ordena en el temps", mode: "order", prompt: `<p class="muted small">Ordena els fets del més antic al més recent:</p>`, items: sorted.map(e => e.fet), years: sorted.map(e => e.any), order, answerText: sorted.map(e => `${e.any}: ${e.fet}`).join(" · "), explain: "", source: "", hints: ["Pensa quins fets depenen d'altres anteriors.", `El més antic és: «${sorted[0].fet}».`, `Anys: ${sorted.map(e => e.any).join(", ")} (desordenats ja no!).`] };
+  }
+  return null;
+}
+function checkMcq(item, idx) { const o = item.options[idx]; if (!o) return { ok: false, diag: "Tria una opció." }; return o.ok ? { ok: true } : { ok: false, diag: o.why || "No és aquesta.", kind: "confusio" }; }
+function checkOrder(item, order) {
+  const wrongPos = order.map((v, i) => v === i ? -1 : i).filter(i => i >= 0);
+  if (!wrongPos.length) return { ok: true, wrongPos };
+  const firstBad = wrongPos[0], should = item.items[firstBad];
+  return { ok: false, wrongPos, diag: `${wrongPos.length} element${wrongPos.length > 1 ? "s" : ""} fora de lloc. A la posició ${firstBad + 1} hi hauria d'anar un altre pas: pensa què cal fer just després de «${firstBad > 0 ? item.items[firstBad - 1] : "començar"}».`, kind: "sequencia", should };
+}
+
+/* ---------------- Selecció de sessions ---------------- */
+function buildSession(tids, n = 10, focus = null) {
+  let pool = [];
+  if (focus) pool = focus.slice();
+  else {
+    const due = [], err = [], fresh = [], rest = [];
+    for (const tid of tids) { const t = topicById(tid); if (!t) continue; for (const k of topicKeys(t)) { const c = peekCard(tid, k), e = [tid, k]; if (c.pendingError) err.push(e); else if (!c.reps) fresh.push(e); else if (c.due <= now()) due.push([tid, k, c.due]); else rest.push([tid, k, c.S || 0, stateOf(c)]); } }
+    due.sort((a, b) => a[2] - b[2]); rest.sort((a, b) => a[3] - b[3] || a[2] - b[2]);
+    pool = [...err, ...due.map(x => [x[0], x[1]]), ...shuffle(fresh).slice(0, 5), ...rest.map(x => [x[0], x[1]])];
+  }
+  const chosen = []; const seen = new Set();
+  for (const [tid, k] of pool) { const id = tid + "|" + k; if (seen.has(id)) continue; seen.add(id); chosen.push([tid, k]); if (chosen.length >= n) break; }
+  // Intercalat: evita dos elements del mateix tipus seguits
+  const out = []; let rem = shuffle(chosen);
+  while (rem.length) { const last = out[out.length - 1]; let i = rem.findIndex(x => !last || (x[1][0] !== last[1][0] || x[0] !== last[0])); if (i < 0) i = 0; out.push(rem.splice(i, 1)[0]); }
+  return out.map(([tid, k]) => makeItem(tid, k)).filter(Boolean);
+}
+
+
+/* ---------------- Sons (AudioContext, sense fitxers) i confeti ---------------- */
+const Sfx = (() => {
+  let ctx = null;
+  const ac = () => { if (!ctx) { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; ctx = new A(); } if (ctx.state === "suspended") ctx.resume(); return ctx; };
+  function tone(freq, start, dur, type = "sine", vol = 0.12) {
+    const c = ac(); if (!c) return;
+    const o = c.createOscillator(), g = c.createGain(), t = c.currentTime + start;
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + 0.05);
+  }
+  const SOUNDS = {
+    ok: () => { tone(660, 0, 0.12); tone(880, 0.09, 0.16); },
+    bad: () => { tone(220, 0, 0.18, "triangle", 0.1); tone(180, 0.12, 0.2, "triangle", 0.08); },
+    combo: () => { [660, 784, 988].forEach((f, i) => tone(f, i * 0.07, 0.14, "square", 0.05)); },
+    gold: () => { [784, 988, 1175, 1568].forEach((f, i) => tone(f, i * 0.08, 0.22, "sine", 0.1)); },
+    level: () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.1, 0.3, "triangle", 0.09)); }
+  };
+  function play(name) { try { if (S.sound === false || !SOUNDS[name]) return; SOUNDS[name](); } catch { } }
+  function confetti() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cv = document.createElement("canvas"); cv.className = "confetti"; cv.width = innerWidth; cv.height = innerHeight; document.body.appendChild(cv);
+    const g = cv.getContext("2d"), cols = ["#e8b400", "#2a6fdb", "#2e9e5b", "#d6455d", "#8a5cd6"];
+    const ps = Array.from({ length: 120 }, () => ({ x: innerWidth / 2 + (Math.random() - 0.5) * 120, y: innerHeight * 0.35, vx: (Math.random() - 0.5) * 12, vy: -Math.random() * 12 - 4, r: Math.random() * 6 + 3, c: pick(cols), a: Math.random() * 6 }));
+    let f = 0;
+    (function step() {
+      g.clearRect(0, 0, cv.width, cv.height);
+      ps.forEach(p => { p.vy += 0.35; p.x += p.vx; p.y += p.vy; p.a += 0.2; g.save(); g.translate(p.x, p.y); g.rotate(p.a); g.fillStyle = p.c; g.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); g.restore(); });
+      if (++f < 110) requestAnimationFrame(step); else cv.remove();
+    })();
+    setTimeout(() => cv.remove(), 3000); // si la pestanya passa a segon pla, rAF s'atura
+  }
+  return { play, confetti };
+})();
+
+function addXP(n, why) { if (n <= 0) return; S.xp += n; popXP("+" + n + " XP · " + why); }
+function popXP(text) { const d = document.createElement("div"); d.className = "xp-pop"; d.textContent = text; document.body.appendChild(d); setTimeout(() => d.remove(), 1900); renderStats(); }
+function logError(tid, key, label, diag) {
+  const open = S.errors.find(e => e.tid === tid && e.key === key && !e.fixed);
+  if (open) { open.n++; open.diag = diag; open.t = now(); }
+  else S.errors.unshift({ tid, key, label, diag, t: now(), n: 1, fixed: false });
+  S.errors = S.errors.slice(0, 200);
+}
+function fixError(tid, key) { const e = S.errors.find(e => e.tid === tid && e.key === key && !e.fixed); if (e) { e.fixed = true; e.tf = now(); S.fixed++; return true; } return false; }
+
+/* Registra un intent: grade 1-4, xp segons l'esforç útil */
+function record(tid, key, { ok, firstTry, hint, conf, label, diag }) {
+  const c = card(tid, key), wasDue = c.reps && c.due <= now() && (now() - c.last) >= 0.5 * DAY, before = stateOf(c);
+  let g = !ok ? 1 : (hint || !firstTry) ? 2 : conf === "segur" ? 4 : 3;
+  fsrs(c, g);
+  let xp = 0, why = [];
+  if (ok) {
+    if (firstTry && !hint) {
+      c.streak++;
+      const d = dayKey(); if (!c.okDays.includes(d)) c.okDays = [...c.okDays, d].slice(-10);
+      if (before < 3 || wasDue) { xp += 10; why.push("encert al primer intent"); }
+    } else { c.streak = 0; xp += 4; why.push(hint ? "encert amb pista" : "encert al segon intent"); }
+    if (c.pendingError) { c.pendingError = false; if (fixError(tid, key)) { xp += 8; why.push("error corregit"); } }
+    if (wasDue) { xp += 5; why.push("repàs a temps"); }
+  } else {
+    c.streak = 0; c.pendingError = true; logError(tid, key, label, diag);
+  }
+  if (conf === "segur" || conf === "crec") { S.calib[conf][1]++; if (ok) S.calib[conf][0]++; if ((conf === "segur") === ok && ok) { xp += 2; why.push("ben calibrat"); } }
+  markDay();
+  const after = stateOf(c);
+  if (xp) addXP(xp, why.join(" + "));
+  checkBadges(); save();
+  return { before, after, xp, noXP: ok && firstTry && !hint && before >= 3 && !wasDue };
+}
+
+/* ---------------- Insígnies ---------------- */
+const BADGES = [
+  { id: "primer", ic: "1", nom: "Primer tema", desc: "Crea un tema a partir dels teus apunts" },
+  { id: "errors10", ic: "E", nom: "Caçador d'errors", desc: "Corregeix 10 errors del quadern" },
+  { id: "calib", ic: "C", nom: "Ben calibrat", desc: "20 respostes amb seguretat i un 80% d'encert quan dius 'segur'" },
+  { id: "lab5", ic: "L", nom: "Mans al laboratori", desc: "Supera 5 reptes de simulació" },
+  { id: "boss", ic: "B", nom: "Repte final", desc: "Aprova el repte final d'un tema" },
+  { id: "setmana", ic: "S", nom: "Setmana completa", desc: "Estudia 3 dies diferents en una setmana" },
+  { id: "ratxa3", ic: "3", nom: "Constància", desc: "Ratxa de 3 setmanes" },
+  { id: "dom10", ic: "D", nom: "Domini", desc: "Domina 10 elements" }
+];
+function checkBadges() {
+  const has = id => S.badges[id];
+  const give = id => { if (!has(id)) { S.badges[id] = now(); const b = BADGES.find(b => b.id === id); setTimeout(() => popXP("Insígnia: " + b.nom), 900); } };
+  if (Object.keys(S.topics).length) give("primer");
+  if (S.fixed >= 10) give("errors10");
+  const [ok, n] = S.calib.segur; if (n >= 20 && ok / n >= 0.8) give("calib");
+  if (Object.keys(S.labDone).length >= 5) give("lab5");
+  if (S.exams.some(e => e.boss && e.nota >= 7)) give("boss");
+  const ws = weekStreak(); if (ws.thisWeek >= 3) give("setmana"); if (ws.streak >= 3) give("ratxa3");
+  if (globalStats().dom >= 10) give("dom10");
+}
+
+
+/* ---------------- Sessions: combo, pregunta d'or i estrelles ----------------
+   Tot premia esforç útil: el combo només compta encerts al primer intent sense pista
+   i només dona bonus si l'encert ja sumava XP (no es pot farmejar el que ja domines). */
+function totalStars() { return Object.values(S.stars || {}).reduce((a, b) => a + b, 0); }
+function startSessionGame(P) {
+  P.combo = 0; P.maxCombo = 0;
+  const cands = P.items.map((_, i) => i).filter(i => i >= 2);
+  P.golden = cands.length ? pick(cands) : -1;
+}
+function isGolden(P, idx) { return P.golden === idx; }
+/* Retorna HTML extra per al feedback */
+function onAnswer(P, idx, { ok, first, rec }) {
+  let html = "";
+  if (ok && first) {
+    P.combo++; P.maxCombo = Math.max(P.maxCombo, P.combo);
+    if (P.combo >= 3 && rec && rec.xp > 0) { const b = P.combo >= 5 ? 3 : 2; S.xp += b; popXP(`Combo x${P.combo} · +${b} XP`); }
+    if (P.combo >= 3) { html += `<p class="combo">Combo x${P.combo}</p>`; Sfx.play("combo"); } else Sfx.play("ok");
+  } else { if (P.combo >= 3) html += `<p class="small muted">S'ha trencat el combo de ${P.combo}.</p>`; P.combo = 0; Sfx.play(ok ? "ok" : "bad"); }
+  if (isGolden(P, idx)) {
+    S.golden.n++;
+    if (ok && first) { S.golden.ok++; S.xp += 15; popXP("Pregunta d'or · +15 XP"); Sfx.play("gold"); Sfx.confetti(); html += `<p class="gold-msg">Pregunta d'or superada: +15 XP</p>`; }
+    else html += `<p class="small muted">Era la pregunta d'or. La propera vegada!</p>`;
+  }
+  S.bestCombo = Math.max(S.bestCombo || 0, P.maxCombo || 0);
+  save();
+  return html;
+}
+/* Estrelles per tema: 1 = 60% al primer intent, 2 = 80%, 3 = tot bé (mínim 5 preguntes) */
+function finishSession(P) {
+  S.sessions = (S.sessions || 0) + 1;
+  const won = {};
+  for (const tid of P.tids) {
+    const rs = P.results.filter(r => r.item.tid === tid); if (rs.length < 3) continue;
+    const f = rs.filter(r => r.first).length / rs.length;
+    const st = f === 1 && rs.length >= 5 ? 3 : f >= 0.8 ? 2 : f >= 0.6 ? 1 : 0;
+    if (st > (S.stars[tid] || 0)) { S.stars[tid] = st; won[tid] = st; }
+  }
+  if (Object.keys(won).length) { Sfx.play("level"); Sfx.confetti(); }
+  checkBadges(); save();
+  return won;
+}
+
+/* OCR al dispositiu amb Tesseract.js (codi obert, sense IA generativa ni servidor) */
+/* ---------- OCR ---------- */
+let tessLoading = null;
+function loadTesseract() {
+  if (window.Tesseract) return Promise.resolve(window.Tesseract);
+  if (tessLoading) return tessLoading;
+  tessLoading = new Promise((res, rej) => { const s = document.createElement("script"); s.src = TESS_URL; s.onload = () => window.Tesseract ? res(window.Tesseract) : rej(new Error("no Tesseract")); s.onerror = () => rej(new Error("No s'ha pogut carregar el motor d'OCR")); document.head.appendChild(s); });
+  tessLoading.catch(() => { tessLoading = null; });
+  return tessLoading;
+}
+async function enhance(blob) {
+  // Escala de grisos + estirament de contrast + binarització d'Otsu: millora molt l'OCR de fotos
+  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(blob); });
+  const cv = document.createElement("canvas"); cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+  const ctx = cv.getContext("2d"); ctx.drawImage(img, 0, 0);
+  const d = ctx.getImageData(0, 0, cv.width, cv.height), px = d.data, hist = new Array(256).fill(0), g = new Uint8ClampedArray(px.length / 4);
+  for (let i = 0, j = 0; i < px.length; i += 4, j++) { const v = (px[i] * 0.299 + px[i + 1] * 0.587 + px[i + 2] * 0.114) | 0; g[j] = v; hist[v]++; }
+  let total = g.length, sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i];
+  let sumB = 0, wB = 0, best = 0, thr = 128;
+  for (let i = 0; i < 256; i++) { wB += hist[i]; if (!wB) continue; const wF = total - wB; if (!wF) break; sumB += i * hist[i]; const mB = sumB / wB, mF = (sum - sumB) / wF, between = wB * wF * (mB - mF) ** 2; if (between > best) { best = between; thr = i; } }
+  for (let i = 0, j = 0; i < px.length; i += 4, j++) { const v = g[j] > thr ? 255 : 0; px[i] = px[i + 1] = px[i + 2] = v; }
+  ctx.putImageData(d, 0, 0);
+  return await new Promise(r => cv.toBlob(r, "image/png"));
+}
+async function runOCR(blobs, lang, onProgress, useEnhance) {
+  const T = await loadTesseract();
+  let cur = 0;
+  const worker = await T.createWorker(lang, 1, { logger: m => { if (m.status === "recognizing text") onProgress((cur + m.progress) / blobs.length, `Llegint la foto ${cur + 1} de ${blobs.length}`); else onProgress(cur / blobs.length, m.status === "loading language traineddata" ? "Descarregant el diccionari de l'idioma (només la primera vegada)" : "Preparant el motor d'OCR"); } });
+  const texts = [];
+  try {
+    for (cur = 0; cur < blobs.length; cur++) {
+      const input = useEnhance ? await enhance(blobs[cur]) : blobs[cur];
+      const { data } = await worker.recognize(input);
+      texts.push({ text: data.text || "", conf: data.confidence || 0 });
+    }
+  } finally { await worker.terminate(); }
+  return texts;
+}
+
+
+/* Extracció del tema per regles (sense IA) a partir del text dels apunts */
+const STOP = new Set("el la els les l un una uns unes de del dels d i o a al als en amb per pel pels que què qui es és són son se s com més menys molt no hi ha han ho li lo seu seva seus seves aquest aquesta aquests aquestes aquell aquella quan on si també però sense sobre entre fins cap tot tots totes ja pot poden fa fan cal ser estar te té tenen y the of and to is".split(" "));
+const TESS_URL = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";
+const wc = s => String(s).trim().split(/\s+/).filter(Boolean).length;
+const cap1 = s => { s = String(s).trim(); return s ? s[0].toUpperCase() + s.slice(1) : s; };
+const endDot = s => /[.!?…)]$/.test(s.trim()) ? s.trim() : s.trim() + ".";
+const stripArt = s => String(s).trim().replace(/^["'«»]+|["'«»]+$/g, "").replace(/^(el|la|els|les|l'|un|una|uns|unes)\s*/i, "").replace(/^l'/i, "").trim();
+
+
+/* ---------- Extracció per regles ---------- */
+function cleanText(t) {
+  return String(t).replace(/\r/g, "").replace(/[“”]/g, '"').replace(/[‘’´`]/g, "'").replace(/ﬁ/g, "fi").replace(/ﬂ/g, "fl").replace(/([a-zà-ÿ])([lL])\s?[-.•·]\s?([lL])([a-zà-ÿ])/gi, "$1$2·$3$4").replace(/(\w)-\n(\w)/g, "$1$2").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+}
+const BULLET = /^\s*(?:[-–—•*·▪►>✓]|\d{1,2}[.)º]|[a-h][.)])\s+/;
+const NUMBERED = /^\s*(\d{1,2})[.)º]\s+/;
+function isHeading(s) {
+  s = s.trim(); if (!s || s.length > 70) return false;
+  if (/^#+\s/.test(s)) return true;
+  if (/^(tema|unitat|bloc|lliçó|capítol)\s+\d+/i.test(s)) return true;
+  if (/^(\d+\.\d+(\.\d+)*|[IVX]+\.)\s+\S/.test(s) && wc(s) <= 9 && !/[.;]$/.test(s)) return true;
+  const letters = s.replace(/[^A-Za-zÀ-ÿ]/g, "");
+  if (letters.length >= 4 && letters === letters.toUpperCase() && wc(s) <= 8) return true;
+  if (/:$/.test(s) && wc(s) <= 6 && !/=/.test(s)) return true;
+  return false;
+}
+function logicalLines(text) {
+  const out = [];
+  for (const raw of cleanText(text).split("\n")) {
+    const s = raw.trim();
+    if (!s) { out.push({ kind: "blank", text: "" }); continue; }
+    const prev = out[out.length - 1];
+    if (isHeading(s)) { let h = s.replace(/^#+\s*/, "").replace(/:$/, "").replace(/^(\d+(\.\d+)*|[IVX]+)[.)]?\s+/, "").trim(); if (h === h.toUpperCase()) h = cap1(h.toLowerCase()); out.push({ kind: "h", text: h }); continue; }
+    if (BULLET.test(s)) { const n = s.match(NUMBERED); out.push({ kind: "li", num: n ? +n[1] : null, text: s.replace(BULLET, "").trim() }); continue; }
+    const assign = x => /^\s*[A-Za-z][A-Za-z0-9_]{0,3}\s*=/.test(x);
+    if (prev && (prev.kind === "p" || prev.kind === "li") && !/[.!?:;]$/.test(prev.text) && /^[a-zà-ÿ]/.test(s) && !assign(s) && !assign(prev.text) && !/^on\s/.test(s)) { prev.text += " " + s; continue; }
+    out.push({ kind: "p", text: s });
+  }
+  return out.filter((l, i, a) => !(l.kind === "blank" && (i === 0 || a[i - 1].kind === "blank")));
+}
+function normFormula(s) {
+  return s.replace(/[·×∙•]/g, "*").replace(/÷|:(?=\s*\w)/g, "/").replace(/−|–/g, "-").replace(/²/g, "^2").replace(/³/g, "^3").replace(/√\s*\(/g, "sqrt(").replace(/√\s*([A-Za-z0-9_]+)/g, "sqrt($1)").replace(/(\d),(\d)/g, "$1.$2").replace(/\s+x\s+/g, " * ");
+}
+function isFormulaText(s) {
+  const m = normFormula(s.replace(/\([^)]*[a-zà-ÿ]{4,}[^)]*\)/g, "")).match(/^\s*([A-Za-z][A-Za-z0-9_]{0,3})\s*=\s*([A-Za-z0-9_+\-*/^().\s]+)$/);
+  if (!m || !/[A-Za-z]/.test(m[2]) || /[A-Za-z]{5,}/.test(m[2].replace(/sqrt|sin|cos|tan|log|ln|abs|exp/g, ""))) return null;
+  try { const tree = parseExpr(m[2]); const vs = varsOf(tree); if (!vs.size) return null; return { lhs: m[1], rhs: m[2].trim(), vars: [...vs] }; } catch { return null; }
+}
+function defFrom(s) {
+  s = s.trim().replace(BULLET, "").replace(/\s+/g, " ");
+  if (s.length < 14 || isFormulaText(s)) return null;
+  let m;
+  const ok = (term, def) => { term = stripArt(term).replace(/[*_]/g, ""); def = def.trim(); if (!term || wc(term) > 5 || term.length > 45 || !/[a-zà-ÿ]/i.test(term) || /^\d/.test(term) || wc(def) < 3 || STOP.has(norm(term))) return null; if (/^(ex|exemple|p\. ex|compte|atenció|nota|ull)$/i.test(term)) return null; return [term, def]; };
+  if ((m = s.match(/^(.{2,48}?)\s*:\s+(.{10,})$/))) return ok(m[1], m[2]);
+  if ((m = s.match(/^(.{2,48}?)\s+[–—-]\s+(.{10,})$/))) return ok(m[1], m[2]);
+  if ((m = s.match(/^(?:s'anomena|anomenem|es diu|rep el nom de)\s+(.{2,40}?)\s+(?:a la |a l'|al |als |a les |a )(.{10,})$/i))) return ok(m[1], m[2]);
+  if ((m = s.match(/^(.{10,}?)\s+(?:s'anomena|s'anomenen|es diu|es diuen|rep el nom de|es coneix com a?)\s+([^,.;]{2,40})\.?$/i))) return ok(m[2], m[1]);
+  if ((m = s.match(/^([^,.;:]{2,45}?)\s+(?:és|són|es defineix com|consisteix en|és a dir)\s+(.{10,})$/i))) return ok(m[1], m[2]);
+  return null;
+}
+function suspicious(s) {
+  const toks = String(s).split(/\s+/).filter(Boolean); if (!toks.length) return false;
+  const bad = toks.filter(t => /[^A-Za-zÀ-ÿ·'’\-.,;:()0-9%°/²³"]/.test(t) || (t.length > 3 && !/[aeiouàèéíïòóúüAEIOU]/.test(t))).length;
+  return bad / toks.length > 0.2;
+}
+function keywords(def, term) {
+  const tn = norm(term).split(" ");
+  const freq = {}; norm(def).split(" ").filter(w => w.length > 4 && !STOP.has(w) && !tn.includes(w)).forEach(w => freq[w] = (freq[w] || 0) + w.length);
+  const orig = def.split(/[^A-Za-zÀ-ÿ·'-]+/);
+  return Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, 3).map(w => (orig.find(o => norm(o) === w) || w).replace(/^[ldsmtn]'/i, ""));
+}
+const UNIT_RANGE = { kg: [0.5, 100, 0.5], g: [1, 1000, 1], m: [1, 1000, 1], km: [1, 500, 1], cm: [1, 200, 1], s: [1, 120, 1], h: [0.5, 10, 0.5], "m/s": [1, 50, 0.5], "km/h": [10, 150, 5], "m/s²": [0.5, 10, 0.1], "m/s2": [0.5, 10, 0.1], n: [1, 500, 1], j: [10, 5000, 10], w: [10, 2000, 10], pa: [100, 100000, 100], l: [0.1, 10, 0.1], "°c": [0, 100, 1], v: [1, 24, 0.5], a: [0.1, 10, 0.1], "ω": [1, 1000, 1] };
+function extractTopic(text, meta) {
+  const lines = logicalLines(text), full = cleanText(text);
+  const t = { titol: meta.titol || "", materia: meta.materia, curs: meta.curs, seccions: [], conceptes: [], formules: [], procediments: [], relacions: [], cronologia: [], errors_tipics: [], preguntes_obertes: [] };
+  // títol
+  if (!t.titol) { const h = lines.find(l => l.kind === "h") || lines.find(l => l.text && wc(l.text) <= 8); t.titol = h ? cap1(h.text).slice(0, 70) : "Els meus apunts"; }
+  // llegenda de variables: "m = massa (kg)", "v: velocitat (m/s)"
+  const legend = {}, consts = {};
+  for (const m of full.matchAll(/\b([A-Za-z][A-Za-z0-9_]{0,2})\s*(?:=|:|→|és|es)\s*(?:la |el |l'|les |els )?([a-zà-ÿç·' ]{3,30}?)\s*\(([^)]{1,12})\)/g)) if (!legend[m[1]]) legend[m[1]] = { nom: m[2].trim(), unitat: m[3].trim() };
+  for (const m of full.matchAll(/(?:^|[^A-Za-z0-9_])(g|G|c|k|K|R|h|NA|Na)\s*=\s*(\d+(?:[.,]\d+)?(?:\s*[·x*]\s*10\^?-?\d+)?)\s*([A-Za-z/²³0-9°%·]*)/g)) { const sv = m[2].replace(",", "."), e = sv.match(/10\^?(-?\d+)\s*$/); consts[m[1]] = { valor: parseFloat(sv) * (e ? Math.pow(10, +e[1]) : 1), unitat: m[3] || "" }; }
+  let section = null, lastHeading = "", listRun = [], lastConcept = null;
+  const flushList = () => {
+    const nums = listRun.filter(x => x.num !== null);
+    if (nums.length >= 3) t.procediments.push({ id: "p_" + slug(lastHeading || "procediment"), nom: cap1(lastHeading || "Procediment"), passos: nums.map(x => endDot(cap1(x.text))) });
+    listRun = [];
+  };
+  const pushPoint = s => { if (!section) { section = { titol: "Apunts", punts: [] }; t.seccions.push(section); } if (section.punts.length < 10) section.punts.push(s.length > 180 ? s.slice(0, 177) + "…" : s); };
+  for (const l of lines) {
+    if (l.kind !== "li" && listRun.length) flushList();
+    if (l.kind === "blank") continue;
+    if (l.kind === "h") { lastHeading = l.text; section = { titol: cap1(l.text), punts: [] }; t.seccions.push(section); continue; }
+    if (l.kind === "li") listRun.push(l);
+    const s = l.text;
+    // exemple associat al concepte anterior
+    const ex = s.match(/^(?:ex(?:emple)?s?|p\.\s?ex\.?)\s*[:.]?\s*(.+)$/i);
+    if (ex && lastConcept) { if (!lastConcept.exemple) lastConcept.exemple = ex[1].trim(); pushPoint(s); continue; }
+    // errors típics
+    let m;
+    if ((m = s.match(/no\s+(?:s'ha de |hem de |has de )?confondre\s+(?:el |la |els |les |l')?(.+?)\s+amb\s+(?:el |la |els |les |l')?([^.,;]+)/i))) { t.errors_tipics.push({ id: "e_" + slug(m[1]), afirmacio_erronia: `${cap1(m[1])} i ${m[2]} són el mateix.`, correccio: endDot(cap1(s)) }); pushPoint(s); continue; }
+    if ((m = s.match(/^(?:compte|atenció|ull|error típic|error habitual|important)\s*[:!.,-]?\s*(.+)$/i)) && / no /i.test(" " + m[1] + " ")) { t.errors_tipics.push({ id: "e_" + slug(m[1]), afirmacio_erronia: endDot(cap1((/\sni\s/i.test(m[1]) ? m[1].split(/[,;]/)[0].replace(/\s+ni\s+/i, " i ") : m[1]).replace(/\s+no\s+/i, " ").replace(/\s+mai\s+/i, " sempre "))), correccio: endDot(cap1(m[1])) }); pushPoint(s); continue; }
+    // fórmules (també "Nom: F = m · a")
+    const fparts = s.match(/^(.{3,50}?)\s*:\s*(.+=.+)$/); const ftxt = fparts && isFormulaText(fparts[2]) ? fparts[2] : s;
+    const fm = isFormulaText(ftxt);
+    if (fm && !t.formules.some(f => f.expressio === `${fm.lhs} = ${fm.rhs}`)) {
+      const vars = fm.vars.filter(v => !(v in consts) || v === fm.lhs);
+      const lg = legend[fm.lhs] || {};
+      t.formules.push({ id: "f_" + slug(fm.lhs + "_" + fm.vars.join("")), nom: cap1(fparts && fparts[2] === ftxt ? fparts[1] : (lg.nom ? "Càlcul de " + lg.nom : lastHeading || "Fórmula " + fm.lhs)), expressio: `${fm.lhs} = ${fm.rhs}`,
+        resultat: { simbol: fm.lhs, nom: lg.nom || fm.lhs, unitat: lg.unitat || "" },
+        variables: vars.map(v => { const L = legend[v] || {}, r = UNIT_RANGE[(L.unitat || "").toLowerCase()] || [1, 100, 1]; return { simbol: v, nom: L.nom || v, unitat: L.unitat || "", min: r[0], max: r[1], pas: r[2] }; }),
+        constants: fm.vars.filter(v => v in consts && v !== fm.lhs).map(v => ({ simbol: v, nom: (legend[v] || {}).nom || v, valor: consts[v].valor, unitat: consts[v].unitat })), errors: [] });
+      pushPoint(s); continue;
+    }
+    // cronologia
+    const ym = s.match(/^(?:any\s+)?(-?\d{3,4})\s*[:.\-–—)]?\s+(.{8,})$/) || s.match(/^(.{8,}?)\s*\((\d{3,4})\)\.?$/);
+    if (ym) { const yearFirst = /^\D?-?\d/.test(s.replace(/^any\s+/i, "")); const any = yearFirst ? ym[1] : ym[2], fet = yearFirst ? ym[2] : ym[1]; if (+any > 0 && +any < 2100) { t.cronologia.push({ any, fet: endDot(cap1(fet)) }); pushPoint(s); continue; } }
+    // definicions
+    const d = defFrom(s);
+    if (d && !t.conceptes.some(c => norm(c.nom) === norm(d[0]))) {
+      const c = { id: slug(d[0]), nom: d[0].length > 1 && d[0] === d[0].toUpperCase() ? d[0] : d[0].charAt(0).toLowerCase() + d[0].slice(1), definicio: endDot(cap1(d[1])), exemple: "", paraules_clau: keywords(d[1], d[0]), sinonims: [], distractors: [], font: s.length > 140 ? s.slice(0, 137) + "…" : s, pista_conceptual: "" };
+      if (suspicious(s)) { c.dubtos = true; c.motiu = "Possible error de lectura de l'OCR: revisa'l"; }
+      t.conceptes.push(c); lastConcept = c;
+    }
+    pushPoint(s);
+  }
+  if (listRun.length) flushList();
+  // relacions entre conceptes detectats
+  const names = t.conceptes.map(c => c.nom);
+  const CONN = [["és part de", /\b(forma part d|és part d|es troba (?:a|en|dins))/i], ["causa", /\b(causa|provoca|origina|fa que|produeix un canvi)\b/i], ["produeix", /\b(produeix|genera|fabrica|allibera)\b/i], ["conté", /\b(conté|inclou|està format per)\b/i], ["s'oposa a", /\b(s'oposa|oposat|contrari)\b/i], ["és un tipus de", /\b(és un tipus de|és una mena de|és una classe de)\b/i]];
+  for (const sent of full.split(/(?<=[.!?])\s+|\n/)) {
+    const ns = " " + norm(sent) + " ";
+    const found = names.map(n => [n, ns.indexOf(" " + norm(n) + " ")]).filter(x => x[1] >= 0).sort((a, b) => a[1] - b[1]);
+    if (found.length < 2) continue;
+    const conn = CONN.find(([, re]) => re.test(sent)); if (!conn) continue;
+    const r = { a: found[0][0], tipus: conn[0], b: found[1][0] };
+    if (r.a !== r.b && !t.relacions.some(x => x.a === r.a && x.b === r.b) && t.relacions.length < 12) t.relacions.push(r);
+  }
+  // resum i preguntes d'examen
+  t.resum = t.conceptes.slice(0, 4).map(c => `${cap1(c.nom)}: ${c.definicio}`).join(" ") || lines.filter(l => l.kind === "p").map(l => l.text).join(" ").slice(0, 500);
+  t.conceptes.filter(c => c.paraules_clau.length >= 2).slice(0, 3).forEach(c => t.preguntes_obertes.push({ id: "o_" + c.id, pregunta: `Explica què és ${/^[aeiouàèéíòóú]/i.test(c.nom) ? "l'" : "el/la "}${c.nom}${c.exemple ? " i posa'n un exemple" : ""}.`, resposta_model: c.definicio + (c.exemple ? " Exemple: " + c.exemple : ""), criteris: [...c.paraules_clau.slice(0, 3).map(k => `Fa servir la idea de «${k}»`), ...(c.exemple ? ["Posa un exemple adequat"] : [])], concepte_id: c.id }));
+  t.procediments.slice(0, 1).forEach(p => t.preguntes_obertes.push({ id: "o_" + p.id, pregunta: `Descriu els passos per a: ${p.nom.toLowerCase()}.`, resposta_model: p.passos.join(" "), criteris: [`Comença amb: ${p.passos[0]}`, `Acaba amb: ${p.passos[p.passos.length - 1]}`, "Els passos estan en l'ordre correcte"] }));
+  t.seccions = t.seccions.filter(s => s.punts.length);
+  return t;
+}
+
+
+/* ---------- Pantalla: Inici ---------- */
+function stackedBar(s) { const n = s.n || 1; return `<div class="bar" role="img" aria-label="${s.counts[3]} dominats, ${s.counts[2]} consolidats, ${s.counts[1]} en pràctica, ${s.counts[0]} nous"><span style="width:${s.counts[3] / n * 100}%;background:var(--st-dom)"></span><span style="width:${s.counts[2] / n * 100}%;background:var(--st-cons)"></span><span style="width:${s.counts[1] / n * 100}%;background:var(--st-prac)"></span></div>`; }
+const LEGEND = `<div class="legend"><span><i style="background:var(--st-new)"></i>nou</span><span><i style="background:var(--st-prac)"></i>en pràctica</span><span><i style="background:var(--st-cons)"></i>consolidat</span><span><i style="background:var(--st-dom)"></i>dominat</span></div>`;
+const starsHTML = (n, max = 3) => `<span class="stars" aria-label="${n} de ${max} estrelles">${Array.from({ length: max }, (_, i) => `<i class="${i < n ? "on" : ""}">★</i>`).join("")}</span>`;
+
+function viewHome(el) {
+  const ts = allTopics(), ws = weekStreak(), g = globalStats();
+  const dueTotal = ts.reduce((n, t) => n + topicStats(t).due, 0);
+  const pend = S.errors.filter(e => !e.fixed).length;
+  el.innerHTML = `
+  <section class="hero">
+    <div class="card stack">
+      <span class="eyebrow">De la foto a l'examen</span>
+      <h1>Els teus apunts, convertits en entrenament</h1>
+      <p class="muted">Fes una foto dels apunts: l'app en llegeix el text i el converteix en apunts, simulacions, pràctica amb correcció immediata i un possible examen. Tot funciona al teu mòbil, sense IA i sense comptes.</p>
+      <div class="row"><button class="btn mark" id="newT">Fer foto dels apunts</button>${dueTotal || pend ? `<button class="btn primary" id="quick">Repassos d'avui (${dueTotal + pend})</button>` : ""}</div>
+    </div>
+    <div class="card stack">
+      <span class="eyebrow">Aquesta setmana</span>
+      <div class="row" style="justify-content:space-between"><span>Dies d'estudi</span><b class="mono">${ws.thisWeek} / 3</b></div>
+      <div class="progress"><span style="width:${Math.min(100, ws.thisWeek / 3 * 100)}%"></span></div>
+      <div class="row" style="justify-content:space-between"><span>Errors per corregir</span><b class="mono">${pend}</b></div>
+      <div class="row" style="justify-content:space-between"><span>Elements dominats</span><b class="mono">${g.dom}</b></div>
+      <div class="row" style="justify-content:space-between"><span>Estrelles</span><b class="mono">${totalStars()} ★</b></div>
+      <p class="small muted">La ratxa és setmanal: n'hi ha prou amb 3 dies. Tens un comodí: una setmana fluixa (amb almenys 1 dia) no et trenca la ratxa.</p>
+    </div>
+  </section>
+  <section class="stack">
+    <div class="row" style="justify-content:space-between"><h2>Els teus temes</h2>${LEGEND}</div>
+    <div class="grid">${ts.map(t => { const s = topicStats(t); return `
+      <article class="card topic">
+        <div class="meta">${t.demo ? '<span class="pill">Exemple</span>' : '<span class="pill blue">Dels teus apunts</span>'}<span class="pill">${esc(t.materia)}</span>${s.due ? `<span class="pill mark">${s.due} per repassar</span>` : ""}</div>
+        <div class="row" style="justify-content:space-between"><h3>${esc(t.titol)}</h3>${starsHTML(S.stars[t.id] || 0)}</div>
+        <p class="small muted">${t.conceptes.length} conceptes · ${COMPILED[t.id].formules.length} fórmules · ${t.procediments.length} procediments</p>
+        ${stackedBar(s)}
+        <p class="small"><b>${Math.round(s.score * 100)}%</b> de domini · ${Math.round(s.consolidat * 100)}% consolidat</p>
+        <div class="row"><button class="btn primary small" data-open="${t.id}">Obrir</button><button class="btn small" data-prac="${t.id}">Practicar</button></div>
+      </article>`; }).join("")}</div>
+  </section>`;
+  $("#newT", el).onclick = () => Router.push("nou");
+  $$("[data-open]", el).forEach(b => b.onclick = () => { S.active = b.dataset.open; save(); Router.push("tema"); });
+  $$("[data-prac]", el).forEach(b => b.onclick = () => { S.active = b.dataset.prac; save(); startPractice([S.active]); Router.push("practica"); });
+  const q = $("#quick", el); if (q) q.onclick = () => { startPractice(allTopics().map(t => t.id), 12); Router.push("practica"); };
+}
+
+/* ---------- Pantalla: centre d'un tema ---------- */
+function viewTopic(el) {
+  const t = topicById(S.active); if (!t) return Router.root("inici");
+  const s = topicStats(t), boss = s.consolidat >= 0.8;
+  const tiles = [
+    ["apunts", "Apunts", "Resum, esquema, glossari, mapa i errors típics"],
+    ["lab", "Laboratori", "Simuladors i reptes interactius"],
+    ["practica", "Practicar", s.due ? `${s.due} repassos pendents` : "Sessió amb correcció immediata"],
+    ["examen", boss ? "Repte final" : "Possible examen", boss ? "Desbloquejat: demostra que ho domines" : "Simulacre cronometrat"]
+  ];
+  el.innerHTML = `<div class="card stack"><span class="eyebrow">${esc(t.materia)}${t.curs ? " · " + esc(t.curs) : ""}</span><div class="row" style="justify-content:space-between"><h1>${esc(t.titol)}</h1>${starsHTML(S.stars[t.id] || 0)}</div>${stackedBar(s)}<p class="small"><b>${Math.round(s.score * 100)}%</b> de domini · ${s.counts[3]} dominats de ${s.n}</p></div>
+    <div class="tiles">${tiles.map(([id, n, d]) => `<button class="tile" data-to="${id}"><b>${n}</b><span class="small muted">${d}</span></button>`).join("")}</div>`;
+  $$("[data-to]", el).forEach(b => b.onclick = () => {
+    const to = b.dataset.to;
+    if (to === "practica") { startPractice([t.id]); Router.push("practica"); }
+    else if (to === "examen") { examSession = boss ? buildExam([t.id], 15, 20, true) : null; Router.push("examen"); }
+    else Router.push(to);
+  });
+}
+
+/* ---------- Apunts ---------- */
+let coverMode = false;
+function viewNotes(el) {
+  const t = topicById(S.active); if (!t) return go("inici");
+  const C = COMPILED[t.id], flagged = t.conceptes.filter(c => c.dubtos).length + C.formules.filter(f => f.dubtos).length;
+  const sections = [["resum", "Resum"], ["esquema", "Esquema"], ["glossari", "Glossari"], C.formules.length && ["formules", "Fórmules"], t.procediments.length && ["procediments", "Procediments"], t.relacions.length && ["mapa", "Mapa conceptual"], t.cronologia.length && ["cronologia", "Cronologia"], t.errors_tipics.length && ["compte", "Compte!"]].filter(Boolean);
+  el.innerHTML = `
+  <div class="card stack">
+    <div class="row" style="justify-content:space-between"><div class="stack" style="gap:4px"><span class="eyebrow">${esc(t.materia)} ${t.curs ? "· " + esc(t.curs) : ""}</span><h1>${esc(t.titol)}</h1></div>
+    <div class="row"><button class="btn primary" id="toPractice">Practicar aquest tema</button>${!t.demo ? `<button class="btn ghost small" id="exportT">Copiar JSON</button><button class="btn ghost small" id="delT">Esborrar tema</button>` : ""}</div></div>
+    ${!t.demo ? `<p class="ai-note">Contingut extret automàticament (OCR i regles) a partir de les teves fotos: pot tenir errors de lectura. ${flagged ? `Hi ha <b>${flagged}</b> element${flagged > 1 ? "s" : ""} marcat${flagged > 1 ? "s" : ""} com a dubtós${flagged > 1 ? "os" : ""}: comprova'ls amb els apunts originals.` : "Cada concepte mostra el fragment de l'apunt d'on surt."}</p>` : `<p class="small muted">Tema d'exemple per provar l'app. Crea'n un amb les teves fotos amb el botó de la càmera.</p>`}
+    <div id="delConfirm"></div>
+  </div>
+  <div class="notes-layout">
+    <nav class="toc card" aria-label="Seccions">${sections.map(([id, n]) => `<a href="#apunts" data-sec="${id}">${n}</a>`).join("")}</nav>
+    <div class="stack">
+      <section class="card stack" id="s-resum"><h2>Resum</h2><p>${esc(t.resum)}</p>${recallBox(t, 0)}</section>
+      <section class="card stack" id="s-esquema"><h2>Esquema</h2>${t.seccions.map(s => `<div class="stack" style="gap:6px"><h3>${esc(s.titol)}</h3><ul class="clean">${s.punts.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`).join("")}${recallBox(t, 1)}</section>
+      <section class="card stack" id="s-glossari"><div class="row" style="justify-content:space-between"><h2>Glossari</h2><label class="row small"><input type="checkbox" id="cover" ${coverMode ? "checked" : ""}> Tapa i recorda</label></div>
+        <p class="small muted">${coverMode ? "Intenta recordar cada definició abans de tocar-la per destapar-la." : "Activa «Tapa i recorda» per amagar les definicions i posar-te a prova."}</p>
+        <div class="gloss">${t.conceptes.map(c => `<div class="term ${c.dubtos ? "flag" : ""}" data-cid="${c.id}"><h3><span class="hl">${esc(c.nom)}</span> ${stateChip(t.id, "c:" + c.id)}</h3><p class="def ${coverMode ? "covered" : ""}" tabindex="0">${esc(c.definicio)}</p>${c.exemple ? `<p class="small muted">Ex.: ${esc(c.exemple)}</p>` : ""}${c.font ? `<p class="src">«${esc(c.font)}»</p>` : ""}${c.dubtos ? `<p class="small" style="color:var(--warn)"><b>Dubtós:</b> ${esc(c.motiu || "comprova-ho amb la foto")}</p><div class="row"><button class="btn small" data-okc="${c.id}">És correcte</button><button class="btn small ghost" data-rmc="${c.id}">Treure'l</button></div>` : ""}</div>`).join("")}</div></section>
+      ${C.formules.length ? `<section class="card stack" id="s-formules"><h2>Fórmules</h2>${C.formules.map(f => `<div class="stack" style="gap:6px"><h3>${esc(f.nom)}</h3><span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span><p class="small muted">${[`${esc(f.lhs)}: ${esc(f.res.nom)} (${esc(f.res.unitat)})`, ...f.vars.map(v => `${esc(v.simbol)}: ${esc(v.nom)} (${esc(v.unitat)})`), ...f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`)].join(" · ")}</p>${f.errors.length ? `<p class="small"><b>Errors habituals:</b> ${f.errors.map(e => esc(e.explicacio)).join(" ")}</p>` : ""}</div>`).join('<div class="sep"></div>')}<div class="row"><button class="btn small" data-go="lab">Obrir el laboratori</button></div></section>` : ""}
+      ${t.procediments.length ? `<section class="card stack" id="s-procediments"><h2>Procediments</h2>${t.procediments.map(p => `<div class="stack" style="gap:6px"><h3>${esc(p.nom)}</h3><ol class="steps">${p.passos.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>`).join("")}</section>` : ""}
+      ${t.relacions.length ? `<section class="card stack" id="s-mapa"><h2>Mapa conceptual</h2><div class="map-wrap">${conceptMap(t)}</div></section>` : ""}
+      ${t.cronologia.length ? `<section class="card stack" id="s-cronologia"><h2>Cronologia</h2><div class="tl">${t.cronologia.slice().sort((a, b) => parseFloat(a.any) - parseFloat(b.any)).map(e => `<div><b>${esc(e.any)}</b> · ${esc(e.fet)}</div>`).join("")}</div></section>` : ""}
+      ${t.errors_tipics.length ? `<section class="card stack" id="s-compte"><h2>Compte! Errors típics</h2>${t.errors_tipics.map(e => `<div class="fb bad"><p><b>Error:</b> ${esc(e.afirmacio_erronia)}</p><p><b>En realitat:</b> ${esc(e.correccio)}</p></div>`).join("")}</section>` : ""}
+    </div>
+  </div>`;
+  $$("[data-sec]", el).forEach(a => a.onclick = e => { e.preventDefault(); const s = $("#s-" + a.dataset.sec); if (s) s.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); });
+  $("#cover", el).onchange = e => { coverMode = e.target.checked; viewNotes(el); };
+  $$(".def.covered", el).forEach(d => { const un = () => d.classList.remove("covered"); d.onclick = un; d.onkeydown = e => { if (e.key === "Enter" || e.key === " ") un(); }; });
+  $$("[data-go]", el).forEach(b => b.onclick = () => go(b.dataset.go));
+  $("#toPractice", el).onclick = () => { startPractice([t.id]); go("practica"); };
+  $$("[data-okc]", el).forEach(b => b.onclick = () => { const c = conceptById(t, b.dataset.okc); c.dubtos = false; save(); viewNotes(el); });
+  $$("[data-rmc]", el).forEach(b => b.onclick = () => { t.conceptes = t.conceptes.filter(c => c.id !== b.dataset.rmc); save(); viewNotes(el); });
+  const ex = $("#exportT", el); if (ex) ex.onclick = () => copyText(JSON.stringify(t, null, 2), ex);
+  const del = $("#delT", el); if (del) del.onclick = () => { $("#delConfirm", el).innerHTML = `<div class="fb bad"><p>Segur que vols esborrar «${esc(t.titol)}» i el seu progrés? No es pot desfer.</p><div class="row"><button class="btn small" id="delYes">Sí, esborra'l</button><button class="btn small ghost" id="delNo">Cancel·la</button></div></div>`; $("#delYes").onclick = () => { delete S.topics[t.id]; delete S.prog[t.id]; delete COMPILED[t.id]; S.active = null; save(); Router.root("inici"); }; $("#delNo").onclick = () => $("#delConfirm", el).innerHTML = ""; };
+  $$(".recall", el).forEach(wireRecall);
+}
+function stateChip(tid, key) { const s = stateOf(peekCard(tid, key)); return `<span class="pill ${["", "blue", "blue", "mark"][s]}" style="font-size:.68rem">${STATE_KEYS[s]}</span>`; }
+function recallBox(t, i) {
+  const pool = t.conceptes.filter(c => c.nom); if (!pool.length) return "";
+  const c = pool[(i * 3 + 1) % pool.length];
+  return `<div class="fb hint recall" data-cid="${c.id}" data-tid="${t.id}"><h3>Tapa i recorda</h3><p>Sense mirar: com es diu? <i>${esc(c.definicio)}</i></p><div class="row"><input type="text" aria-label="Resposta" style="max-width:260px"><button class="btn small">Comprova</button></div><p class="out small"></p></div>`;
+}
+function wireRecall(box) {
+  const t = topicById(box.dataset.tid), c = conceptById(t, box.dataset.cid), inp = $("input", box), out = $(".out", box);
+  const it = makeItem(t.id, "c:" + c.id, { type: "short" });
+  const go2 = () => { const r = it.check(inp.value); out.innerHTML = r.ok ? `<b style="color:var(--ok)">Correcte!</b> ${esc(r.note || "")}` : `<b style="color:var(--bad)">Encara no.</b> ${esc(r.diag)} <button class="btn small ghost" data-rev>Mostra la resposta</button>`; const rv = $("[data-rev]", out); if (rv) rv.onclick = () => out.innerHTML = `Resposta: <b>${esc(c.nom)}</b>`; };
+  $("button", box).onclick = go2; inp.onkeydown = e => { if (e.key === "Enter") go2(); };
+}
+function conceptMap(t) {
+  const nodes = [...new Set(t.relacions.flatMap(r => [r.a, r.b]))];
+  const W0 = Math.max(560, nodes.length * 90), H0 = 380, cx = W0 / 2, cy = H0 / 2, R = Math.min(W0 / 2 - 90, H0 / 2 - 40);
+  const pos = {}; nodes.forEach((n, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / nodes.length; pos[n] = [cx + R * Math.cos(a) * 1.25, cy + R * Math.sin(a)]; });
+  const edges = t.relacions.map(r => { const [x1, y1] = pos[r.a], [x2, y2] = pos[r.b], mx = (x1 + x2) / 2, my = (y1 + y2) / 2; return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--line2)" stroke-width="2" marker-end="url(#ar)"/><text x="${mx}" y="${my - 6}" text-anchor="middle" font-size="12" fill="var(--blue)" font-family="var(--f-body)" font-weight="700" paint-order="stroke" stroke="var(--sheet)" stroke-width="4">${esc(r.tipus)}</text>`; }).join("");
+  const ns = nodes.map(n => { const [x, y] = pos[n], w = Math.max(70, n.length * 7.6 + 20); return `<rect x="${x - w / 2}" y="${y - 15}" width="${w}" height="30" rx="15" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1.5"/><text x="${x}" y="${y + 5}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)" font-family="var(--f-body)">${esc(n)}</text>`; }).join("");
+  return `<svg width="${W0}" height="${H0}" viewBox="0 0 ${W0} ${H0}" role="img" aria-label="Mapa conceptual"><defs><marker id="ar" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line2)"/></marker></defs>${edges}${ns}</svg>`;
+}
+
+
+/* ---------- Laboratori (simulacions) ---------- */
+let labState = {};
+function viewLab(el) {
+  const t = topicById(S.active); if (!t) return go("inici");
+  const C = COMPILED[t.id];
+  const sims = [...C.formules.map(f => ({ kind: "f", id: f.id, name: f.nom, sub: "Simulador de fórmula" })), ...t.procediments.map(p => ({ kind: "p", id: p.id, name: p.nom, sub: "Seqüència de passos" })), ...(t.relacions.length >= 3 ? [{ kind: "r", id: "all", name: "Construeix el mapa", sub: "Aparella conceptes" }] : []), ...(t.cronologia.length >= 3 ? [{ kind: "t", id: "all", name: "Línia del temps", sub: "Ordena els fets" }] : [])];
+  if (!sims.length) { el.innerHTML = `<div class="card empty">Aquest tema no té fórmules, procediments, relacions ni cronologia per simular. Prova la Pràctica.</div>`; return; }
+  if (!labState.sel || !sims.find(s => s.kind + ":" + s.id === labState.sel)) labState.sel = sims[0].kind + ":" + sims[0].id;
+  el.innerHTML = `<div class="card stack"><span class="eyebrow">Laboratori · ${esc(t.titol)}</span><h1>Entorns de simulació</h1><p class="muted">Manipula, prediu i comprova. Cada repte superat compta com a pràctica i dona XP la primera vegada.</p>
+    <div class="row">${sims.map(s => `<button class="btn small ${labState.sel === s.kind + ":" + s.id ? "primary" : ""}" data-sim="${s.kind}:${s.id}">${esc(s.name)}</button>`).join("")}</div></div><div id="simBox"></div>`;
+  $$("[data-sim]", el).forEach(b => b.onclick = () => { labState.sel = b.dataset.sim; viewLab(el); });
+  const [k, id] = labState.sel.split(":"), box = $("#simBox", el);
+  if (k === "f") simFormula(box, t, C.formules.find(f => f.id === id));
+  else if (k === "p") simOrder(box, t, makeItem(t.id, "p:" + id), "p:" + id);
+  else if (k === "t") simOrder(box, t, makeItem(t.id, "t:all"), "t:all");
+  else if (k === "r") simPairs(box, t);
+}
+function labWin(t, key, chId, label) {
+  const id = t.id + "|" + chId;
+  if (!S.labDone[id]) { S.labDone[id] = now(); addXP(6, "repte de laboratori"); const c = card(t.id, key); fsrs(c, 3); c.streak = Math.max(c.streak, 1); if (c.pendingError) { c.pendingError = false; fixError(t.id, key); } markDay(); checkBadges(); save(); }
+}
+function simFormula(box, t, f) {
+  const env = { ...f.consts }; f.vars.forEach(v => env[v.simbol] = Number(niceRound((v.min + v.max) / 2, v.pas).toPrecision(6)));
+  let xVar = f.vars[0].simbol, challenge = null, predicted = null;
+  const newChallenge = () => { const e = randVars(f); challenge = { target: evalTree(f.tree, e), id: "obj_" + Math.round(Math.random() * 1e6) }; };
+  newChallenge();
+  box.innerHTML = `<div class="lab">
+    <div class="card stack">
+      <h2>${esc(f.nom)}</h2><span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span>
+      ${f.vars.map(v => `<div class="slider"><div class="lbl"><span>${esc(v.nom)} (${esc(v.simbol)})</span><b id="lv_${v.simbol}"></b></div><input type="range" id="sl_${v.simbol}" min="${v.min}" max="${v.max}" step="${v.pas || (v.max - v.min) / 200}" value="${env[v.simbol]}" aria-label="${esc(v.nom)}"></div>`).join("")}
+      ${f.constList.length ? `<p class="small muted">Constants: ${f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`).join(", ")}</p>` : ""}
+      <div><span class="eyebrow">${esc(f.res.nom)}</span><div class="readout" id="out"></div><p class="small muted mono" id="subs"></p></div>
+    </div>
+    <div class="stack">
+      <div class="card stack"><div class="row" style="justify-content:space-between"><h3>Gràfica</h3>${f.vars.length > 1 ? `<select id="xv" style="width:auto">${f.vars.map(v => `<option value="${v.simbol}">${esc(f.lhs)} segons ${esc(v.simbol)}</option>`).join("")}</select>` : ""}</div><canvas class="plot" id="plot" width="600" height="260" aria-label="Gràfica del resultat"></canvas></div>
+      <div class="card stack"><h3>Repte 1 · Arriba a l'objectiu</h3><p>Mou els controls fins que <b>${esc(f.lhs)}</b> valgui <b class="mono" id="tgt"></b> (±2%).</p><div id="chOut" class="small"></div><div class="row"><button class="btn small" id="newCh">Un altre objectiu</button></div></div>
+      <div class="card stack"><h3>Repte 2 · Prediu abans de provar</h3><p id="prq"></p><div class="opts" id="prOpts"></div><div id="prOut"></div></div>
+    </div></div>`;
+  const cv = $("#plot", box), ctx = cv.getContext("2d");
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || "#888";
+  function draw() {
+    const v = f.vars.find(x => x.simbol === xVar), N = 80, pts = [];
+    for (let i = 0; i <= N; i++) { const x = v.min + (v.max - v.min) * i / N; const y = evalTree(f.tree, { ...env, [xVar]: x }); if (isFinite(y)) pts.push([x, y]); }
+    const ys = pts.map(p => p[1]); let y0 = Math.min(0, ...ys), y1 = Math.max(...ys); if (y1 === y0) y1 = y0 + 1;
+    const Wc = cv.width, Hc = cv.height, L = 56, Rr = 14, T = 14, B = 34;
+    const X = x => L + (x - v.min) / (v.max - v.min) * (Wc - L - Rr), Y = y => T + (1 - (y - y0) / (y1 - y0)) * (Hc - T - B);
+    ctx.clearRect(0, 0, Wc, Hc); ctx.font = "12px " + css("--f-mono"); ctx.fillStyle = css("--muted"); ctx.strokeStyle = css("--line");
+    for (let i = 0; i <= 4; i++) { const yy = y0 + (y1 - y0) * i / 4; ctx.beginPath(); ctx.moveTo(L, Y(yy)); ctx.lineTo(Wc - Rr, Y(yy)); ctx.stroke(); ctx.textAlign = "right"; ctx.fillText(fmt(yy), L - 6, Y(yy) + 4); }
+    ctx.textAlign = "center"; [v.min, (v.min + v.max) / 2, v.max].forEach(x => ctx.fillText(fmt(x), X(x), Hc - 16)); ctx.fillText(`${v.simbol} (${v.unitat})`, (L + Wc) / 2, Hc - 2);
+    ctx.strokeStyle = css("--blue"); ctx.lineWidth = 2.5; ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(X(p[0]), Y(p[1])) : ctx.moveTo(X(p[0]), Y(p[1]))); ctx.stroke();
+    if (challenge) { ctx.setLineDash([5, 5]); ctx.strokeStyle = css("--warn"); ctx.lineWidth = 1.5; const ty = Y(challenge.target); if (ty > T && ty < Hc - B) { ctx.beginPath(); ctx.moveTo(L, ty); ctx.lineTo(Wc - Rr, ty); ctx.stroke(); } ctx.setLineDash([]); }
+    const cy = evalTree(f.tree, env); ctx.fillStyle = css("--mark"); ctx.strokeStyle = css("--ink"); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(X(env[xVar]), Y(cy), 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  }
+  function update() {
+    f.vars.forEach(v => $("#lv_" + v.simbol, box).textContent = `${fmt(env[v.simbol])} ${v.unitat}`);
+    const R = evalTree(f.tree, env);
+    $("#out", box).innerHTML = `${esc(f.lhs)} = ${fmt(R)} <small>${esc(f.res.unitat)}</small>`;
+    $("#subs", box).textContent = `${f.lhs} = ${f.src.replace(/[A-Za-z_][A-Za-z0-9_]*/g, s => (s in env) ? fmt(env[s]) : s).replace(/\*/g, "·")}`;
+    $("#tgt", box).textContent = `${fmt(challenge.target)} ${f.res.unitat}`;
+    const rel = Math.abs(R - challenge.target) / Math.max(Math.abs(challenge.target), 1e-12), co = $("#chOut", box);
+    if (rel <= 0.02) { co.innerHTML = `<div class="fb ok"><b>Aconseguit!</b> ${esc(f.lhs)} = ${fmt(R)} ${esc(f.res.unitat)}. Fixa't en quines combinacions funcionen: n'hi ha més d'una.</div>`; labWin(t, "f:" + f.id, f.id + "_" + challenge.id, f.nom); }
+    else co.innerHTML = `<span class="muted">Estàs a un ${Math.round(rel * 100)}% de l'objectiu. ${R < challenge.target ? "Has d'augmentar" : "Has de reduir"} ${esc(f.lhs)}.</span>`;
+    draw();
+  }
+  f.vars.forEach(v => $("#sl_" + v.simbol, box).oninput = e => { env[v.simbol] = parseFloat(e.target.value); update(); });
+  const xs = $("#xv", box); if (xs) xs.onchange = e => { xVar = e.target.value; draw(); };
+  $("#newCh", box).onclick = () => { newChallenge(); update(); };
+  // predicció
+  const item = makeItem(t.id, "f:" + f.id, { type: "predict" });
+  $("#prq", box).innerHTML = item.prompt.replace(/<p class="muted small">.*?<\/p>/, "");
+  $("#prOpts", box).innerHTML = item.options.map((o, i) => `<button class="opt" data-i="${i}"><span class="k">${"ABCD"[i]}</span><span>${esc(o.text)}</span></button>`).join("");
+  $$("#prOpts .opt", box).forEach(b => b.onclick = () => {
+    if (predicted !== null) return; predicted = +b.dataset.i; const r = checkMcq(item, predicted);
+    $$("#prOpts .opt", box).forEach((x, i) => { x.classList.toggle("right", !!item.options[i].ok); if (i === predicted && !r.ok) x.classList.add("wrong"); });
+    const v = item.prompt.match(/\((\w+)\)<\/b> i la resta/); const sym = v ? v[1] : null;
+    $("#prOut", box).innerHTML = `<div class="fb ${r.ok ? "ok" : "bad"}"><b>${r.ok ? "Bona predicció!" : "Predicció incorrecta."}</b> ${r.ok ? "" : esc(r.diag)} ${sym ? `Ara mou el control de ${esc(sym)} i comprova-ho a la gràfica.` : ""}</div>`;
+    if (r.ok) labWin(t, "f:" + f.id, f.id + "_pred", f.nom);
+  });
+  update();
+}
+function simOrder(box, t, item, key) {
+  let order = item.order.slice(), checked = false;
+  const paint = res => {
+    box.innerHTML = `<div class="card stack"><h2>${esc(item.label)}</h2>${item.prompt}<ol class="order">${order.map((ix, pos) => `<li class="${res ? (res.wrongPos.includes(pos) ? "wrong" : "right") : ""}"><span class="mono muted">${pos + 1}</span><span class="txt">${esc(item.items[ix])}${res && item.years ? ` <b class="mono">(${esc(item.years[ix])})</b>` : ""}</span><button aria-label="Puja" data-up="${pos}" ${pos === 0 ? "disabled" : ""}>↑</button><button aria-label="Baixa" data-dn="${pos}" ${pos === order.length - 1 ? "disabled" : ""}>↓</button></li>`).join("")}</ol><div class="actions"><button class="btn primary" id="chk">Comprova</button></div><div id="o"></div></div>`;
+    $$("[data-up]", box).forEach(b => b.onclick = () => { const p = +b.dataset.up; [order[p - 1], order[p]] = [order[p], order[p - 1]]; paint(); });
+    $$("[data-dn]", box).forEach(b => b.onclick = () => { const p = +b.dataset.dn; [order[p + 1], order[p]] = [order[p], order[p + 1]]; paint(); });
+    $("#chk", box).onclick = () => { const r = checkOrder(item, order); paint(r); $("#o", box).innerHTML = `<div class="fb ${r.ok ? "ok" : "bad"}"><b>${r.ok ? "Seqüència correcta!" : "Encara no."}</b> ${r.ok ? "" : esc(r.diag) + " Els verds ja són al seu lloc."}</div>`; if (r.ok) labWin(t, key, key, item.label); };
+  };
+  paint();
+}
+function simPairs(box, t) {
+  const rels = shuffle(t.relacions).slice(0, 5);
+  const left = rels.map((r, i) => ({ i, text: `${r.a} — ${r.tipus}` })), right = shuffle(rels.map((r, i) => ({ i, text: r.b })));
+  let selL = null, done = new Set(), misses = 0;
+  const paint = msg => {
+    box.innerHTML = `<div class="card stack"><h2>Construeix el mapa</h2><p class="muted">Toca una frase de l'esquerra i després el concepte que la completa.</p><div class="pairs"><div class="opts">${left.map(l => `<button class="opt ${done.has(l.i) ? "right" : ""}" data-l="${l.i}" aria-pressed="${selL === l.i}" ${done.has(l.i) ? "disabled" : ""}>${esc(l.text)} …</button>`).join("")}</div><div class="opts">${right.map(r => `<button class="opt ${done.has(r.i) ? "right" : ""}" data-r="${r.i}" ${done.has(r.i) ? "disabled" : ""}>${esc(r.text)}</button>`).join("")}</div></div><div id="o">${msg || ""}</div></div>`;
+    $$("[data-l]", box).forEach(b => b.onclick = () => { selL = +b.dataset.l; paint(); });
+    $$("[data-r]", box).forEach(b => b.onclick = () => {
+      if (selL === null) return paint(`<p class="small muted">Primer tria una frase de l'esquerra.</p>`);
+      const ri = +b.dataset.r, rl = rels[selL];
+      if (ri === selL) { done.add(ri); selL = null; if (done.size === rels.length) { paint(`<div class="fb ok"><b>Mapa complet!</b> ${misses ? `Amb ${misses} errada${misses > 1 ? "es" : ""}: torna-ho a provar per fer-ho net.` : "Sense cap errada."}</div>`); if (!misses) labWin(t, "r:all", "pairs", "Mapa"); return; } paint(`<p class="small" style="color:var(--ok)"><b>Correcte:</b> ${esc(rl.a)} ${esc(rl.tipus)} ${esc(rl.b)}.</p>`); }
+      else { misses++; const wrong = rels[ri]; paint(`<div class="fb bad">«${esc(rl.a)} ${esc(rl.tipus)} ${esc(wrong.b)}» no és el que diuen els apunts. Pensa quin concepte encaixa amb «${esc(rl.tipus)}».</div>`); }
+    });
+  };
+  paint();
+}
+
+
+/* ---------- Pràctica ---------- */
+function startPractice(tids, n = 10, focus = null) {
+  const items = buildSession(tids, n, focus);
+  practiceSession = { tids, items, i: 0, results: [], requeued: new Set(), xp0: S.xp, changes: [] };
+  startSessionGame(practiceSession);
+}
+function viewPractice(el) {
+  if (!practiceSession) {
+    const ts = allTopics();
+    el.innerHTML = `<div class="card stack"><span class="eyebrow">Pràctica espaiada</span><h1>Què vols practicar?</h1><p class="muted">L'app tria primer els errors pendents i els repassos que toquen avui, després conceptes nous, i ho barreja tot. Cada resposta actualitza quan has de tornar a veure aquell element.</p>
+      <div class="grid">${ts.map(t => { const s = topicStats(t); return `<label class="card row" style="box-shadow:none"><input type="checkbox" value="${t.id}" ${t.id === S.active ? "checked" : ""}><span><b>${esc(t.titol)}</b><br><span class="small muted">${s.due} per repassar · ${s.counts[0]} nous</span></span></label>`; }).join("")}</div>
+      <div class="row"><label class="row small">Preguntes <select id="nq" style="width:auto"><option>5</option><option selected>10</option><option>15</option></select></label><button class="btn primary" id="go">Començar</button>${S.errors.some(e => !e.fixed) ? `<button class="btn" id="goErr">Només errors pendents (${S.errors.filter(e => !e.fixed).length})</button>` : ""}</div></div>`;
+    $("#go", el).onclick = () => { const tids = $$("input[type=checkbox]:checked", el).map(x => x.value); if (!tids.length) return; startPractice(tids, +$("#nq", el).value); viewPractice(el); };
+    const ge = $("#goErr", el); if (ge) ge.onclick = () => { practiceErrors(); viewPractice(el); };
+    return;
+  }
+  const P = practiceSession;
+  if (!P.items.length) { el.innerHTML = `<div class="card empty">No hi ha res per practicar ara mateix.<br><br><button class="btn" id="back">Tornar</button></div>`; $("#back", el).onclick = () => { practiceSession = null; viewPractice(el); }; return; }
+  if (P.i >= P.items.length) return practiceSummary(el);
+  const item = P.items[P.i];
+  const st = { attempts: 0, hint: 0, sel: null, order: item.order ? item.order.slice() : null, done: false, conf: null };
+  el.innerHTML = `<div class="card qcard ${isGolden(P, P.i) ? "golden" : ""}">
+    <div class="qhead"><span class="row"><span class="pill blue">${esc(item.type)}</span><span class="small muted">${esc(item.topic)}</span>${stateChip(item.tid, item.key)}</span><span class="row">${isGolden(P, P.i) ? '<span class="pill gold">Pregunta d\'or</span>' : ""}${P.combo >= 2 ? `<span class="pill mark">Combo x${P.combo}</span>` : ""}<span class="small mono muted">${P.i + 1} / ${P.items.length}</span></span></div>
+    <div class="progress"><span style="width:${P.i / P.items.length * 100}%"></span></div>
+    <div id="qp">${item.prompt}</div>
+    <div id="qin"></div>
+    <div class="actions" id="qact">
+      <span class="small muted">Comprova i digues com n'estàs de segur:</span>
+      <div class="conf"><button class="btn primary" data-conf="segur">N'estic segur</button><button class="btn" data-conf="crec">Crec que sí</button></div>
+      <button class="btn ghost" id="hintBtn">Necessito una pista</button>
+    </div>
+    <div id="hintArea"></div>
+    <div id="fb"></div>
+    <div class="row" style="justify-content:space-between"><button class="btn ghost small" id="report">Aquesta pregunta està malament</button><button class="btn mark" id="next" hidden>Següent</button></div>
+  </div>`;
+  const qin = $("#qin", el);
+  function paintInput(res) {
+    if (item.mode === "mcq") {
+      qin.innerHTML = `<div class="opts">${item.options.map((o, i) => `<button class="opt ${res && st.done && o.ok ? "right" : ""} ${res && i === st.sel && !res.ok ? "wrong" : ""}" data-i="${i}" aria-pressed="${st.sel === i}" ${st.done ? "disabled" : ""}><span class="k">${"ABCDE"[i]}</span><span>${esc(o.text)}</span></button>`).join("")}</div>`;
+      $$(".opt", qin).forEach(b => b.onclick = () => { st.sel = +b.dataset.i; paintInput(); });
+    } else if (item.mode === "order") {
+      qin.innerHTML = `<ol class="order">${st.order.map((ix, pos) => `<li class="${res && res.wrongPos ? (res.wrongPos.includes(pos) ? "wrong" : "right") : ""}"><span class="mono muted">${pos + 1}</span><span class="txt">${esc(item.items[ix])}${st.done && item.years ? ` <b class="mono">(${esc(item.years[ix])})</b>` : ""}</span><button aria-label="Puja" data-up="${pos}" ${pos === 0 || st.done ? "disabled" : ""}>↑</button><button aria-label="Baixa" data-dn="${pos}" ${pos === st.order.length - 1 || st.done ? "disabled" : ""}>↓</button></li>`).join("")}</ol>`;
+      $$("[data-up]", qin).forEach(b => b.onclick = () => { const p = +b.dataset.up; [st.order[p - 1], st.order[p]] = [st.order[p], st.order[p - 1]]; paintInput(); });
+      $$("[data-dn]", qin).forEach(b => b.onclick = () => { const p = +b.dataset.dn; [st.order[p + 1], st.order[p]] = [st.order[p], st.order[p + 1]]; paintInput(); });
+    } else if (!qin.firstChild) {
+      qin.innerHTML = item.mode === "number" ? `<div class="numin"><input type="text" inputmode="decimal" id="ans" autocomplete="off" aria-label="Resposta numèrica" placeholder="0,0"><span class="unit">${esc(item.unit || "")}</span></div>` : `<input type="text" id="ans" autocomplete="off" aria-label="Resposta" placeholder="Escriu la resposta">`;
+      const a = $("#ans", qin); a.focus(); a.onkeydown = e => { if (e.key === "Enter") submit("crec"); };
+    }
+  }
+  function submit(conf) {
+    if (st.done) return;
+    let r;
+    if (item.mode === "mcq") { if (st.sel === null) return flash("Tria una opció."); r = checkMcq(item, st.sel); }
+    else if (item.mode === "order") r = checkOrder(item, st.order);
+    else { const v = $("#ans", qin).value; if (!v.trim()) return flash("Escriu una resposta."); r = item.check(v); }
+    st.attempts++;
+    const fb = $("#fb", el);
+    if (r.ok) {
+      st.done = true;
+      const rec = record(item.tid, item.key, { ok: true, firstTry: st.attempts === 1, hint: st.hint > 0, conf, label: item.label });
+      P.results.push({ item, ok: true, first: st.attempts === 1 && !st.hint, conf });
+      if (rec.before !== rec.after) P.changes.push([item.label, rec.before, rec.after]);
+      const extra = onAnswer(P, P.i, { ok: true, first: st.attempts === 1 && !st.hint, rec });
+      fb.innerHTML = `<div class="fb ok">${extra}<h3>${st.attempts === 1 && !st.hint ? "Correcte al primer intent!" : "Correcte!"}</h3>${r.note ? `<p>${esc(r.note)}</p>` : ""}${item.explain ? `<p>${item.raw ? item.explain : esc(item.explain)}</p>` : ""}${item.source ? `<p class="src">Font dels apunts: «${esc(item.source)}»</p>` : ""}${rec.noXP ? `<p class="small">Ja ho domines i no tocava repassar-ho: no suma XP. Torna quan l'app t'ho demani.</p>` : ""}${conf === "segur" ? "" : `<p class="small">Has encertat però no n'estaves segur: és normal mentre consolides.</p>`}${rec.before !== rec.after ? `<p class="small"><b>Progrés:</b> ${STATE_KEYS[rec.before]} → <b>${STATE_KEYS[rec.after]}</b></p>` : ""}</div>`;
+      finish(r);
+    } else if (st.attempts === 1) {
+      Sfx.play("bad");
+      fb.innerHTML = `<div class="fb warn"><h3>Encara no. Torna-ho a provar</h3><p>${esc(r.diag)}</p>${conf === "segur" ? `<p class="small"><b>Ull:</b> n'estaves segur i no era correcte. Aquest és el tipus d'error que més convé revisar.</p>` : ""}</div>`;
+      if (item.mode === "order") paintInput(r);
+      if (item.mode === "mcq") { const bad = st.sel; st.sel = null; paintInput(); const b = $$(".opt", qin)[bad]; if (b) { b.classList.add("wrong"); b.disabled = true; } }
+    } else {
+      st.done = true;
+      const rec = record(item.tid, item.key, { ok: false, conf, label: item.label, diag: r.diag });
+      P.results.push({ item, ok: false, conf, diag: r.diag });
+      const extra = onAnswer(P, P.i, { ok: false, first: false, rec });
+      if (!P.requeued.has(item.key + item.tid)) { P.requeued.add(item.key + item.tid); const again = makeItem(item.tid, item.key); if (again) P.items.splice(Math.min(P.items.length, P.i + 3), 0, again); }
+      fb.innerHTML = `<div class="fb bad">${extra}<h3>Resposta correcta: ${item.mode === "order" ? "" : esc(item.answerText)}</h3>${item.mode === "order" ? `<p>${esc(item.answerText)}</p>` : ""}<p><b>Diagnòstic:</b> ${esc(r.diag)}</p>${item.explain ? `<p>${item.raw ? item.explain : esc(item.explain)}</p>` : ""}${item.source ? `<p class="src">Font dels apunts: «${esc(item.source)}»</p>` : ""}<p class="small">L'error queda al quadern i <b>tornarà a sortir d'aquí a poc</b> en aquesta mateixa sessió. Corregir-lo et dona +8 XP.</p></div>`;
+      finish(r);
+    }
+  }
+  function finish(r) {
+    if (item.mode === "mcq" || item.mode === "order") paintInput(r);
+    else { const a = $("#ans", qin); if (a) a.disabled = true; }
+    $("#qact", el).hidden = true; $("#hintArea", el).innerHTML = "";
+    const nx = $("#next", el); nx.hidden = false; nx.focus(); nx.onclick = () => { P.i++; viewPractice(el); };
+  }
+  function flash(msg) { $("#fb", el).innerHTML = `<p class="small muted">${esc(msg)}</p>`; }
+  $$("[data-conf]", el).forEach(b => b.onclick = () => submit(b.dataset.conf));
+  $("#hintBtn", el).onclick = () => {
+    if (st.hint >= 3) return;
+    const ha = $("#hintArea", el);
+    ha.innerHTML = `<div class="fb hint"><label class="f" for="stuck">Abans de la pista ${st.hint + 1}/3: on t'has encallat? (una frase)</label><input type="text" id="stuck" placeholder="Ex.: no sé quina fórmula fer servir"><div class="row"><button class="btn small primary" id="giveHint">Veure la pista</button></div></div>`;
+    const s = $("#stuck", ha); s.focus();
+    const give = () => { if (s.value.trim().length < 8) { s.placeholder = "Explica-ho una mica més (mínim 8 caràcters)"; s.value = ""; return; } st.hint++; renderHints(); };
+    $("#giveHint", ha).onclick = give; s.onkeydown = e => { if (e.key === "Enter") give(); };
+  };
+  function renderHints() {
+    const names = ["Pista conceptual", "Pista de procediment", "Exemple semblant"];
+    $("#hintArea", el).innerHTML = `<div class="fb hint">${item.hints.slice(0, st.hint).map((hh, i) => `<p><b>${names[i]}:</b> ${item.raw || i === 2 ? hh : esc(hh)}</p>`).join("")}<p class="small muted">${st.hint < 3 ? "Amb pista l'encert suma menys XP, però compta com a pràctica." : "Ja has vist totes les pistes. La resposta l'has de trobar tu."}</p></div>`;
+    if (st.hint >= 3) $("#hintBtn", el).disabled = true;
+  }
+  $("#report", el).onclick = () => { (S.reported[item.tid] = S.reported[item.tid] || {})[item.key] = { t: now(), type: item.type }; save(); $("#fb", el).innerHTML = `<div class="fb warn">Gràcies. Aquest element no tornarà a sortir. Pots revisar-lo als Apunts. <button class="btn small" id="skip">Saltar</button></div>`; $("#skip", el).onclick = () => { P.i++; viewPractice(el); }; };
+  paintInput();
+}
+function practiceErrors() { const pend = S.errors.filter(e => !e.fixed && topicById(e.tid)); startPractice([...new Set(pend.map(e => e.tid))], 15, pend.map(e => [e.tid, e.key])); }
+function practiceSummary(el) {
+  const P = practiceSession, ok = P.results.filter(r => r.ok).length, first = P.results.filter(r => r.first).length, n = P.results.length;
+  const segur = P.results.filter(r => r.conf === "segur"), segurOk = segur.filter(r => r.ok).length;
+  if (!P.finished) { P.finished = true; P.stars = finishSession(P); }
+  const next = P.tids.map(tid => topicStats(topicById(tid) || { conceptes: [] })).reduce((a, b) => a + b.due, 0);
+  el.innerHTML = `<div class="card stack"><span class="eyebrow">Sessió acabada</span><h1>${first}/${n} encerts al primer intent</h1>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+      <div><span class="eyebrow">XP guanyada</span><div class="score">${S.xp - P.xp0}</div></div>
+      <div><span class="eyebrow">Encerts totals</span><div class="score">${ok}</div></div>
+      <div><span class="eyebrow">Quan deies «segur»</span><div class="score">${segur.length ? Math.round(segurOk / segur.length * 100) + "%" : "—"}</div><p class="small muted">d'encert</p></div>
+    </div>
+    ${Object.keys(P.stars).length ? `<div class="fb ok">${Object.entries(P.stars).map(([tid, n]) => `<p><b>${esc((topicById(tid) || {}).titol || "")}</b>: ${starsHTML(n)} nova marca!</p>`).join("")}</div>` : ""}
+    ${P.maxCombo >= 3 ? `<p>Millor combo de la sessió: <b>x${P.maxCombo}</b></p>` : ""}
+    ${P.changes.length ? `<div class="stack"><h3>Has avançat</h3><ul class="clean">${P.changes.map(([l, a, b]) => `<li>${esc(l)}: ${STATE_KEYS[a]} → <b>${STATE_KEYS[b]}</b></li>`).join("")}</ul></div>` : ""}
+    ${P.results.some(r => !r.ok) ? `<div class="stack"><h3>Per revisar</h3><ul class="clean">${P.results.filter(r => !r.ok).map(r => `<li><b>${esc(r.item.label)}</b>: ${esc(r.diag || "")}</li>`).join("")}</ul></div>` : ""}
+    <p class="muted small">${next ? `Encara tens ${next} element${next > 1 ? "s" : ""} per repassar avui.` : "Has fet tots els repassos d'avui. L'app et dirà quan tornar."}</p>
+    <div class="row"><button class="btn primary" id="again">Una altra sessió</button><button class="btn" id="home">Inici</button></div></div>`;
+  $("#again", el).onclick = () => { startPractice(P.tids); viewPractice(el); };
+  $("#home", el).onclick = () => { practiceSession = null; Router.root("inici"); };
+}
+
+
+/* ---------- Examen ---------- */
+function viewExam(el) {
+  if (examSession && !examSession.done) return examRun(el);
+  if (examSession && examSession.done) return examResults(el);
+  const ts = allTopics();
+  el.innerHTML = `<div class="card stack"><span class="eyebrow">Simulacre</span><h1>Possible examen</h1><p class="muted">Preguntes barrejades de tots els temes que triïs, amb temps i sense pistes. Abans de cada resposta indiques la seguretat: al final veuràs on et creies que sabies i no sabies.</p>
+    <div class="grid">${ts.map(t => { const s = topicStats(t), boss = s.consolidat >= 0.8; return `<div class="card stack" style="box-shadow:none"><label class="row"><input type="checkbox" value="${t.id}" ${t.id === S.active ? "checked" : ""}><b>${esc(t.titol)}</b></label><p class="small muted">${Math.round(s.consolidat * 100)}% consolidat</p><button class="btn small ${boss ? "mark" : ""}" data-boss="${t.id}" ${boss ? "" : "disabled"} title="${boss ? "" : "Es desbloqueja amb el 80% consolidat"}">${boss ? "Repte final" : "Repte final (80%)"}</button></div>`; }).join("")}</div>
+    <div class="row"><label class="row small">Preguntes <select id="nq" style="width:auto"><option>8</option><option selected>12</option><option>16</option></select></label><label class="row small">Minuts <select id="mins" style="width:auto"><option>10</option><option selected>15</option><option>25</option></select></label><button class="btn primary" id="start">Començar el simulacre</button><button class="btn" id="paper">Examen en paper</button></div>
+    <div id="paperOut"></div></div>`;
+  const sel = () => $$("input[type=checkbox]:checked", el).map(x => x.value);
+  $("#start", el).onclick = () => { const t = sel(); if (t.length) { examSession = buildExam(t, +$("#nq", el).value, +$("#mins", el).value, false); viewExam(el); } };
+  $$("[data-boss]", el).forEach(b => b.onclick = () => { examSession = buildExam([b.dataset.boss], 15, 20, true); viewExam(el); });
+  $("#paper", el).onclick = () => { const t = sel(); if (t.length) paperExam($("#paperOut", el), t, +$("#nq", el).value); };
+}
+function buildExam(tids, n, mins, boss) {
+  const keys = []; tids.forEach(tid => topicKeys(topicById(tid)).forEach(k => keys.push([tid, k])));
+  const byKind = {}; shuffle(keys).forEach(x => (byKind[x[1][0]] = byKind[x[1][0]] || []).push(x));
+  const nOpen = Math.min(2, tids.reduce((a, tid) => a + topicById(tid).preguntes_obertes.length, 0));
+  const chosen = []; let progress = true;
+  while (chosen.length < n - nOpen && progress) { progress = false; for (const k of Object.keys(byKind)) { if (byKind[k].length && chosen.length < n - nOpen) { chosen.push(byKind[k].shift()); progress = true; } } }
+  const items = shuffle(chosen).map(([tid, k]) => makeItem(tid, k, { exam: true, type: k[0] === "c" ? pick(["mcq_def", "short", "fill", "mcq_name"]) : undefined })).filter(Boolean);
+  const opens = shuffle(tids.flatMap(tid => topicById(tid).preguntes_obertes.map(q => ({ tid, q })))).slice(0, nOpen);
+  opens.forEach(({ tid, q }) => items.push({ tid, key: q.concepte_id ? "c:" + q.concepte_id : null, topic: topicById(tid).titol, label: q.pregunta, type: "Pregunta oberta", mode: "open", prompt: `<p class="prompt">${esc(q.pregunta)}</p>`, q }));
+  return { tids, items, ans: items.map(() => ({ v: null, conf: null })), i: 0, end: now() + mins * 60e3, mins, boss, done: false };
+}
+function examRun(el) {
+  const E = examSession, item = E.items[E.i], a = E.ans[E.i];
+  el.innerHTML = `<div class="card qcard">
+    <div class="qhead"><span class="row"><span class="pill ${E.boss ? "mark" : "blue"}">${E.boss ? "Repte final" : "Simulacre"}</span><span class="small muted">${esc(item.topic)} · ${esc(item.type)}</span></span><span class="timer" id="timer"></span></div>
+    <div class="dots">${E.items.map((_, i) => `<button class="${E.ans[i].v !== null ? "done" : ""} ${i === E.i ? "cur" : ""}" data-j="${i}" aria-label="Pregunta ${i + 1}">${i + 1}</button>`).join("")}</div>
+    <div>${item.prompt}</div><div id="qin"></div>
+    <div class="row"><span class="small muted">Seguretat:</span>${["segur", "crec", "no"].map(c => `<button class="btn small ${a.conf === c ? "primary" : ""}" data-conf="${c}">${{ segur: "Segur", crec: "Crec que sí", no: "No ho sé" }[c]}</button>`).join("")}</div>
+    <div class="row" style="justify-content:space-between"><div class="row"><button class="btn" id="prev" ${E.i === 0 ? "disabled" : ""}>Anterior</button><button class="btn primary" id="nxt">${E.i === E.items.length - 1 ? "Revisar" : "Següent"}</button></div><button class="btn mark" id="hand">Entregar</button></div>
+    <div id="handConfirm"></div></div>`;
+  const qin = $("#qin", el);
+  if (item.mode === "mcq") { qin.innerHTML = `<div class="opts">${item.options.map((o, i) => `<button class="opt" data-i="${i}" aria-pressed="${a.v === i}"><span class="k">${"ABCDE"[i]}</span><span>${esc(o.text)}</span></button>`).join("")}</div>`; $$(".opt", qin).forEach(b => b.onclick = () => { a.v = +b.dataset.i; examRun(el); }); }
+  else if (item.mode === "order") { if (a.v === null) a.v = item.order.slice(); const paint = () => { qin.innerHTML = `<ol class="order">${a.v.map((ix, pos) => `<li><span class="mono muted">${pos + 1}</span><span class="txt">${esc(item.items[ix])}</span><button data-up="${pos}" aria-label="Puja" ${pos === 0 ? "disabled" : ""}>↑</button><button data-dn="${pos}" aria-label="Baixa" ${pos === a.v.length - 1 ? "disabled" : ""}>↓</button></li>`).join("")}</ol>`; $$("[data-up]", qin).forEach(b => b.onclick = () => { const p = +b.dataset.up; [a.v[p - 1], a.v[p]] = [a.v[p], a.v[p - 1]]; paint(); }); $$("[data-dn]", qin).forEach(b => b.onclick = () => { const p = +b.dataset.dn; [a.v[p + 1], a.v[p]] = [a.v[p], a.v[p + 1]]; paint(); }); }; paint(); }
+  else if (item.mode === "open") { qin.innerHTML = `<textarea id="ans" aria-label="Resposta" placeholder="Escriu la teva resposta">${esc(a.v || "")}</textarea>`; $("#ans", qin).oninput = e => a.v = e.target.value || null; }
+  else { qin.innerHTML = item.mode === "number" ? `<div class="numin"><input type="text" inputmode="decimal" id="ans" value="${esc(a.v || "")}" aria-label="Resposta"><span class="unit">${esc(item.unit || "")}</span></div>` : `<input type="text" id="ans" value="${esc(a.v || "")}" aria-label="Resposta">`; $("#ans", qin).oninput = e => a.v = e.target.value || null; }
+  $$("[data-conf]", el).forEach(b => b.onclick = () => { a.conf = b.dataset.conf; $$("[data-conf]", el).forEach(x => x.classList.toggle("primary", x === b)); });
+  $$("[data-j]", el).forEach(b => b.onclick = () => { E.i = +b.dataset.j; examRun(el); });
+  $("#prev", el).onclick = () => { E.i--; examRun(el); };
+  $("#nxt", el).onclick = () => { if (E.i < E.items.length - 1) { E.i++; examRun(el); } else $("#hand", el).click(); };
+  $("#hand", el).onclick = () => { const blank = E.ans.filter(x => x.v === null || x.v === "").length; $("#handConfirm", el).innerHTML = `<div class="fb warn"><p>${blank ? `Tens ${blank} pregunta${blank > 1 ? "es" : ""} sense respondre. ` : ""}Vols entregar l'examen?</p><div class="row"><button class="btn small primary" id="yes">Entrega</button><button class="btn small ghost" id="no">Continua</button></div></div>`; $("#yes").onclick = () => gradeExam(el); $("#no").onclick = () => $("#handConfirm", el).innerHTML = ""; };
+  clearInterval(examTimer);
+  const tick = () => { const left = Math.max(0, E.end - now()), tm = $("#timer"); if (!tm) { clearInterval(examTimer); return; } tm.textContent = `${Math.floor(left / 60e3)}:${String(Math.floor(left / 1e3) % 60).padStart(2, "0")}`; tm.classList.toggle("low", left < 60e3); if (left <= 0) { clearInterval(examTimer); gradeExam(el); } };
+  tick(); examTimer = setInterval(tick, 1000);
+}
+async function gradeExam(el) {
+  clearInterval(examTimer);
+  const E = examSession; E.done = true;
+  E.res = E.items.map((it, i) => {
+    const a = E.ans[i];
+    if (it.mode === "open") return { open: true, pts: null };
+    if (a.v === null || a.v === "") return { ok: false, pts: 0, diag: "Sense resposta." };
+    const r = it.mode === "mcq" ? checkMcq(it, a.v) : it.mode === "order" ? checkOrder(it, a.v) : it.check(a.v);
+    return { ok: r.ok, pts: r.ok ? 1 : 0, diag: r.diag };
+  });
+  E.openMode = "self";
+  finalizeExam();
+  examResults(el);
+}
+function finalizeExam() {
+  const E = examSession;
+  if (E.res.some(r => r.open && r.pts === null)) { E.pending = true; return; }
+  E.pending = false;
+  const total = E.res.reduce((s, r) => s + (r.pts || 0), 0);
+  E.nota = Math.round(total / E.items.length * 100) / 10;
+  if (E.recorded) return; E.recorded = true;
+  let xp = 0;
+  E.items.forEach((it, i) => {
+    const r = E.res[i], a = E.ans[i]; if (!it.key) return;
+    const tid = it.tid, c = card(tid, it.key);
+    if (a.conf === "segur" || a.conf === "crec") { S.calib[a.conf][1]++; if (r.ok) S.calib[a.conf][0]++; }
+    if (r.ok) { xp += 2; if (E.boss) c.bossOk = true; } else { c.pendingError = true; c.streak = 0; if (c.reps) c.due = now(); logError(tid, it.key, it.label, (r.diag || r.comentari || "Error a l'examen")); }
+  });
+  markDay();
+  S.exams.unshift({ t: now(), nota: E.nota, n: E.items.length, boss: E.boss, tids: E.tids }); S.exams = S.exams.slice(0, 50);
+  if (E.boss && E.nota >= 7) xp += 50;
+  addXP(xp, E.boss && E.nota >= 7 ? "repte final superat" : "simulacre");
+  checkBadges(); save();
+}
+function criterionHit(crit, ans) {
+  if (!ans) return false;
+  const q = crit.match(/«([^»]+)»/); const words = (q ? q[1] : crit).split(/\s+/).map(norm).filter(w => w.length > 3 && !STOP.has(w));
+  if (!words.length) return false;
+  const a = " " + norm(ans) + " ";
+  const hits = words.filter(w => a.includes(" " + w.slice(0, Math.max(4, w.length - 2)))).length;
+  return hits / words.length >= (q ? 0.99 : 0.5);
+}
+function examResults(el) {
+  const E = examSession;
+  const confRows = ["segur", "crec", "no"].map(c => { const xs = E.items.map((_, i) => i).filter(i => E.ans[i].conf === c && !E.res[i].open); const ok = xs.filter(i => E.res[i].ok).length; return [c, xs.length, ok]; });
+  const overconf = E.items.map((it, i) => [it, i]).filter(([it, i]) => E.ans[i].conf === "segur" && !E.res[i].ok && !E.res[i].open);
+  el.innerHTML = `<div class="card stack"><span class="eyebrow">${E.boss ? "Repte final" : "Simulacre"} corregit</span>
+    ${E.pending ? `<h1>Falta autoavaluar les preguntes obertes</h1><p class="muted">Compara la teva resposta amb la resposta model i marca els criteris que compleixes amb sinceritat.</p>` : `<div class="row" style="align-items:flex-end;gap:18px"><div class="score">${fmt(E.nota)}</div><div><b>sobre 10</b><p class="small muted">${E.res.filter(r => r.ok).length} de ${E.items.length} correctes${E.boss ? (E.nota >= 7 ? " · Repte superat! Els elements encertats passen a dominats." : " · Necessites un 7 per superar el repte.") : ""}</p></div></div>`}
+    ${!E.pending ? `<div class="calib">${confRows.map(([c, n, ok]) => `<div class="r"><span>${{ segur: "Segur", crec: "Crec que sí", no: "No ho sé" }[c]}</span><div class="track"><span style="width:${n ? ok / n * 100 : 0}%"></span></div><span class="mono small">${n ? Math.round(ok / n * 100) + "%" : "—"}</span></div>`).join("")}</div><p class="small muted">Percentatge d'encert segons la seguretat que has indicat. Si dius «segur», hauria d'acostar-se al 100%.</p>${overconf.length ? `<div class="fb warn"><b>Sobreconfiança:</b> n'estaves segur i has fallat en ${overconf.length} pregunta${overconf.length > 1 ? "es" : ""}. Són les primeres que has de repassar.</div>` : ""}` : ""}
+  </div>
+  <div class="card stack"><h2>Correcció</h2><div class="stack">${E.items.map((it, i) => { const r = E.res[i], a = E.ans[i];
+    if (it.mode === "open") return `<div class="fb ${r.pts === null ? "hint" : r.ok ? "ok" : "bad"}"><h3>${i + 1}. ${esc(it.q.pregunta)}</h3><p><b>La teva resposta:</b> ${esc(a.v || "(en blanc)")}</p><p><b>Resposta model:</b> ${esc(it.q.resposta_model)}</p>${r.pts === null ? `<div class="stack" data-self="${i}"><p class="small muted">Marca els criteris que compleix la teva resposta. Els que ja surten marcats contenen les paraules clau, però comprova-ho tu.</p>${it.q.criteris.map((c, j) => `<label class="row small"><input type="checkbox" data-c="${j}" ${criterionHit(c, a.v) ? "checked" : ""}> ${esc(c)}</label>`).join("")}<button class="btn small primary" data-selfok="${i}">Desa l'autoavaluació</button></div>` : `<p><b>Punts:</b> ${fmt(r.pts)} / 1 (autoavaluació)</p>${r.comentari ? `<p>${esc(r.comentari)}</p>` : ""}`}</div>`;
+    return `<div class="fb ${r.ok ? "ok" : "bad"}"><h3>${i + 1}. ${esc(it.type)} · ${esc(it.label.length > 90 ? it.label.slice(0, 90) + "…" : it.label)}</h3>${r.ok ? "" : `<p><b>Correcte:</b> ${esc(it.answerText)}</p><p><b>Diagnòstic:</b> ${esc(r.diag || "")}</p>`}${a.conf ? `<p class="small muted">Seguretat: ${{ segur: "segur", crec: "crec que sí", no: "no ho sé" }[a.conf]}</p>` : ""}</div>`; }).join("")}</div>
+    <div class="row">${E.res.some(r => !r.ok) && !E.pending ? `<button class="btn primary" id="fixNow">Practicar ara els errors</button>` : ""}<button class="btn" id="newEx">Un altre simulacre</button></div></div>`;
+  $$("[data-selfok]", el).forEach(b => b.onclick = () => { const i = +b.dataset.selfok, box = $(`[data-self="${i}"]`, el), it = E.items[i]; const cm = $$("input[data-c]", box).map(x => x.checked); const pts = it.q.criteris.length ? cm.filter(Boolean).length / it.q.criteris.length : 0; E.res[i] = { open: true, pts, ok: pts >= 0.5, complerts: cm }; finalizeExam(); examResults(el); });
+  const fx = $("#fixNow", el); if (fx) fx.onclick = () => { const focus = E.items.map((it, i) => [it, i]).filter(([it, i]) => !E.res[i].ok && it.key).map(([it]) => [it.tid, it.key]); startPractice(E.tids, 15, focus); examSession = null; go("practica"); };
+  $("#newEx", el).onclick = () => { examSession = null; viewExam(el); };
+}
+function paperExam(box, tids, n) {
+  const E = buildExam(tids, n, 0, false);
+  const qs = E.items.map((it, i) => {
+    const txt = it.prompt.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    let body = "";
+    if (it.mode === "mcq") body = it.options.map((o, j) => `   ${"abcde"[j]}) ${o.text}`).join("\n");
+    else if (it.mode === "order") body = it.order.map(ix => `   [ ] ${it.items[ix]}`).join("\n");
+    else body = "   ______________________________";
+    return `${i + 1}. ${txt}\n${body}`;
+  }).join("\n\n");
+  const key = E.items.map((it, i) => `${i + 1}. ${it.mode === "open" ? it.q.resposta_model : it.mode === "mcq" ? "abcde"[it.options.findIndex(o => o.ok)] + ") " + it.answerText : it.answerText}`).join("\n");
+  const title = tids.map(id => topicById(id).titol).join(" + ");
+  const text = `EXAMEN DE PRÀCTICA · ${title}\nNom: ____________________   Data: ___________\n\n${qs}\n\n\n--- SOLUCIONARI ---\n${key}\n`;
+  box.innerHTML = `<div class="stack"><div class="row"><button class="btn small primary" id="cp">Copiar</button><button class="btn small" id="dl">Desar com a fitxer</button></div><pre class="code">${esc(text)}</pre></div>`;
+  $("#cp", box).onclick = e => copyText(text, e.target);
+  $("#dl", box).onclick = () => saveFile("examen-" + slug(title) + ".txt", text, "text/plain");
+}
+
+
+/* ---------- Progrés ---------- */
+function viewProgress(el) {
+  const ts = allTopics(), g = globalStats(), ws = weekStreak(), [so, sn] = S.calib.segur, [co, cn] = S.calib.crec;
+  const pend = S.errors.filter(e => !e.fixed && topicById(e.tid)), fixed = S.errors.filter(e => e.fixed);
+  el.innerHTML = `
+  <div class="card stack"><span class="eyebrow">El teu nivell</span><div class="row" style="align-items:flex-end;gap:18px"><div class="score">${Math.round(g.domini * 100)}%</div><div><b>del temari après</b><p class="small muted">${g.cons} elements consolidats o dominats · ${S.xp} XP · ratxa de ${ws.streak} setman${ws.streak === 1 ? "a" : "es"}</p></div></div>
+    <details><summary>Com es guanya XP</summary><ul class="clean small"><li>+10 encert al primer intent sense pista (si encara no ho domines o tocava repassar-ho)</li><li>+4 encert al segon intent o amb pista</li><li>+8 corregir un error del quadern</li><li>+5 fer un repàs el dia que toca</li><li>+2 encertar quan dius «segur»</li><li>+6 superar un repte de laboratori (la primera vegada)</li><li>+50 superar el repte final d'un tema</li><li>Repetir el que ja domines no suma: el temps de pantalla no puntua.</li></ul></details></div>
+  <div class="card stack"><div class="row" style="justify-content:space-between"><h2>Mapa de domini</h2>${LEGEND}</div>
+    ${ts.filter(t => !t.demo || Object.keys(S.prog[t.id] || {}).length).map(t => `<div class="stack" style="gap:8px"><h3>${esc(t.titol)}</h3><div class="mastery">${topicKeys(t).map(k => { const c = peekCard(t.id, k), s = stateOf(c); return `<div class="cell s${s}" title="${STATE_KEYS[s]}${c.due ? " · proper repàs: " + new Date(c.due).toLocaleDateString("ca-ES") : ""}">${esc(keyLabel(t, k))}</div>`; }).join("")}</div></div>`).join("") || `<p class="muted">Encara no has practicat cap tema.</p>`}</div>
+  <div class="card stack"><h2>Calibratge</h2><p class="small muted">Saber què saps és part d'estudiar bé. Si dius «segur» i falles sovint, t'estàs sobreestimant.</p>
+    <div class="calib"><div class="r"><span>Segur</span><div class="track"><span style="width:${sn ? so / sn * 100 : 0}%"></span></div><span class="mono small">${sn ? Math.round(so / sn * 100) + "%" : "—"}</span></div><div class="r"><span>Crec que sí</span><div class="track"><span style="width:${cn ? co / cn * 100 : 0}%"></span></div><span class="mono small">${cn ? Math.round(co / cn * 100) + "%" : "—"}</span></div></div>
+    <p class="small">${sn >= 5 ? (so / sn >= 0.85 ? "Bon calibratge: quan dius que ho saps, ho saps." : "Quan dius «segur» falles més del que caldria. Abans de respondre, pregunta't: ho podria explicar a un company?") : "Respon unes quantes preguntes més per veure el teu calibratge."}</p></div>
+  <div class="card stack"><div class="row" style="justify-content:space-between"><h2>Quadern d'errors</h2>${pend.length ? `<button class="btn primary small" id="fixAll">Practicar els ${pend.length} pendents</button>` : ""}</div>
+    ${pend.length || fixed.length ? `<div class="tbl"><table class="t"><thead><tr><th>Element</th><th>Diagnòstic</th><th>Cops</th><th>Estat</th></tr></thead><tbody>${[...pend, ...fixed.slice(0, 15)].map(e => `<tr><td><b>${esc(e.label)}</b><br><span class="small muted">${esc((topicById(e.tid) || {}).titol || "")}</span></td><td class="small">${esc(e.diag || "")}</td><td class="mono">${e.n}</td><td>${e.fixed ? '<span class="pill ok">corregit</span>' : '<span class="pill bad">pendent</span>'}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">Encara no hi ha errors. Quan en facis, apareixeran aquí amb el diagnòstic fins que els corregeixis.</p>`}</div>
+  <div class="card stack"><h2>Insígnies</h2><div class="badges">${BADGES.map(b => `<div class="badge ${S.badges[b.id] ? "on" : ""}"><span class="ic">${b.ic}</span><b class="small">${esc(b.nom)}</b><span class="small muted">${esc(b.desc)}</span></div>`).join("")}</div></div>
+  ${S.exams.length ? `<div class="card stack"><h2>Simulacres</h2><div class="tbl"><table class="t"><thead><tr><th>Data</th><th>Temes</th><th>Nota</th></tr></thead><tbody>${S.exams.slice(0, 10).map(x => `<tr><td>${new Date(x.t).toLocaleDateString("ca-ES")}</td><td class="small">${esc(x.tids.map(id => (topicById(id) || {}).titol || "?").join(", "))}${x.boss ? ' <span class="pill mark">repte final</span>' : ""}</td><td class="mono">${fmt(x.nota)}</td></tr>`).join("")}</tbody></table></div></div>` : ""}
+  <div class="card stack"><h2>Preferències</h2><label class="row"><input type="checkbox" id="snd" ${S.sound !== false ? "checked" : ""}> Sons i efectes</label></div>
+  <div class="card stack"><h2>Les teves dades</h2><p class="small muted">El progrés es desa en aquest dispositiu. Fes-ne una còpia de seguretat de tant en tant. Les fotos no es desen mai: només el tema extret.</p><div class="row"><button class="btn small" id="bk">Exportar còpia</button><label class="btn small" for="imp">Importar còpia</label><input type="file" id="imp" accept=".json,application/json" hidden></div><p class="small" id="bkOut"></p></div>`;
+  const fa = $("#fixAll", el); if (fa) fa.onclick = () => { practiceErrors(); go("practica"); };
+  $("#snd", el).onchange = e => { S.sound = e.target.checked; save(); if (S.sound) Sfx.play("ok"); };
+  $("#bk", el).onclick =() => saveFile("apunts-vius-copia.json", JSON.stringify(S), "application/json");
+  $("#imp", el).onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const o = JSON.parse(await f.text()); if (!o || !o.prog) throw 0; S = migrate(o); Object.values(S.topics).forEach(t => compile(t)); save(); $("#bkOut", el).textContent = "Còpia importada."; render(); } catch { $("#bkOut", el).textContent = "Aquest fitxer no és una còpia vàlida d'Apunts Vius."; } };
+}
+function keyLabel(t, k) { const [kind, id] = k.split(":"); if (kind === "c") return (conceptById(t, id) || {}).nom || id; if (kind === "f") return ((COMPILED[t.id].formules.find(f => f.id === id)) || {}).nom || id; if (kind === "p") return (t.procediments.find(p => p.id === id) || {}).nom || id; if (kind === "e") return "Error: " + ((t.errors_tipics.find(e => e.id === id) || {}).afirmacio_erronia || id).slice(0, 40) + "…"; if (kind === "r") return "Relacions"; if (kind === "t") return "Cronologia"; return k; }
+
+
+/* ---------- Vista: nou tema ---------- */
+let newState = { photos: [], text: "", draft: null };
+function viewNew(el) {
+  if (newState.draft) return viewReview(el);
+  el.innerHTML = `<div class="card stack"><span class="eyebrow">Nou tema</span><h1>Dels teus apunts a un tema d'estudi</h1>
+    <p class="muted">Fes fotos dels apunts. L'app en llegeix el text amb <b>OCR</b>, al teu dispositiu i sense IA, i en detecta definicions, fórmules, passos, dates i errors típics. Després ho revises tot abans de crear el tema.</p>
+    <details><summary>Com escriure els apunts perquè es detectin millor</summary><ul class="clean small" style="margin-top:8px">
+      <li><b>Definicions:</b> «Massa: quantitat de matèria…» o «La massa és la quantitat de matèria…»</li>
+      <li><b>Fórmules:</b> en una línia sola: «F = m · a». Per a les unitats: «m = massa (kg)».</li>
+      <li><b>Procediments:</b> llista numerada (1. 2. 3.) sota un títol.</li>
+      <li><b>Cronologia:</b> línies que comencen per l'any: «1665: Hooke observa…».</li>
+      <li><b>Errors típics:</b> «No confondre massa amb pes» o «Compte: el pes no és la massa».</li>
+      <li><b>Títols:</b> en majúscules o acabats en dos punts.</li></ul></details>
+  </div>
+  <div class="card stack">
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+      <label class="f">Matèria<select id="mat"><option>Ciències de la Naturalesa</option><option>Biologia i Geologia</option><option>Física i Química</option><option>Matemàtiques</option><option>Tecnologia</option><option>Geografia i Història</option><option>Llengua catalana</option><option>Llengua castellana</option><option>Anglès</option><option>Filosofia</option><option>Economia</option><option>Altres</option></select></label>
+      <label class="f">Curs<select id="curs"><option>1r ESO</option><option>2n ESO</option><option selected>3r ESO</option><option>4t ESO</option><option>1r Batxillerat</option><option>2n Batxillerat</option></select></label>
+      <label class="f">Idioma dels apunts<select id="lang"><option value="cat">Català</option><option value="spa">Castellà</option><option value="eng">Anglès</option><option value="cat+spa">Català i castellà</option></select></label>
+    </div>
+    <div class="photo-btns">
+      <button class="btn mark big" id="cam"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>${newState.photos.length ? "Fer una altra foto" : "Fer foto"}</button>
+      <button class="btn big" id="gal"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v9.6l4-4 3 3 5-5 4 4V6H4zm4 1.5A1.5 1.5 0 1 1 8 10.5 1.5 1.5 0 0 1 8 7.5z"/></svg>Triar de la galeria</button>
+    </div>
+    <p class="small muted">Consell: foto ben il·luminada, de prop i recta, una pàgina per foto. Funciona millor amb text imprès o lletra clara.</p>
+    <div class="drop desk-only" id="drop" tabindex="0" role="button" aria-label="Arrossegar fotos"><span class="small muted">També pots arrossegar fotos aquí</span></div>
+    <input type="file" id="fileCam" accept="image/*" capture="environment" hidden>
+    <input type="file" id="file" accept="image/*" multiple hidden>
+    <div class="thumbs" id="thumbs"></div>
+    <div class="row"><label class="row small"><input type="checkbox" id="enh" checked> Millorar el contrast abans de llegir</label></div>
+    <div class="row"><button class="btn small" id="ocr">Tornar a llegir les fotos</button><span class="small muted" id="ocrMsg"></span></div>
+    <div class="progress" id="ocrBar" hidden><span style="width:0%"></span></div>
+    <label class="f" for="txt">Text dels apunts <span class="small muted" style="font-weight:400">(corregeix aquí els errors de lectura, o enganxa-hi el text directament)</span></label>
+    <textarea id="txt" style="min-height:220px;font-family:var(--f-mono);font-size:.88rem" placeholder="Aquí apareixerà el text llegit de les fotos.">${esc(newState.text)}</textarea>
+    <div class="row"><button class="btn primary" id="analyze">Analitzar el text</button></div>
+    <div id="genOut"></div>
+  </div>
+  <div class="card stack" id="imp-sec"><h2>Importar un tema</h2><p class="small muted">Per compartir temes entre docent i alumnat: a la pestanya Apunts, «Copiar JSON», i aquí, enganxar-lo.</p>
+    <textarea id="imp" placeholder='Enganxa aquí el JSON del tema ({"titol": ...})'></textarea>
+    <div class="row"><button class="btn" id="doImp">Importar</button></div><div id="impOut"></div></div>`;
+  $("#txt", el).oninput = e => newState.text = e.target.value;
+  $("#mat", el).onchange = e => { const v = e.target.value; $("#lang", el).value = v === "Llengua castellana" ? "spa" : v === "Anglès" ? "eng" : "cat"; };
+  $("#doImp", el).onclick = () => { const out = $("#impOut", el); try { const raw = JSON.parse(($("#imp", el).value.match(/\{[\s\S]*\}/) || [""])[0]); addTopic(raw, out, $("#mat", el).value, $("#curs", el).value); } catch { out.innerHTML = `<div class="fb bad">No és un JSON vàlid. Comprova que l'has copiat sencer.</div>`; } };
+  wirePhotos(el);
+  $("#ocr", el).onclick = async () => {
+    const todo = newState.photos.filter(p => p.blob && !p.read), blobs = todo.map(p => p.blob), msg = $("#ocrMsg", el), bar = $("#ocrBar", el), btn = $("#ocr", el);
+    if (!blobs.length) { msg.textContent = newState.photos.length ? "Ja s'han llegit totes les fotos." : "Primer fes o tria alguna foto."; return; }
+    btn.disabled = true; bar.hidden = false;
+    try {
+      const res = await runOCR(blobs, $("#lang", el).value, (p, m) => { $("span", bar).style.width = Math.round(p * 100) + "%"; msg.textContent = m; }, $("#enh", el).checked);
+      todo.forEach(p => p.read = true);
+      const txt = res.map(r => r.text.trim()).join("\n\n");
+      newState.text = (newState.text ? newState.text + "\n\n" : "") + txt; $("#txt", el).value = newState.text;
+      const conf = Math.round(res.reduce((s, r) => s + r.conf, 0) / res.length);
+      msg.innerHTML = conf >= 75 ? `Fet. Lectura bona (${conf}% de confiança). Revisa el text i analitza'l.` : `<span style="color:var(--warn)">Lectura dubtosa (${conf}% de confiança). Corregeix el text, o prova amb més llum, més a prop o sense «millorar el contrast».</span>`;
+      $("span", bar).style.width = "100%";
+    } catch (e) {
+      console.warn(e);
+      msg.innerHTML = `<span style="color:var(--bad)">No s'ha pogut fer l'OCR en aquesta vista (cal connexió la primera vegada per descarregar el motor i l'idioma). Pots enganxar el text directament.</span>`; bar.hidden = true;
+    } finally { btn.disabled = false; }
+  };
+  $("#analyze", el).onclick = () => {
+    const text = $("#txt", el).value.trim(), out = $("#genOut", el);
+    if (text.length < 40) { out.innerHTML = `<div class="fb warn">Cal més text per crear un tema.</div>`; return; }
+    const d = extractTopic(text, { materia: $("#mat", el).value, curs: $("#curs", el).value });
+    if (d.conceptes.length < 2 && !d.formules.length) { out.innerHTML = `<div class="fb warn"><b>Només s'han detectat ${d.conceptes.length} definicions.</b> Revisa el text: escriu les definicions com «Terme: definició» o «El terme és…» (mira els consells de dalt). També pots afegir conceptes a mà al pas següent.</div><div class="row"><button class="btn small" id="anyway">Continuar igualment</button></div>`; $("#anyway", out).onclick = () => { newState.draft = d; viewNew(el); }; return; }
+    newState.draft = d; viewNew(el);
+  };
+}
+function wirePhotos(el) {
+  const file = $("#file", el), cam = $("#fileCam", el), drop = $("#drop", el), MAX = 10;
+  const paint = () => { $("#thumbs", el).innerHTML = newState.photos.map((p, i) => `<div class="thumb"><img src="${p.url}" alt="Foto ${i + 1}"><div class="tb"><button class="btn small ghost" data-rot="${i}" aria-label="Girar">↻</button><button class="btn small ghost" data-rm="${i}" aria-label="Treure">✕</button></div></div>`).join(""); $$("[data-rot]", el).forEach(b => b.onclick = async () => { const p = newState.photos[+b.dataset.rot]; p.rot = (p.rot + 90) % 360; p.read = false; await prepPhoto(p); paint(); }); $$("[data-rm]", el).forEach(b => b.onclick = () => { newState.photos.splice(+b.dataset.rm, 1); paint(); }); };
+  const add = async files => { for (const f of Array.from(files)) { if (newState.photos.length >= MAX) break; if (!/^image\//.test(f.type)) continue; const p = { file: f, rot: 0 }; try { await prepPhoto(p); newState.photos.push(p); } catch { } } paint(); const cb = $("#cam", el); if (cb && newState.photos.length) cb.lastChild.textContent = "Fer una altra foto"; if (newState.photos.some(p => !p.read)) $("#ocr", el).click(); };
+  drop.onclick = () => file.click(); drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") file.click(); };
+  $("#cam", el).onclick = () => cam.click(); $("#gal", el).onclick = () => file.click();
+  file.onchange = e => { add(e.target.files); e.target.value = ""; }; cam.onchange = e => { add(e.target.files); e.target.value = ""; };
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); }; drop.ondragleave = () => drop.classList.remove("over");
+  drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); add(e.dataTransfer.files); };
+  paint();
+}
+async function prepPhoto(p) {
+  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(p.file); });
+  const max = 2400, sc = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.round(img.naturalWidth * sc), hh = Math.round(img.naturalHeight * sc), rot = p.rot % 180 !== 0;
+  const cv = document.createElement("canvas"); cv.width = rot ? hh : w; cv.height = rot ? w : hh;
+  const ctx = cv.getContext("2d"); ctx.translate(cv.width / 2, cv.height / 2); ctx.rotate(p.rot * Math.PI / 180); ctx.drawImage(img, -w / 2, -hh / 2, w, hh);
+  p.blob = await new Promise(r => cv.toBlob(r, "image/jpeg", 0.92));
+  if (p.url) URL.revokeObjectURL(p.url); p.url = URL.createObjectURL(p.blob);
+}
+
+
+/* ---------- Revisió del tema detectat ---------- */
+function viewReview(el) {
+  const d = newState.draft;
+  const fCheck = f => { try { compileFormula({ ...f, variables: f.variables, constants: f.constants || [], errors: [] }); return ""; } catch (e) { return e.message; } };
+  el.innerHTML = `<div class="card stack"><span class="eyebrow">Revisió</span><h1>Comprova què s'ha detectat</h1><p class="muted">Corregeix, desmarca el que no sigui correcte i afegeix el que falti. Res no es crea fins que no premis «Crear el tema».</p>
+    <label class="f">Títol del tema<input type="text" id="rTitle" value="${esc(d.titol)}"></label></div>
+  <div class="card stack"><div class="row" style="justify-content:space-between"><h2>Conceptes (${d.conceptes.length})</h2><button class="btn small" id="addC">+ Afegir concepte</button></div>
+    ${d.conceptes.length ? "" : `<p class="small muted">No s'ha detectat cap definició. Afegeix-ne a mà.</p>`}
+    <div class="stack">${d.conceptes.map((c, i) => `<div class="term ${c.dubtos ? "flag" : ""}" data-ci="${i}"><div class="row"><label class="row small"><input type="checkbox" data-k="on" ${c.off ? "" : "checked"}> Incloure</label>${c.dubtos ? `<span class="pill warn">${esc(c.motiu)}</span>` : ""}</div>
+      <label class="f small">Terme<input type="text" data-k="nom" value="${esc(c.nom)}"></label>
+      <label class="f small">Definició<textarea data-k="definicio" style="min-height:60px">${esc(c.definicio)}</textarea></label>
+      <label class="f small">Exemple (opcional)<input type="text" data-k="exemple" value="${esc(c.exemple)}"></label></div>`).join("")}</div></div>
+  <div class="card stack"><div class="row" style="justify-content:space-between"><h2>Fórmules (${d.formules.length})</h2><button class="btn small" id="addF">+ Afegir fórmula</button></div>
+    <p class="small muted">Escriu-les amb * per multiplicar, / per dividir i ^ per a potències (p. ex. «Ec = 0.5 * m * v^2»). Els rangs serveixen per generar problemes amb dades noves.</p>
+    ${d.formules.map((f, i) => { const err = fCheck(f); return `<div class="term" data-fi="${i}"><div class="row"><label class="row small"><input type="checkbox" data-k="on" ${f.off ? "" : "checked"}> Incloure</label>${err ? `<span class="pill bad">${esc(err)}</span>` : `<span class="pill ok">Es pot calcular</span>`}</div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))"><label class="f small">Nom<input type="text" data-k="nom" value="${esc(f.nom)}"></label><label class="f small">Fórmula<input type="text" class="mono" data-k="expressio" value="${esc(f.expressio)}"></label><label class="f small">Nom del resultat<input type="text" data-k="rnom" value="${esc(f.resultat.nom)}"></label><label class="f small">Unitat del resultat<input type="text" data-k="runitat" value="${esc(f.resultat.unitat)}"></label></div>
+      <div class="tbl"><table class="t"><thead><tr><th>Variable</th><th>Nom</th><th>Unitat</th><th>Mín.</th><th>Màx.</th></tr></thead><tbody>${f.variables.map((v, j) => `<tr data-vj="${j}"><td class="mono">${esc(v.simbol)}</td><td><input type="text" data-v="nom" value="${esc(v.nom)}"></td><td><input type="text" data-v="unitat" value="${esc(v.unitat)}" style="max-width:90px"></td><td><input type="number" data-v="min" value="${v.min}" style="max-width:100px"></td><td><input type="number" data-v="max" value="${v.max}" style="max-width:100px"></td></tr>`).join("")}${(f.constants || []).map(c => `<tr><td class="mono">${esc(c.simbol)}</td><td colspan="4" class="small muted">constant = ${fmt(c.valor)} ${esc(c.unitat)}</td></tr>`).join("")}</tbody></table></div></div>`; }).join("")}</div>
+  <div class="card stack"><h2>Procediments</h2><p class="small muted">Un procediment per bloc: primera línia el nom, i després un pas per línia. Separa els blocs amb una línia en blanc.</p>
+    <textarea id="rProc" style="min-height:110px">${esc(d.procediments.map(p => [p.nom, ...p.passos].join("\n")).join("\n\n"))}</textarea></div>
+  <div class="card stack"><h2>Cronologia</h2><p class="small muted">Una línia per fet: «any | fet».</p><textarea id="rCron">${esc(d.cronologia.map(e => `${e.any} | ${e.fet}`).join("\n"))}</textarea></div>
+  <div class="card stack"><h2>Relacions</h2><p class="small muted">Una línia per relació: «concepte | relació | concepte» (p. ex. «força | causa | acceleració»).</p><textarea id="rRel">${esc(d.relacions.map(r => `${r.a} | ${r.tipus} | ${r.b}`).join("\n"))}</textarea></div>
+  <div class="card stack"><h2>Errors típics</h2><p class="small muted">Una línia per error: «idea errònia | correcció».</p><textarea id="rErr">${esc(d.errors_tipics.map(e => `${e.afirmacio_erronia} | ${e.correccio}`).join("\n"))}</textarea></div>
+  <div class="card stack"><div class="row"><button class="btn mark" id="create">Crear el tema</button><button class="btn ghost" id="backTxt">Tornar al text</button></div><div id="genOut"></div></div>`;
+  const sync = () => {
+    d.titol = $("#rTitle", el).value.trim() || d.titol;
+    $$("[data-ci]", el).forEach(box => { const c = d.conceptes[+box.dataset.ci]; c.off = !$("[data-k=on]", box).checked; c.nom = $("[data-k=nom]", box).value.trim(); c.definicio = $("[data-k=definicio]", box).value.trim(); c.exemple = $("[data-k=exemple]", box).value.trim(); c.paraules_clau = keywords(c.definicio, c.nom); });
+    $$("[data-fi]", el).forEach(box => {
+      const f = d.formules[+box.dataset.fi]; f.off = !$("[data-k=on]", box).checked; f.nom = $("[data-k=nom]", box).value.trim(); f.resultat.nom = $("[data-k=rnom]", box).value.trim(); f.resultat.unitat = $("[data-k=runitat]", box).value.trim();
+      const ex = normFormula($("[data-k=expressio]", box).value.trim());
+      if (ex !== f.expressio) { f.expressio = ex; const fm = isFormulaText(ex); if (fm) { f.resultat.simbol = fm.lhs; const old = f.variables; f.variables = fm.vars.filter(v => !(f.constants || []).some(c => c.simbol === v)).map(v => old.find(o => o.simbol === v) || { simbol: v, nom: v, unitat: "", min: 1, max: 100, pas: 1 }); } }
+      else $$("[data-vj]", box).forEach(tr => { const v = f.variables[+tr.dataset.vj]; if (!v) return; v.nom = $("[data-v=nom]", tr).value; v.unitat = $("[data-v=unitat]", tr).value; v.min = +$("[data-v=min]", tr).value; v.max = +$("[data-v=max]", tr).value; v.pas = 0; });
+    });
+    d.procediments = $("#rProc", el).value.split(/\n\s*\n/).map(b => b.split("\n").map(s => s.trim()).filter(Boolean)).filter(b => b.length >= 4).map(b => ({ id: "p_" + slug(b[0]), nom: b[0], passos: b.slice(1) }));
+    d.cronologia = $("#rCron", el).value.split("\n").map(s => s.split("|").map(x => x.trim())).filter(x => x.length >= 2 && x[0] && x[1]).map(([any, fet]) => ({ any, fet }));
+    d.relacions = $("#rRel", el).value.split("\n").map(s => s.split("|").map(x => x.trim())).filter(x => x.length >= 3 && x.every(Boolean)).map(([a, tipus, b]) => ({ a, tipus, b }));
+    d.errors_tipics = $("#rErr", el).value.split("\n").map(s => s.split("|").map(x => x.trim())).filter(x => x.length >= 2 && x[0]).map(([a, c]) => ({ id: "e_" + slug(a), afirmacio_erronia: a, correccio: c || "" }));
+  };
+  el.querySelectorAll("[data-fi] [data-k=expressio]").forEach(i => i.onchange = () => { sync(); viewReview(el); });
+  $("#addC", el).onclick = () => { sync(); d.conceptes.push({ id: "c" + d.conceptes.length, nom: "", definicio: "", exemple: "", paraules_clau: [], sinonims: [], distractors: [], font: "", pista_conceptual: "" }); viewReview(el); };
+  $("#addF", el).onclick = () => { sync(); d.formules.push({ id: "f" + d.formules.length, nom: "Nova fórmula", expressio: "", resultat: { simbol: "", nom: "", unitat: "" }, variables: [], constants: [], errors: [] }); viewReview(el); };
+  $("#backTxt", el).onclick = () => { newState.draft = null; viewNew(el); };
+  $("#create", el).onclick = () => {
+    sync();
+    const topic = { ...d, conceptes: d.conceptes.filter(c => !c.off && c.nom && c.definicio), formules: d.formules.filter(f => !f.off && !fCheck(f)) };
+    const names = new Set(topic.conceptes.map(c => norm(c.nom)));
+    topic.preguntes_obertes = (d.preguntes_obertes || []).filter(q => !q.concepte_id || topic.conceptes.some(c => c.id === q.concepte_id));
+    topic.relacions = topic.relacions.filter(r => r.a && r.b);
+    topic.conceptes.forEach(c => { if (c.dubtos && !suspicious(c.definicio)) { c.dubtos = false; c.motiu = ""; } });
+    if (!topic.resum || topic.resum.length < 20) topic.resum = topic.conceptes.slice(0, 4).map(c => `${cap1(c.nom)}: ${c.definicio}`).join(" ");
+    if (!topic.seccions.length) topic.seccions = [{ titol: "Idees clau", punts: topic.conceptes.slice(0, 8).map(c => `${cap1(c.nom)}: ${c.definicio}`) }];
+    if (!names.size && !topic.formules.length) { $("#genOut", el).innerHTML = `<div class="fb warn">Cal com a mínim un concepte o una fórmula.</div>`; return; }
+    const ok = addTopic(topic, $("#genOut", el), topic.materia, topic.curs);
+    if (ok) newState = { photos: [], text: "", draft: null };
+  };
+}
+function addTopic(raw, out, mat, curs) {
+  const t = normTopic({ ...raw, materia: raw.materia || mat, curs: raw.curs || curs, id: raw.id || slug(raw.titol || "tema") });
+  if (S.topics[t.id] || DEMOS.some(d => d.id === t.id)) t.id = t.id + "_" + Date.now().toString(36).slice(-4);
+  if (t.conceptes.length < 2 && !t.formules.length) { out.innerHTML = `<div class="fb bad">El tema té massa poc contingut (${t.conceptes.length} conceptes). Afegeix-ne més.</div>`; return false; }
+  const C = compile(t);
+  S.topics[t.id] = t; S.active = t.id; checkBadges(); save();
+  out.innerHTML = `<div class="fb ok"><h3>Tema creat: ${esc(t.titol)}</h3><p>${t.conceptes.length} conceptes · ${C.formules.length} fórmules · ${t.procediments.length} procediments · ${t.errors_tipics.length} errors típics · ${t.preguntes_obertes.length} preguntes d'examen.</p><div class="row"><button class="btn primary" id="openT">Obrir el tema</button></div></div>`;
+  $("#openT", out).onclick = () => Router.root("inici", "tema");
+  return true;
+}
+
+
+/* ---------------- Router: pila de pantalles ----------------
+   Cada pantalla és una funció view(el). La pila es desa a l'historial del navegador,
+   de manera que el botó «enrere» d'Android (i del navegador) torna a la pantalla anterior. */
+let practiceSession = null, examSession = null, examTimer = null;
+const SCREENS = {
+  inici: { title: "Inici", view: () => viewHome, root: true },
+  nou: { title: "Nou tema", view: () => viewNew, root: true },
+  progres: { title: "Progrés", view: () => viewProgress, root: true },
+  tema: { title: "Tema", view: () => viewTopic, needsTopic: true },
+  apunts: { title: "Apunts", view: () => viewNotes, needsTopic: true },
+  lab: { title: "Laboratori", view: () => viewLab, needsTopic: true },
+  practica: { title: "Pràctica", view: () => viewPractice },
+  examen: { title: "Examen", view: () => viewExam }
+};
+const Router = {
+  stack: ["inici"],
+  cur() { return this.stack[this.stack.length - 1]; },
+  push(name) {
+    if (!SCREENS[name]) name = "inici";
+    if (this.cur() === name) return render();
+    this.stack.push(name); history.pushState({ stack: this.stack.slice() }, "", "#" + name); render();
+  },
+  back() { if (this.stack.length > 1) history.back(); else this.root("inici"); },
+  root(name, ...more) {
+    this.stack = [name, ...more].filter(n => SCREENS[n]);
+    if (!this.stack.length) this.stack = ["inici"];
+    history.replaceState({ stack: this.stack.slice() }, "", "#" + this.cur()); render();
+  },
+  init() {
+    const h = location.hash.replace("#", "");
+    this.stack = SCREENS[h] ? (SCREENS[h].root ? [h] : ["inici", h]) : ["inici"];
+    history.replaceState({ stack: this.stack.slice() }, "", "#" + this.cur());
+    addEventListener("popstate", e => { const st = e.state && e.state.stack; this.stack = Array.isArray(st) && st.length ? st.filter(n => SCREENS[n]) : ["inici"]; render(); });
+  }
+};
+/* Compatibilitat: go() obre una pantalla (les arrels reinicien la pila) */
+function go(name) { const s = SCREENS[name]; if (s && s.root) Router.root(name); else Router.push(name); }
+
+function renderStats() {
+  const el = $("#stats"); if (!el) return;
+  const g = globalStats(), ws = weekStreak();
+  el.innerHTML = `<span class="stat" title="Temari consolidat o dominat"><strong>${Math.round(g.domini * 100)}%</strong></span><span class="stat" title="XP: només per esforç útil"><strong>${S.xp}</strong> XP</span><span class="stat" title="Ratxa setmanal"><strong>${ws.streak}</strong> set.</span>`;
+}
+function renderChrome() {
+  const sc = SCREENS[Router.cur()];
+  $("#back").hidden = Router.stack.length <= 1;
+  $("#title").textContent = sc.root ? "" : sc.title;
+  $(".brand").hidden = !sc.root;
+  $$("#nav [data-root]").forEach(b => b.setAttribute("aria-current", Router.stack[0] === b.dataset.root ? "page" : "false"));
+  renderStats();
+}
+function render() {
+  let sc = SCREENS[Router.cur()];
+  if (sc.needsTopic && !topicById(S.active)) { Router.stack = ["inici"]; sc = SCREENS.inici; history.replaceState({ stack: ["inici"] }, "", "#inici"); }
+  renderChrome();
+  sc.view()($("#view"));
+  window.scrollTo(0, 0);
+}
+
+/* ---------------- Arrencada ---------------- */
+function compileAll() {
+  DEMOS.forEach(d => compile(normTopic(d)));
+  Object.values(S.topics).forEach(t => { try { compile(t); } catch (e) { console.warn("Tema descartat", e); delete S.topics[t.id]; } });
+  if (S.active && !COMPILED[S.active]) S.active = null;
+}
+function boot() {
+  loadState(); compileAll();
+  $("#back").onclick = () => Router.back();
+  $$("#nav [data-root]").forEach(b => b.onclick = () => Router.root(b.dataset.root));
+  Router.init(); render();
+}
+boot();
+
+</script>

@@ -1,0 +1,8 @@
+{
+  "appId": "cat.apuntsvius.app",
+  "appName": "Apunts Vius",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}

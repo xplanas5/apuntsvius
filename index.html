@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2546c4">
+<meta name="description" content="Fes fotos dels apunts i converteix-les en apunts, simulacions, pràctica i un possible examen. Sense IA, gratuït i al teu dispositiu.">
+<title>Apunts Vius</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <button class="iconbtn" id="back" aria-label="Enrere" hidden><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></svg></button>
+    <a class="brand" href="#inici" aria-label="Apunts Vius, inici"><span class="logo">A</span><b>Apunts <span class="hl">Vius</span></b></a>
+    <span class="top-title" id="title"></span>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+<main class="wrap" id="view" aria-live="polite"></main>
+<nav class="bottom-nav" id="nav" aria-label="Navegació principal">
+  <div class="wrap">
+    <button data-root="inici"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M12 3 2 11h3v9h6v-6h2v6h6v-9h3z"/></svg>Inici</button>
+    <button data-root="nou" class="cam"><span class="ic"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></span>Nou tema</button>
+    <button data-root="progres"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 20V10h3v10H4zm6.5 0V4h3v16h-3zM17 20v-7h3v7h-3z"/></svg>Progrés</button>
+  </div>
+</nav>
+<!-- Ordre de càrrega: utilitats → dades → lògica → pantalles → router → arrencada -->
+<script src="js/util.js"></script>
+<script src="js/fsrs.js"></script>
+<script src="js/state.js"></script>
+<script src="js/demo-temes.js"></script>
+<script src="js/generators.js"></script>
+<script src="js/sfx.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ocr.js"></script>
+<script src="js/extractor.js"></script>
+<script src="js/screens/inici.js"></script>
+<script src="js/screens/apunts.js"></script>
+<script src="js/screens/lab.js"></script>
+<script src="js/screens/practica.js"></script>
+<script src="js/screens/examen.js"></script>
+<script src="js/screens/progres.js"></script>
+<script src="js/screens/nou.js"></script>
+<script src="js/screens/revisio.js"></script>
+<script src="js/router.js"></script>
+<script src="js/main.js"></script>
+<script>
+/* PWA: funciona sense connexió un cop carregada (a l'APK no cal: ja porta els fitxers) */
+if ("serviceWorker" in navigator && location.protocol === "https:" && !window.Capacitor) {
+  addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+}
+</script>
+</body>
+</html>
