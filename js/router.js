@@ -40,10 +40,12 @@ function go(name) { const s = SCREENS[name]; if (s && s.root) Router.root(name);
 function renderStats() {
   const el = $("#stats"); if (!el) return;
   const g = globalStats(), ws = weekStreak();
-  el.innerHTML = `<span class="stat" title="Temari consolidat o dominat"><strong>${Math.round(g.domini * 100)}%</strong></span><span class="stat" title="XP: només per esforç útil"><strong>${S.xp}</strong> XP</span><span class="stat" title="Ratxa setmanal"><strong>${ws.streak}</strong> set.</span>`;
+  const L = levelOf(S.xp);
+  el.innerHTML = `<span class="stat lvl" title="Nivell ${L.n}: ${S.xp} XP"><b class="lv">${L.n}</b><span class="lvbar"><span style="width:${L.pct}%"></span></span></span><span class="stat fire" title="Ratxa setmanal"><strong>${ws.streak}</strong><span aria-hidden="true">🔥</span></span>`;
 }
 function renderChrome() {
   const sc = SCREENS[Router.cur()];
+  document.body.dataset.screen = Router.cur();
   $("#back").hidden = Router.stack.length <= 1;
   $("#title").textContent = sc.root ? "" : sc.title;
   $(".brand").hidden = !sc.root;

@@ -50,12 +50,12 @@ function defFrom(s) {
   s = s.trim().replace(BULLET, "").replace(/\s+/g, " ");
   if (s.length < 14 || isFormulaText(s)) return null;
   let m;
-  const ok = (term, def) => { term = stripArt(term).replace(/[*_]/g, ""); def = def.trim(); if (!term || wc(term) > 5 || term.length > 45 || !/[a-zà-ÿ]/i.test(term) || /^\d/.test(term) || wc(def) < 3 || STOP.has(norm(term))) return null; if (/^(ex|exemple|p\. ex|compte|atenció|nota|ull)$/i.test(term)) return null; return [term, def]; };
+  const ok = (term, def) => { term = stripArt(String(term).replace(/^(?:[^\s]{1,2}\s+)+(?=\S{3,})/, "")).replace(/[*_]/g, ""); if (/^(no|ja|també|encara|només|molt|més|així)\b/i.test(term) || term.split(/\s+/).some(w => w.length === 1 && !/^[aoiey]$/i.test(w))) return null; def = def.trim(); if (!term || wc(term) > 5 || term.length > 45 || !/[a-zà-ÿ]/i.test(term) || /^\d/.test(term) || wc(def) < 3 || STOP.has(norm(term))) return null; if (/^(ex|exemple|p\. ex|compte|atenció|nota|ull|font)$/i.test(term) || /^(això|aquest|aquesta|aquests|aquestes|ell|ella|ells|elles|que|realitat|fet|cas|veritat|problema)\b/i.test(term)) return null; return [term, def]; };
   if ((m = s.match(/^(.{2,48}?)\s*:\s+(.{10,})$/))) return ok(m[1], m[2]);
   if ((m = s.match(/^(.{2,48}?)\s+[–—-]\s+(.{10,})$/))) return ok(m[1], m[2]);
   if ((m = s.match(/^(?:s'anomena|anomenem|es diu|rep el nom de)\s+(.{2,40}?)\s+(?:a la |a l'|al |als |a les |a )(.{10,})$/i))) return ok(m[1], m[2]);
   if ((m = s.match(/^(.{10,}?)\s+(?:s'anomena|s'anomenen|es diu|es diuen|rep el nom de|es coneix com a?)\s+([^,.;]{2,40})\.?$/i))) return ok(m[2], m[1]);
-  if ((m = s.match(/^([^,.;:]{2,45}?)\s+(?:és|són|es defineix com|consisteix en|és a dir)\s+(.{10,})$/i))) return ok(m[1], m[2]);
+  if ((m = s.match(/^([^,.;:]{2,45}?)\s+(?:és|són|es defineix com|consisteix en)\s+(.{10,})$/i)) && /^(un|una|uns|unes|el|la|els|les|l'|aquell|aquella|qualsevol|tot|tota|com|quan|la que|el que)\b/i.test(m[2]) && !/^(molt|més|menys|que|a dir)\b/i.test(m[2])) return ok(m[1], m[2]);
   return null;
 }
 function suspicious(s) {
@@ -70,11 +70,33 @@ function keywords(def, term) {
   return Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, 3).map(w => (orig.find(o => norm(o) === w) || w).replace(/^[ldsmtn]'/i, ""));
 }
 const UNIT_RANGE = { kg: [0.5, 100, 0.5], g: [1, 1000, 1], m: [1, 1000, 1], km: [1, 500, 1], cm: [1, 200, 1], s: [1, 120, 1], h: [0.5, 10, 0.5], "m/s": [1, 50, 0.5], "km/h": [10, 150, 5], "m/s²": [0.5, 10, 0.1], "m/s2": [0.5, 10, 0.1], n: [1, 500, 1], j: [10, 5000, 10], w: [10, 2000, 10], pa: [100, 100000, 100], l: [0.1, 10, 0.1], "°c": [0, 100, 1], v: [1, 24, 0.5], a: [0.1, 10, 0.1], "ω": [1, 1000, 1] };
+/* ---------- Retolador i soroll ---------- */
+function collectMarks(text) {
+  const t = String(text).replace(/==\s*\n\s*==/g, " ");
+  const out = [];
+  for (const m of t.matchAll(/==([^=]+)==/g)) { const x = m[1].replace(/\s+/g, " ").replace(/^[\s,.;:·-]+|[\s,;:·-]+$/g, "").trim(); const content = norm(x).split(" ").filter(w => w.length > 4 && !STOP.has(w)); if (wc(x) >= 2 && x.length >= 10 && content.length >= 1 && (wc(x) >= 3 || content.length >= 2) && !suspicious(x) && !/^(a dir|es a dir|per tant|que|i|o)\b/i.test(norm(x))) out.push(x); }
+  return [...new Set(out)];
+}
+function stripNoise(text) {
+  const L = String(text).replace(/==/g, "").split("\n");
+  const isIdx = l => /^\s*(\d+(\.\d+)*\.?\s+)?[A-Za-zÀ-ÿ'"][^\d]{2,60}?\s+\d{1,3}\s*$/.test(l);
+  return L.filter((l, i) => {
+    if (/https?:\/\/|www\.|\.com\/|\bFont:/i.test(l)) return false; // peus de foto i fonts
+    if (isIdx(l) && ((L[i - 1] && isIdx(L[i - 1])) || (L[i + 1] && isIdx(L[i + 1])))) return false; // índex
+    return true;
+  }).join("\n");
+}
+const isQuestion = s => { const x = s.replace(/^\s*\d{1,2}\s*[.)]\s*/, "").trim(); return wc(x) >= 5 && (/\?\s*$/.test(x) || (/\b(explica|raona|esbrina|imagina|descriu|compara|justifica|investiga|reflexiona|defineix)\b/i.test(x) && /[:?.]\s*$/.test(x) && /^(imagina|explica|raona|esbrina|busca|investiga|reflexiona|descriu|compara|justifica|defineix|escriu|fes|elabora|pensa)\b/i.test(x) && wc(x) <= 60)); };
+const sentencesOf = s => String(s).split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý«"(])/).map(x => x.trim()).filter(Boolean);
+
 function extractTopic(text, meta) {
+  const marks = collectMarks(text), markN = marks.map(norm);
+  text = stripNoise(text);
   const lines = logicalLines(text), full = cleanText(text);
+  const marked = sent => { const n = " " + norm(sent) + " "; return markN.some(m => n.includes(" " + m + " ")); };
   const t = { titol: meta.titol || "", materia: meta.materia, curs: meta.curs, seccions: [], conceptes: [], formules: [], procediments: [], relacions: [], cronologia: [], errors_tipics: [], preguntes_obertes: [] };
   // títol
-  if (!t.titol) { const h = lines.find(l => l.kind === "h") || lines.find(l => l.text && wc(l.text) <= 8); t.titol = h ? cap1(h.text).slice(0, 70) : "Els meus apunts"; }
+  if (!t.titol) { const h = lines.find(l => l.kind === "h") || lines.find(l => l.text && wc(l.text) <= 8); t.titol = h ? cap1(h.text.replace(/[\s,;:.\-–]+$/, "")).slice(0, 70) : "Els meus apunts"; }
   // llegenda de variables: "m = massa (kg)", "v: velocitat (m/s)"
   const legend = {}, consts = {};
   for (const m of full.matchAll(/\b([A-Za-z][A-Za-z0-9_]{0,2})\s*(?:=|:|→|és|es)\s*(?:la |el |l'|les |els )?([a-zà-ÿç·' ]{3,30}?)\s*\(([^)]{1,12})\)/g)) if (!legend[m[1]]) legend[m[1]] = { nom: m[2].trim(), unitat: m[3].trim() };
@@ -85,11 +107,21 @@ function extractTopic(text, meta) {
     if (nums.length >= 3) t.procediments.push({ id: "p_" + slug(lastHeading || "procediment"), nom: cap1(lastHeading || "Procediment"), passos: nums.map(x => endDot(cap1(x.text))) });
     listRun = [];
   };
-  const pushPoint = s => { if (!section) { section = { titol: "Apunts", punts: [] }; t.seccions.push(section); } if (section.punts.length < 10) section.punts.push(s.length > 180 ? s.slice(0, 177) + "…" : s); };
+  const pushPoint = s => {
+    if (!section) { section = { titol: "Apunts", punts: [] }; t.seccions.push(section); }
+    let pts = [s];
+    if (s.length > 180) { const ss = sentencesOf(s), mk = ss.filter(marked); pts = mk.length ? mk : ss.slice(0, 1); }
+    for (const x of pts) if (section.punts.length < 10) section.punts.push(x.length > 220 ? x.slice(0, 217) + "…" : x);
+  };
   for (const l of lines) {
     if (l.kind !== "li" && listRun.length) flushList();
     if (l.kind === "blank") continue;
     if (l.kind === "h") { lastHeading = l.text; section = { titol: cap1(l.text), punts: [] }; t.seccions.push(section); continue; }
+    if ((l.kind === "li" || l.kind === "p") && isQuestion(l.text) && l.text.length < 400) {
+      const q = l.text.replace(/^\s*\d{1,2}\s*[.)]\s*/, "").trim();
+      if (!t.preguntes_obertes.some(x => x.pregunta === q)) t.preguntes_obertes.push({ id: "o_" + slug(q), pregunta: q, resposta_model: "", criteris: ["Respon exactament el que es pregunta", "Argumenta la resposta amb idees del tema", "Fa servir algun exemple o dada concreta"] });
+      continue;
+    }
     if (l.kind === "li") listRun.push(l);
     const s = l.text;
     // exemple associat al concepte anterior
@@ -114,12 +146,16 @@ function extractTopic(text, meta) {
     // cronologia
     const ym = s.match(/^(?:any\s+)?(-?\d{3,4})\s*[:.\-–—)]?\s+(.{8,})$/) || s.match(/^(.{8,}?)\s*\((\d{3,4})\)\.?$/);
     if (ym) { const yearFirst = /^\D?-?\d/.test(s.replace(/^any\s+/i, "")); const any = yearFirst ? ym[1] : ym[2], fet = yearFirst ? ym[2] : ym[1]; if (+any > 0 && +any < 2100) { t.cronologia.push({ any, fet: endDot(cap1(fet)) }); pushPoint(s); continue; } }
-    // definicions
-    const d = defFrom(s);
-    if (d && !t.conceptes.some(c => norm(c.nom) === norm(d[0]))) {
-      const c = { id: slug(d[0]), nom: d[0].length > 1 && d[0] === d[0].toUpperCase() ? d[0] : d[0].charAt(0).toLowerCase() + d[0].slice(1), definicio: endDot(cap1(d[1])), exemple: "", paraules_clau: keywords(d[1], d[0]), sinonims: [], distractors: [], font: s.length > 140 ? s.slice(0, 137) + "…" : s, pista_conceptual: "" };
-      if (suspicious(s)) { c.dubtos = true; c.motiu = "Possible error de lectura de l'OCR: revisa'l"; }
+    // definicions (la línia sencera i, en paràgrafs, cada frase)
+    const cands = [s, ...(l.kind === "p" && s.length > 120 ? sentencesOf(s) : [])];
+    for (const piece of cands) {
+      const d = defFrom(piece);
+      if (!d || t.conceptes.some(c => norm(c.nom) === norm(d[0]))) continue;
+      const def = d[1].length > 260 ? sentencesOf(d[1])[0] : d[1];
+      const c = { id: slug(d[0]), nom: d[0].length > 1 && d[0] === d[0].toUpperCase() ? d[0] : d[0].charAt(0).toLowerCase() + d[0].slice(1), definicio: endDot(cap1(def)), exemple: "", paraules_clau: keywords(def, d[0]), sinonims: [], distractors: [], font: piece.length > 160 ? piece.slice(0, 157) + "…" : piece, pista_conceptual: "" };
+      if (suspicious(piece)) { c.dubtos = true; c.motiu = "Possible error de lectura de l'OCR: revisa'l"; }
       t.conceptes.push(c); lastConcept = c;
+      if (piece === s) break;
     }
     pushPoint(s);
   }
@@ -139,7 +175,60 @@ function extractTopic(text, meta) {
   t.resum = t.conceptes.slice(0, 4).map(c => `${cap1(c.nom)}: ${c.definicio}`).join(" ") || lines.filter(l => l.kind === "p").map(l => l.text).join(" ").slice(0, 500);
   t.conceptes.filter(c => c.paraules_clau.length >= 2).slice(0, 3).forEach(c => t.preguntes_obertes.push({ id: "o_" + c.id, pregunta: `Explica què és ${/^[aeiouàèéíòóú]/i.test(c.nom) ? "l'" : "el/la "}${c.nom}${c.exemple ? " i posa'n un exemple" : ""}.`, resposta_model: c.definicio + (c.exemple ? " Exemple: " + c.exemple : ""), criteris: [...c.paraules_clau.slice(0, 3).map(k => `Fa servir la idea de «${k}»`), ...(c.exemple ? ["Posa un exemple adequat"] : [])], concepte_id: c.id }));
   t.procediments.slice(0, 1).forEach(p => t.preguntes_obertes.push({ id: "o_" + p.id, pregunta: `Descriu els passos per a: ${p.nom.toLowerCase()}.`, resposta_model: p.passos.join(" "), criteris: [`Comença amb: ${p.passos[0]}`, `Acaba amb: ${p.passos[p.passos.length - 1]}`, "Els passos estan en l'ordre correcte"] }));
+  humanities(t, lines, full, marks);
   t.seccions = t.seccions.filter(s => s.punts.length);
   return t;
+}
+
+/* ---------- Text d'humanitats: retolador, dates, grups ---------- */
+const DECADE_WORDS = { vint: 20, trenta: 30, quaranta: 40, cinquanta: 50, seixanta: 60, setanta: 70, vuitanta: 80, noranta: 90 };
+function romanToInt(r) { const v = { I: 1, V: 5, X: 10, L: 50 }; let n = 0; r = r.toUpperCase(); for (let i = 0; i < r.length; i++) { const a = v[r[i]], b = v[r[i + 1]] || 0; n += a < b ? -a : a; } return n; }
+function findDate(sent) {
+  const c = [];
+  let m;
+  const re1 = /\banys\s+(?:19)?([2-9]0)\b/gi; while ((m = re1.exec(sent))) c.push({ i: m.index, len: m[0].length, label: "anys " + m[1], ordre: 1900 + +m[1] + 5 });
+  const re2 = new RegExp("\\banys\\s+(" + Object.keys(DECADE_WORDS).join("|") + ")\\b", "gi"); while ((m = re2.exec(sent))) { const d = DECADE_WORDS[m[1].toLowerCase()]; c.push({ i: m.index, len: m[0].length, label: "anys " + d, ordre: 1900 + d + 5 }); }
+  const re3 = /\b([2-9]0)s\b/g; while ((m = re3.exec(sent))) c.push({ i: m.index, len: m[0].length, label: "anys " + m[1], ordre: 1900 + +m[1] + 5 });
+  const re4 = /\b(?:(?:primera|segona)\s+)?(?:(principis|finals|meitat|mitjan)\s+(?:de l'|del\s+))?segle\s+([IVXL]{1,5})\b/gi;
+  while ((m = re4.exec(sent))) { const n = romanToInt(m[2]); if (n < 1 || n > 21) continue; const q = (m[1] || "").toLowerCase(), half = (/^(primera|segona)/i.exec(m[0]) || [""])[0].toLowerCase(), off = q === "principis" ? 10 : q === "finals" ? 90 : half === "primera" ? 25 : half === "segona" ? 75 : 50; c.push({ i: m.index, len: m[0].length, label: (half ? half + " " : "") + (q ? q + " del " : "") + "segle " + m[2].toUpperCase(), ordre: (n - 1) * 100 + off }); }
+  const re5 = /(^|[^\d.,])(1[0-9]{3}|20[0-4][0-9])(?![\d]|[.,]\d)/g; while ((m = re5.exec(sent))) c.push({ i: m.index + m[1].length, len: m[2].length, label: m[2], ordre: +m[2] });
+  return c.sort((a, b) => a.i - b.i)[0] || null;
+}
+function humanities(t, lines, full, marks) {
+  // idees clau: el que l'alumne ha marcat amb retolador, amb la frase on surt
+  const plain = full.replace(/\s+/g, " "), sents = sentencesOf(plain);
+  // una idea per frase: tots els trossos marcats de la frase; el més llarg serà el buit a completar
+  t.idees_clau = []; const byFrase = new Map();
+  for (const mk of marks) {
+    const nm = norm(mk), frase = sents.find(x => (" " + norm(x) + " ").includes(" " + nm + " "));
+    if (!frase || frase.length > 400) continue;
+    if (!byFrase.has(frase)) byFrase.set(frase, []);
+    const arr = byFrase.get(frase); if (!arr.some(x => norm(x) === nm)) arr.push(mk);
+  }
+  for (const [frase, ms] of byFrase) {
+    const main = ms.slice().sort((a, b) => b.length - a.length)[0];
+    t.idees_clau.push({ id: "k_" + slug(main), text: main, frase, marques: ms });
+    if (t.idees_clau.length >= 25) break;
+  }
+  // dates dins de les frases (anys 70, 1950, segle XIX…)
+  for (const sent of sents) {
+    if (sent.length < 25 || sent.length > 320 || isQuestion(sent) || suspicious(sent)) continue;
+    const d = findDate(sent); if (!d) continue;
+    if (t.cronologia.some(e => e.fet === sent)) continue;
+    t.cronologia.push({ any: d.label, ordre: d.ordre, fet: sent });
+    if (t.cronologia.length >= 18) break;
+  }
+  t.cronologia.forEach(e => { if (e.ordre === undefined) e.ordre = parseFloat(e.any) || 0; });
+  // grups: un títol (o una frase que acaba en «:») seguit de 3 o més elements de llista
+  t.grups = [];
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i]; if (!(l.kind === "h" || (l.kind === "p" && (/:$/.test(l.text) || wc(l.text) <= 4)))) continue;
+    const items = []; let j = i + 1;
+    while (j < lines.length && lines[j].kind === "li") { const x = lines[j].text.split(/:\s/)[0].trim(); if (x && x.length <= 70 && !isQuestion(x)) items.push(x.replace(/[.;,]$/, "")); j++; }
+    if (items.length >= 3) t.grups.push({ id: "g_" + slug(l.text), nom: cap1(l.text.replace(/:$/, "")).slice(0, 80), items: items.slice(0, 20) });
+  }
+  // resum: les frases marcades amb retolador, si n'hi ha
+  const mk = t.idees_clau.map(k => k.frase).filter((x, i, a) => a.indexOf(x) === i);
+  if (mk.length >= 2) t.resum = mk.slice(0, 6).join(" ");
 }
 

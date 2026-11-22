@@ -17,7 +17,8 @@ const Sfx = (() => {
     gold: () => { [784, 988, 1175, 1568].forEach((f, i) => tone(f, i * 0.08, 0.22, "sine", 0.1)); },
     level: () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.1, 0.3, "triangle", 0.09)); }
   };
-  function play(name) { try { if (S.sound === false || !SOUNDS[name]) return; SOUNDS[name](); } catch { } }
+  const BUZZ = { ok: 18, bad: [40, 60, 40], gold: [20, 40, 20, 40, 60], level: [30, 50, 80] };
+  function play(name) { try { if (S.sound === false || !SOUNDS[name]) return; SOUNDS[name](); if (BUZZ[name] && navigator.vibrate) navigator.vibrate(BUZZ[name]); } catch { } }
   function confetti() {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const cv = document.createElement("canvas"); cv.className = "confetti"; cv.width = innerWidth; cv.height = innerHeight; document.body.appendChild(cv);

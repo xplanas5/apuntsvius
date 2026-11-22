@@ -99,3 +99,9 @@ function finishSession(P) {
   checkBadges(); save();
   return won;
 }
+
+/* ---------- Nivell (corba suau: cada nivell costa una mica més) i colors ---------- */
+function levelOf(xp) { let n = 1, need = 60, base = 0; while (xp >= base + need) { base += need; n++; need = Math.round(need * 1.18); } return { n, pct: Math.round((xp - base) / need * 100), toNext: base + need - xp }; }
+const SUBJECTS = [[/mat(e|è)m/i, "#3b5bdb", "∑"], [/f(í|i)sic|qu(í|i)mic/i, "#7048e8", "⚛"], [/biol|ci(è|e)nc|natura/i, "#2b8a3e", "🌿"], [/hist(ò|o)r|geograf|social|human|filosof|cultura/i, "#d9480f", "🏛"], [/catal|castell|llengu|literat|angl|franc/i, "#c2255c", "✎"], [/tecnol|inform/i, "#0b7285", "⚙"], [/art|m(ú|u)sica|visual/i, "#e67700", "🎨"]];
+function subjectStyle(materia) { const m = SUBJECTS.find(([re]) => re.test(materia || "")); return m ? { c: m[1], ic: m[2] } : { c: "#495057", ic: "📒" }; }
+function ring(pct, size = 56, color = "var(--st-cons)") { const r = size / 2 - 5, C = 2 * Math.PI * r; return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${pct}% de domini"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${(C * pct / 100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/><text x="50%" y="50%" dy=".35em" text-anchor="middle">${pct}%</text></svg>`; }

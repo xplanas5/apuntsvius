@@ -58,7 +58,9 @@ function normTopic(raw) {
   t.formules = arr(t.formules).map(f => ({ ...f, id: uid(f.id || f.nom, "f"), variables: arr(f.variables), constants: arr(f.constants), errors: arr(f.errors), dubtos: !!f.dubtos }));
   t.procediments = arr(t.procediments).filter(p => arr(p.passos).length >= 3).map(p => ({ id: uid(p.id || p.nom, "p"), nom: String(p.nom || "Procediment"), passos: arr(p.passos).map(String), concepte_id: p.concepte_id ? slug(p.concepte_id) : "", dubtos: !!p.dubtos }));
   t.relacions = arr(t.relacions).filter(r => r.a && r.b && r.tipus).map(r => ({ a: String(r.a), tipus: String(r.tipus), b: String(r.b) }));
-  t.cronologia = arr(t.cronologia).filter(e => e.fet && e.any !== undefined).map(e => ({ any: String(e.any), fet: String(e.fet) }));
+  t.cronologia = arr(t.cronologia).filter(e => e.fet && e.any !== undefined).map(e => ({ id: uid(e.id || "d_" + e.any + "_" + String(e.fet).slice(0, 20), "d"), any: String(e.any), ordre: isFinite(+e.ordre) && e.ordre !== "" && e.ordre !== undefined ? +e.ordre : (parseFloat(e.any) || 0), fet: String(e.fet) }));
+  t.idees_clau = arr(t.idees_clau).filter(k => k && k.text && k.frase).map(k => ({ id: uid(k.id || "k_" + k.text, "k"), text: String(k.text), frase: String(k.frase), marques: arr(k.marques).map(String).filter(m => String(k.frase).includes(m)) }));
+  t.grups = arr(t.grups).filter(g => g && g.nom && arr(g.items).length >= 2).map(g => ({ id: uid(g.id || "g_" + g.nom, "g"), nom: String(g.nom), items: arr(g.items).map(String) }));
   t.errors_tipics = arr(t.errors_tipics).filter(e => e.afirmacio_erronia).map(e => ({ id: uid(e.id || e.afirmacio_erronia, "e"), afirmacio_erronia: String(e.afirmacio_erronia), correccio: String(e.correccio || ""), concepte_id: e.concepte_id ? slug(e.concepte_id) : "", dubtos: !!e.dubtos }));
   t.preguntes_obertes = arr(t.preguntes_obertes).filter(q => q.pregunta).map(q => ({ id: uid(q.id || q.pregunta, "o"), pregunta: String(q.pregunta), resposta_model: String(q.resposta_model || ""), criteris: arr(q.criteris).map(String), concepte_id: q.concepte_id ? slug(q.concepte_id) : "" }));
   t.creat = t.creat || now();
@@ -100,6 +102,10 @@ function topicKeys(t) {
   t.errors_tipics.forEach(e => k.push("e:" + e.id));
   if (t.relacions.length >= 2) k.push("r:all");
   if (t.cronologia.length >= 3) k.push("t:all");
+  (t.idees_clau || []).forEach(x => k.push("k:" + x.id));
+  if ((t.cronologia || []).length >= 2) t.cronologia.forEach(x => k.push("d:" + x.id));
+  if ((t.grups || []).length >= 2) t.grups.forEach(g => k.push("g:" + g.id));
+  if ((t.cronologia || []).length >= 2 || t.conceptes.length >= 3) k.push("v:all");
   return k.filter(x => !(S.reported[t.id] || {})[x]);
 }
 function card(tid, key) { const p = S.prog[tid] || (S.prog[tid] = {}); return p[key] || (p[key] = { reps: 0, streak: 0, okDays: [], pendingError: false }); }

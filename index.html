@@ -3,13 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2546c4">
+<meta name="theme-color" content="#fffdf6">
 <meta name="description" content="Fes fotos dels apunts i converteix-les en apunts, simulacions, pràctica i un possible examen. Sense IA, gratuït i al teu dispositiu.">
 <title>Apunts Vius</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<link rel="stylesheet" href="css/styles.css?v=fc6ba95f">
 </head>
 <body>
 <header class="top">
@@ -29,25 +32,25 @@
   </div>
 </nav>
 <!-- Ordre de càrrega: utilitats → dades → lògica → pantalles → router → arrencada -->
-<script src="js/util.js"></script>
-<script src="js/fsrs.js"></script>
-<script src="js/state.js"></script>
-<script src="js/demo-temes.js"></script>
-<script src="js/generators.js"></script>
-<script src="js/sfx.js"></script>
-<script src="js/game.js"></script>
-<script src="js/ocr.js"></script>
-<script src="js/extractor.js"></script>
-<script src="js/screens/inici.js"></script>
-<script src="js/screens/apunts.js"></script>
-<script src="js/screens/lab.js"></script>
-<script src="js/screens/practica.js"></script>
-<script src="js/screens/examen.js"></script>
-<script src="js/screens/progres.js"></script>
-<script src="js/screens/nou.js"></script>
-<script src="js/screens/revisio.js"></script>
-<script src="js/router.js"></script>
-<script src="js/main.js"></script>
+<script src="js/util.js?v=a7268d71"></script>
+<script src="js/fsrs.js?v=67485e82"></script>
+<script src="js/state.js?v=4f230121"></script>
+<script src="js/demo-temes.js?v=47bea264"></script>
+<script src="js/generators.js?v=ddb20d86"></script>
+<script src="js/sfx.js?v=3734f699"></script>
+<script src="js/game.js?v=c40ff76c"></script>
+<script src="js/ocr.js?v=61546e13"></script>
+<script src="js/extractor.js?v=de21bfb9"></script>
+<script src="js/screens/inici.js?v=2f7f9731"></script>
+<script src="js/screens/apunts.js?v=36c0d13b"></script>
+<script src="js/screens/lab.js?v=f427e5c7"></script>
+<script src="js/screens/practica.js?v=a2b4deb4"></script>
+<script src="js/screens/examen.js?v=6cd40408"></script>
+<script src="js/screens/progres.js?v=b0e7c69c"></script>
+<script src="js/screens/nou.js?v=87303c8b"></script>
+<script src="js/screens/revisio.js?v=71b4213a"></script>
+<script src="js/router.js?v=1dc18ed0"></script>
+<script src="js/main.js?v=1e7becb3"></script>
 <script>
 /* PWA: funciona sense connexió un cop carregada (a l'APK no cal: ja porta els fitxers) */
 if ("serviceWorker" in navigator && location.protocol === "https:" && !window.Capacitor) {

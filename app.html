@@ -243,6 +243,177 @@ pre.code{background:var(--paper);border:1px solid var(--line);border-radius:8px;
 @media (prefers-reduced-motion:reduce){.combo{animation:none}}
 .xp-pop{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 [hidden]{display:none!important}
+/* ---- Retall de la pàgina ---- */
+.crop-stage{display:grid;justify-items:center;width:100%}
+.crop-stage>*{grid-area:1/1}
+.crop-stage canvas{border-radius:8px;max-width:100%}
+.crop-stage svg{touch-action:none;overflow:visible}
+.crop-stage polygon{fill:rgba(255,225,77,.18);stroke:var(--mark);stroke-width:3;stroke-linejoin:round}
+.crop-stage circle{fill:var(--mark);stroke:var(--ink);stroke-width:2.5;cursor:grab}
+.thumb{position:relative}
+.thumb .tn{position:absolute;top:6px;left:6px;background:var(--ink);color:var(--sheet);font-size:.7rem;font-weight:800;border-radius:6px;padding:1px 6px}
+.thumb.done::after{content:"✓";position:absolute;top:6px;right:6px;background:var(--ok);color:#fff;border-radius:50%;width:22px;height:22px;display:grid;place-items:center;font-size:.8rem;font-weight:800}
+.ideas li{line-height:1.6}
+mark{background:linear-gradient(transparent 12%,var(--mark-soft) 12%,var(--mark-soft) 88%,transparent 88%);color:inherit;padding:0 2px;border-radius:3px}
+.blank{display:inline-block;min-width:4em;border-bottom:3px solid var(--blue);margin:0 2px}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.group{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper)}
+
+/* =====================================================================
+   QUADERN VIU: paper càlid, colors de retolador, formes rodones i relleu
+   ===================================================================== */
+:root{
+  --paper:#fbf7ee; --sheet:#fffdf8; --ink:#1b1f3b; --muted:#5d6280; --line:#ebe4d4; --line2:#d9d0bc;
+  --blue:#4c3bdb; --blue-ink:#fff; --blue-soft:#ece9ff;
+  --mark:#ffe03d; --on-mark:#231c00; --mark-soft:#fff3a8;
+  --lila:#b197fc; --lila-soft:#efe8ff; --verd:#3ccf7a; --rosa:#ff6b9a;
+  --ok:#16884a; --ok-soft:#dcf7e6; --bad:#d6334b; --bad-soft:#ffe3e7; --warn:#a85d00; --warn-soft:#fff0d1;
+  --st-new:#e7e0cf; --st-prac:#b197fc; --st-cons:#4c3bdb; --st-dom:#ffcf1f;
+  --shadow:0 2px 0 rgba(27,31,59,.06),0 10px 24px -12px rgba(27,31,59,.22);
+  --lift:0 4px 0 var(--line2);
+  --r:18px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#14152b; --sheet:#1d1f3a; --ink:#f1efff; --muted:#a8a9cc; --line:#2d2f55; --line2:#3b3e6b;
+  --blue:#9d8cff; --blue-ink:#14152b; --blue-soft:#2b2a5c;
+  --mark:#ffe03d; --on-mark:#231c00; --mark-soft:#4a4214;
+  --lila:#b197fc; --lila-soft:#2f2858; --verd:#3ccf7a; --rosa:#ff7ca6;
+  --ok:#5ee39a; --ok-soft:#173a29; --bad:#ff8094; --bad-soft:#47202a; --warn:#ffc061; --warn-soft:#3d2d10;
+  --st-new:#33355e; --st-prac:#8f73f0; --st-cons:#9d8cff; --st-dom:#ffd84a;
+  --shadow:0 2px 0 rgba(0,0,0,.25),0 12px 26px -12px rgba(0,0,0,.6); --lift:0 4px 0 #0c0d1f}}
+:root[data-theme="dark"]{
+  --paper:#14152b; --sheet:#1d1f3a; --ink:#f1efff; --muted:#a8a9cc; --line:#2d2f55; --line2:#3b3e6b;
+  --blue:#9d8cff; --blue-ink:#14152b; --blue-soft:#2b2a5c;
+  --mark:#ffe03d; --on-mark:#231c00; --mark-soft:#4a4214;
+  --lila:#b197fc; --lila-soft:#2f2858; --verd:#3ccf7a; --rosa:#ff7ca6;
+  --ok:#5ee39a; --ok-soft:#173a29; --bad:#ff8094; --bad-soft:#47202a; --warn:#ffc061; --warn-soft:#3d2d10;
+  --st-new:#33355e; --st-prac:#8f73f0; --st-cons:#9d8cff; --st-dom:#ffd84a;
+  --shadow:0 2px 0 rgba(0,0,0,.25),0 12px 26px -12px rgba(0,0,0,.6); --lift:0 4px 0 #0c0d1f; color-scheme:dark}
+body{background:var(--paper);background-image:radial-gradient(var(--line) 1px,transparent 1.2px);background-size:22px 22px}
+h1{font-size:clamp(1.7rem,5vw,2.4rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.4rem;font-weight:800;letter-spacing:-.01em}
+.hl{background:linear-gradient(104deg,transparent 2%,var(--mark) 4%,var(--mark) 96%,transparent 98%);background-size:100% 62%;background-position:0 78%;background-repeat:no-repeat;padding:0 .12em}
+/* barra superior */
+.top{background:color-mix(in srgb,var(--sheet) 88%,transparent);backdrop-filter:blur(10px);border-bottom:2px solid var(--line)}
+.logo{background:var(--ink);color:var(--mark);border-radius:12px;transform:rotate(-6deg);box-shadow:3px 3px 0 var(--mark)}
+.stat{border:2px solid var(--line);background:var(--sheet);font-weight:700}
+.stat.lvl{gap:8px;padding:3px 10px 3px 4px}
+.stat .lv{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--blue);color:var(--blue-ink);font-family:var(--f-display);font-size:.8rem}
+.lvbar{width:54px;height:8px;border-radius:9px;background:var(--line);overflow:hidden}.lvbar span{display:block;height:100%;background:linear-gradient(90deg,var(--lila),var(--blue));border-radius:9px}
+/* targetes i botons */
+.card{border:2px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px}
+.btn{border:2px solid var(--line2);border-radius:14px;padding:10px 16px;box-shadow:var(--lift);transition:transform .08s,box-shadow .08s;font-family:var(--f-display);font-weight:800;letter-spacing:.005em}
+.btn:hover{border-color:var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line2)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--blue-ink);box-shadow:0 4px 0 color-mix(in srgb,var(--blue) 60%,#000)}
+.btn.primary:active{box-shadow:0 1px 0 color-mix(in srgb,var(--blue) 60%,#000)}
+.btn.mark{background:var(--mark);border-color:var(--mark);color:var(--on-mark);box-shadow:0 4px 0 #c9a800}
+.btn.mark:active{box-shadow:0 1px 0 #c9a800}
+.btn.ghost{box-shadow:none;border-color:transparent}
+.btn.small{padding:7px 12px;border-radius:11px;box-shadow:0 3px 0 var(--line2)}
+.btn.big{padding:14px 20px;font-size:1.05rem;border-radius:16px}
+.pill{border-radius:999px;font-weight:700;border:0;background:var(--line)}
+.pill.blue{background:var(--blue-soft);color:var(--blue)}
+.pill.mark{background:var(--mark);color:var(--on-mark)}
+.progress,.bar{height:12px;border-radius:99px;background:var(--line);border:0}
+.progress span{background:linear-gradient(90deg,var(--verd),#20b866);border-radius:99px}
+.bar span:first-child{border-radius:99px 0 0 99px}
+/* inici */
+.hero2{display:grid;gap:16px;grid-template-columns:1.35fr 1fr}
+@media (max-width:760px){.hero2{grid-template-columns:1fr}}
+.hero-main{position:relative;overflow:hidden;border-radius:24px;padding:26px;background:#1b1f3b;color:#fff;display:grid;gap:14px;box-shadow:var(--shadow)}
+.hero-main::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:var(--lila);opacity:.35}
+.hero-main::before{content:"";position:absolute;right:40px;bottom:-60px;width:140px;height:140px;border-radius:50%;background:var(--verd);opacity:.25}
+.hero-main>*{position:relative;z-index:1}
+.hero-main .eyebrow{color:var(--mark)}
+.hero-main p{color:#d8d9f2;max-width:52ch}
+.hero-main .hl{color:var(--on-mark)}
+.hero-side{display:grid;gap:12px;align-content:start}
+.lvcard{display:flex;gap:14px;align-items:center;background:var(--sheet);border:2px solid var(--line);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow)}
+.lvnum{display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--lila),#4c3bdb);color:#fff;flex:none;transform:rotate(-4deg)}
+.lvnum small{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:-6px}
+.lvnum b{font-family:var(--f-display);font-size:1.8rem;line-height:1}
+.grow{flex:1;min-width:0}
+.xpbar{height:14px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}
+.xpbar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--mark),#ffb000)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--sheet);border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:grid;gap:2px}
+.kpi b{font-family:var(--f-display);font-size:1.6rem;line-height:1}
+.kpi b small{font-size:.9rem;margin-left:2px;color:var(--muted)}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.kpi.alert{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent)}
+.grid.topics{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.tcard{background:var(--sheet);border:2px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .15s}
+.tcard:hover{transform:translateY(-3px) rotate(-.3deg)}
+.tband{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--sj);color:#fff;font-weight:700}
+.tband .pill{margin-left:auto;background:rgba(255,255,255,.25);color:#fff}
+.tic{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:rgba(255,255,255,.22);font-size:1.05rem}
+.tbody{padding:16px;display:grid;gap:10px}
+.ring text{font-family:var(--f-display);font-weight:800;font-size:13px;fill:var(--ink)}
+.tcard.add{align-items:center;justify-content:center;gap:6px;min-height:220px;border:3px dashed var(--line2);background:transparent;box-shadow:none;cursor:pointer;color:var(--ink)}
+.tcard.add .plus{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:var(--mark);font-size:2rem;font-weight:800;color:var(--on-mark)}
+/* pantalla del tema */
+.thead{display:flex;gap:16px;align-items:center;padding:24px;border-radius:24px;background:var(--sj);color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.thead::after{content:"";position:absolute;inset:auto -30px -50px auto;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.12)}
+.thead .eyebrow{color:rgba(255,255,255,.85)}
+.thead .ring circle:first-child{stroke:rgba(255,255,255,.25)}
+.thead .ring text{fill:#fff;font-size:18px}
+.thead .stars i{color:rgba(255,255,255,.35)}.thead .stars i.on{color:var(--mark)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{display:grid;gap:4px;justify-items:start;text-align:left;padding:18px;border-radius:20px;border:2px solid var(--line);background:var(--sheet);box-shadow:var(--lift);cursor:pointer;transition:transform .08s;color:var(--ink)}
+.tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line2)}
+.tile .tic{width:44px;height:44px;border-radius:14px;background:var(--paper);font-size:1.4rem;margin-bottom:6px}
+.tile b{font-family:var(--f-display);font-size:1.1rem}
+.tile.hot{background:var(--blue);border-color:var(--blue);color:var(--blue-ink);box-shadow:0 4px 0 color-mix(in srgb,var(--blue) 60%,#000)}
+.tile.hot .muted{color:inherit;opacity:.85}.tile.hot .tic{background:rgba(255,255,255,.2)}
+.tile.boss{background:linear-gradient(135deg,#ffe03d,#ffb000);border-color:#e3a300;color:#231c00;box-shadow:0 4px 0 #b88400}
+.tile.boss .muted{color:#4a3a00}
+/* pràctica: mode concentració */
+body[data-screen="practica"] .bottom-nav,body[data-screen="examen"] .bottom-nav{display:none}
+body[data-screen="practica"] main.wrap{padding-bottom:24px}
+.qcard{border-radius:24px;padding:22px;gap:16px}
+.qprog{height:14px}
+.prompt{font-size:1.15rem;line-height:1.55}
+.prompt.big,.prompt .big{font-family:var(--f-display);font-size:1.6rem;font-weight:800}
+.opts{gap:10px}
+.opt{border:2px solid var(--line2);border-radius:16px;padding:14px;background:var(--sheet);box-shadow:var(--lift);transition:transform .08s,background .15s;font-weight:700}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line2)}
+.opt .k{border-radius:10px;border:2px solid var(--line2);background:var(--paper);font-family:var(--f-display)}
+.opt[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-soft);box-shadow:0 4px 0 var(--blue)}
+.opt[aria-pressed="true"] .k{background:var(--blue);border-color:var(--blue);color:var(--blue-ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft);box-shadow:0 4px 0 var(--ok)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 4px 0 var(--bad);animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+.fb{border-radius:18px;border-width:2px}
+.fb.sheet{position:sticky;bottom:0;z-index:4;margin:0 -22px -22px;border-radius:22px 22px 24px 24px;padding:18px 22px calc(18px + env(safe-area-inset-bottom,0px));border:0;box-shadow:0 -10px 30px -12px rgba(0,0,0,.25);animation:sheetUp .28s cubic-bezier(.2,.9,.3,1.2);display:grid;gap:8px}
+.fb.sheet.ok{background:var(--ok-soft);border-top:4px solid var(--ok)}
+.fb.sheet.bad{background:var(--bad-soft);border-top:4px solid var(--bad)}
+.fb.sheet h3{font-size:1.25rem}
+.fb.sheet.ok h3{color:var(--ok)}.fb.sheet.bad h3{color:var(--bad)}
+.fb.sheet #next{width:100%;margin-top:6px}
+.fb.sheet.ok #next{background:var(--ok);border-color:var(--ok);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--ok) 55%,#000)}
+.fb.sheet.bad #next{background:var(--bad);border-color:var(--bad);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--bad) 55%,#000)}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:0}}
+.blank{border-bottom:3px dashed var(--blue);min-width:5em}
+/* glossari: targetes que giren */
+.term{border:2px solid var(--line);border-radius:16px;background:var(--sheet);padding:14px;perspective:600px}
+.term .def{transition:transform .35s,background .2s}
+.term .def.covered{background:repeating-linear-gradient(-45deg,var(--lila-soft) 0 10px,var(--sheet) 10px 20px);color:transparent;border-radius:12px;cursor:pointer;transform:rotateX(8deg)}
+.term .def:not(.covered){animation:flipIn .4s}
+@keyframes flipIn{from{transform:rotateX(90deg)}}
+mark{background:linear-gradient(transparent 10%,var(--mark) 10%,var(--mark) 90%,transparent 90%);color:var(--on-mark)}
+.group{border:2px solid var(--line);border-radius:16px;background:var(--paper)}
+.group h3{color:var(--blue)}
+/* navegació inferior */
+.bottom-nav{border-top:2px solid var(--line);background:color-mix(in srgb,var(--sheet) 92%,transparent);backdrop-filter:blur(10px)}
+.bottom-nav button[aria-current="page"]{color:var(--blue)}
+.bottom-nav .cam span.ic{background:var(--mark);color:var(--on-mark);box-shadow:0 4px 0 #c9a800;border-radius:20px}
+.stars i.on{color:#ffb000;text-shadow:0 1px 0 #b88400}
+@media (prefers-reduced-motion:reduce){.fb.sheet,.opt.wrong,.term .def:not(.covered){animation:none}.tcard:hover{transform:none}}
+.btn.ghost.small{box-shadow:none}
+.qcard.answered #fb{order:9}
+.qcard.answered{padding-bottom:22px}
+.blank{color:transparent;user-select:none}
 
 </style>
 <header class="top">
@@ -370,7 +541,9 @@ function normTopic(raw) {
   t.formules = arr(t.formules).map(f => ({ ...f, id: uid(f.id || f.nom, "f"), variables: arr(f.variables), constants: arr(f.constants), errors: arr(f.errors), dubtos: !!f.dubtos }));
   t.procediments = arr(t.procediments).filter(p => arr(p.passos).length >= 3).map(p => ({ id: uid(p.id || p.nom, "p"), nom: String(p.nom || "Procediment"), passos: arr(p.passos).map(String), concepte_id: p.concepte_id ? slug(p.concepte_id) : "", dubtos: !!p.dubtos }));
   t.relacions = arr(t.relacions).filter(r => r.a && r.b && r.tipus).map(r => ({ a: String(r.a), tipus: String(r.tipus), b: String(r.b) }));
-  t.cronologia = arr(t.cronologia).filter(e => e.fet && e.any !== undefined).map(e => ({ any: String(e.any), fet: String(e.fet) }));
+  t.cronologia = arr(t.cronologia).filter(e => e.fet && e.any !== undefined).map(e => ({ id: uid(e.id || "d_" + e.any + "_" + String(e.fet).slice(0, 20), "d"), any: String(e.any), ordre: isFinite(+e.ordre) && e.ordre !== "" && e.ordre !== undefined ? +e.ordre : (parseFloat(e.any) || 0), fet: String(e.fet) }));
+  t.idees_clau = arr(t.idees_clau).filter(k => k && k.text && k.frase).map(k => ({ id: uid(k.id || "k_" + k.text, "k"), text: String(k.text), frase: String(k.frase), marques: arr(k.marques).map(String).filter(m => String(k.frase).includes(m)) }));
+  t.grups = arr(t.grups).filter(g => g && g.nom && arr(g.items).length >= 2).map(g => ({ id: uid(g.id || "g_" + g.nom, "g"), nom: String(g.nom), items: arr(g.items).map(String) }));
   t.errors_tipics = arr(t.errors_tipics).filter(e => e.afirmacio_erronia).map(e => ({ id: uid(e.id || e.afirmacio_erronia, "e"), afirmacio_erronia: String(e.afirmacio_erronia), correccio: String(e.correccio || ""), concepte_id: e.concepte_id ? slug(e.concepte_id) : "", dubtos: !!e.dubtos }));
   t.preguntes_obertes = arr(t.preguntes_obertes).filter(q => q.pregunta).map(q => ({ id: uid(q.id || q.pregunta, "o"), pregunta: String(q.pregunta), resposta_model: String(q.resposta_model || ""), criteris: arr(q.criteris).map(String), concepte_id: q.concepte_id ? slug(q.concepte_id) : "" }));
   t.creat = t.creat || now();
@@ -412,6 +585,10 @@ function topicKeys(t) {
   t.errors_tipics.forEach(e => k.push("e:" + e.id));
   if (t.relacions.length >= 2) k.push("r:all");
   if (t.cronologia.length >= 3) k.push("t:all");
+  (t.idees_clau || []).forEach(x => k.push("k:" + x.id));
+  if ((t.cronologia || []).length >= 2) t.cronologia.forEach(x => k.push("d:" + x.id));
+  if ((t.grups || []).length >= 2) t.grups.forEach(g => k.push("g:" + g.id));
+  if ((t.cronologia || []).length >= 2 || t.conceptes.length >= 3) k.push("v:all");
   return k.filter(x => !(S.reported[t.id] || {})[x]);
 }
 function card(tid, key) { const p = S.prog[tid] || (S.prog[tid] = {}); return p[key] || (p[key] = { reps: 0, streak: 0, okDays: [], pendingError: false }); }
@@ -701,11 +878,76 @@ function makeItem(tid, key, opts = {}) {
   }
   if (kind === "t") {
     const ev = shuffle(t.cronologia).slice(0, Math.min(5, t.cronologia.length));
-    const sorted = ev.slice().sort((a, b) => parseFloat(a.any) - parseFloat(b.any));
+    const sorted = ev.slice().sort((a, b) => a.ordre - b.ordre);
     let order = shuffle(sorted.map((_, i) => i)); if (order.every((v, i) => v === i)) order = order.reverse();
     return { ...base, label: "Cronologia", type: "Ordena en el temps", mode: "order", prompt: `<p class="muted small">Ordena els fets del més antic al més recent:</p>`, items: sorted.map(e => e.fet), years: sorted.map(e => e.any), order, answerText: sorted.map(e => `${e.any}: ${e.fet}`).join(" · "), explain: "", source: "", hints: ["Pensa quins fets depenen d'altres anteriors.", `El més antic és: «${sorted[0].fet}».`, `Anys: ${sorted.map(e => e.any).join(", ")} (desordenats ja no!).`] };
   }
+  if (kind === "k") return ideaItem(t, id, base, lvl);
+  if (kind === "d") return dateItem(t, id, base);
+  if (kind === "g") return groupItem(t, id, base);
+  if (kind === "v") return truthItem(t, base);
   return null;
+}
+
+/* ---------- Activitats per a text (humanitats) ---------- */
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function blankIn(frase, text) {
+  const re = new RegExp(text.trim().split(/\s+/).map(reEsc).join("\\s+"), "i"), m = frase.match(re);
+  return m ? { before: frase.slice(0, m.index), after: frase.slice(m.index + m[0].length) } : null;
+}
+function ideaItem(t, id, base, lvl) {
+  const k = t.idees_clau.find(x => x.id === id); if (!k) return null;
+  const b = blankIn(k.frase, k.text); if (!b) return null;
+  const others = shuffle(t.idees_clau.filter(x => x.id !== k.id && norm(x.text) !== norm(k.text))).sort((x, y) => Math.abs(wc(x.text) - wc(k.text)) - Math.abs(wc(y.text) - wc(k.text))).slice(0, 3);
+  const prompt = `<p class="muted small">Completa la frase dels teus apunts (és una idea que vas marcar):</p><p class="prompt">${esc(b.before)}<span class="blank">______</span>${esc(b.after)}</p>`;
+  const common = { ...base, label: k.text, type: "Idea clau", prompt, answerText: k.text, explain: k.frase, source: "", hints: [`Té ${wc(k.text)} paraules.`, `Comença per «${k.text.split(/\s+/).slice(0, 1).join(" ")}…».`, `Comença per «${k.text.split(/\s+/).slice(0, 2).join(" ")}…».`] };
+  if (others.length >= 2 && lvl < 2) return { ...common, mode: "mcq", options: shuffle([{ text: k.text, ok: true }, ...others.map(o => ({ text: o.text, why: `Aquesta idea també és dels apunts, però va en una altra frase: «${o.frase.slice(0, 120)}…»` }))]) };
+  const target = norm(k.text), tw = target.split(" ").filter(w => w.length > 3);
+  return { ...common, mode: "text", check: ans => {
+    const a = norm(ans); if (!a) return { ok: false, diag: "Escriu una resposta." };
+    if (a === target || lev(a, target) <= Math.max(2, Math.floor(target.length * 0.2))) return { ok: true };
+    const hit = tw.filter(w => (" " + a + " ").includes(" " + w.slice(0, Math.max(4, w.length - 2)))).length;
+    if (tw.length && hit / tw.length >= 0.7) return { ok: true, note: `Ho has dit amb altres paraules. Als apunts posa: «${k.text}».` };
+    return { ok: false, diag: hit ? `Vas bé (${hit} de ${tw.length} paraules clau), però falta una part de la idea.` : "No és aquesta idea. Rellegeix la frase sencera: de què parla?", kind: "parcial" };
+  } };
+}
+function dateVariants(e, all) {
+  const labels = [...new Set(all.filter(x => x.any !== e.any).map(x => x.any))];
+  const m = e.any.match(/^anys (\d0)$/), y = e.any.match(/^\d{4}$/), sg = e.any.match(/segle ([IVXL]+)$/i);
+  const gen = [];
+  if (m) for (const d of [-20, -10, 10, 20]) { const v = +m[1] + d; if (v >= 10 && v <= 90) gen.push("anys " + v); }
+  if (y) for (const d of [-30, -12, 7, 15, 25]) gen.push(String(+e.any + d));
+  if (sg) { const n = romanToInt(sg[1]), toR = k => ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"][k]; for (const d of [-2, -1, 1]) if (n + d >= 1 && n + d <= 21) gen.push(e.any.replace(sg[1], toR(n + d))); }
+  return [...new Set([...shuffle(labels), ...shuffle(gen)])].filter(x => x !== e.any).slice(0, 3);
+}
+function dateItem(t, id, base) {
+  const e = t.cronologia.find(x => x.id === id); if (!e) return null;
+  const d = findDate(e.fet);
+  const shown = d && d.len ? esc(e.fet.slice(0, d.i)) + '<span class="blank">______</span>' + esc(e.fet.slice(d.i + d.len)) : esc(e.fet);
+  const opts = dateVariants(e, t.cronologia); if (opts.length < 2) return null;
+  const options = shuffle([{ text: e.any, ok: true }, ...opts.map(o => { const other = t.cronologia.find(x => x.any === o); return { text: o, why: other ? `${o} correspon a un altre fet: «${other.fet.slice(0, 110)}…»` : `No: és ${e.any}. ${Math.abs((parseFloat(o.replace(/\D/g, "")) || 0) - (parseFloat(e.any.replace(/\D/g, "")) || 0)) <= 10 ? "T'has quedat a prop!" : "T'has allunyat força."}` }; })]);
+  return { ...base, label: e.fet.slice(0, 60), type: "Quan va passar?", mode: "mcq", prompt: `<p class="muted small">Quan va passar?</p><p class="prompt">${shown}</p>`, options, answerText: e.any, explain: e.fet, source: "", hints: ["Pensa què va passar abans i què després.", `Ordena mentalment: ${t.cronologia.slice().sort((a, b) => a.ordre - b.ordre).slice(0, 4).map(x => x.any).join(" → ")}…`, "Mira la cronologia de la pestanya Apunts."] };
+}
+function groupItem(t, id, base) {
+  const g = t.grups.find(x => x.id === id); if (!g || t.grups.length < 2) return null;
+  const it = pick(g.items), others = shuffle(t.grups.filter(x => x.id !== g.id)).slice(0, 3);
+  const options = shuffle([{ text: g.nom, ok: true }, ...others.map(o => ({ text: o.nom, why: `«${it}» va a «${g.nom}». A «${o.nom}» hi ha, per exemple: ${o.items.slice(0, 2).join(", ")}.` }))]);
+  return { ...base, label: it, type: "Classifica", mode: "mcq", prompt: `<p class="muted small">On va?</p><p class="prompt big">${esc(it)}</p>`, options, answerText: g.nom, explain: `${g.nom}: ${g.items.join(", ")}.`, source: "", hints: ["Pensa en què tenen en comú els elements de cada grup.", `Al mateix grup hi ha: ${g.items.filter(x => x !== it).slice(0, 2).join(", ")}.`, `Els grups són: ${t.grups.map(x => x.nom).join(" · ")}.`] };
+}
+function truthItem(t, base) {
+  const useDate = t.cronologia.length >= 2 && (t.conceptes.length < 3 || Math.random() < 0.5), isTrue = Math.random() < 0.5;
+  let text, fix;
+  if (useDate) {
+    const e = pick(t.cronologia), d = findDate(e.fet), alt = d && d.len ? dateVariants(e, t.cronologia)[0] : null;
+    if (isTrue || !alt) text = e.fet; else text = e.fet.slice(0, d.i) + alt + e.fet.slice(d.i + d.len);
+    fix = e.fet;
+  } else {
+    const c = pick(t.conceptes), o = pick(t.conceptes.filter(x => x.id !== c.id));
+    text = `${cap1(c.nom)}: ${isTrue ? c.definicio : o.definicio}`; fix = `${cap1(c.nom)}: ${c.definicio}`;
+  }
+  const truth = text === fix;
+  const options = [{ text: "Vertader", ok: truth, why: truth ? "" : `És vertader. Als apunts: «${fix}»` }, { text: "Fals", ok: !truth, why: !truth ? "" : `És fals. El correcte és: «${fix}»` }];
+  return { ...base, label: "Vertader o fals", type: "Vertader o fals", mode: "mcq", prompt: `<p class="muted small">Vertader o fals?</p><p class="prompt">${esc(text)}</p>`, options, answerText: truth ? "Vertader" : "Fals", explain: truth ? "" : "Correcte: " + fix, source: "", hints: ["Fixa't en les dates, els llocs i les paraules clau.", "Una sola paraula canviada fa falsa la frase.", "Compara-ho amb la cronologia i el glossari dels apunts."] };
 }
 function checkMcq(item, idx) { const o = item.options[idx]; if (!o) return { ok: false, diag: "Tria una opció." }; return o.ok ? { ok: true } : { ok: false, diag: o.why || "No és aquesta.", kind: "confusio" }; }
 function checkOrder(item, order) {
@@ -752,7 +994,8 @@ const Sfx = (() => {
     gold: () => { [784, 988, 1175, 1568].forEach((f, i) => tone(f, i * 0.08, 0.22, "sine", 0.1)); },
     level: () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.1, 0.3, "triangle", 0.09)); }
   };
-  function play(name) { try { if (S.sound === false || !SOUNDS[name]) return; SOUNDS[name](); } catch { } }
+  const BUZZ = { ok: 18, bad: [40, 60, 40], gold: [20, 40, 20, 40, 60], level: [30, 50, 80] };
+  function play(name) { try { if (S.sound === false || !SOUNDS[name]) return; SOUNDS[name](); if (BUZZ[name] && navigator.vibrate) navigator.vibrate(BUZZ[name]); } catch { } }
   function confetti() {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const cv = document.createElement("canvas"); cv.className = "confetti"; cv.width = innerWidth; cv.height = innerHeight; document.body.appendChild(cv);
@@ -870,8 +1113,17 @@ function finishSession(P) {
   return won;
 }
 
-/* OCR al dispositiu amb Tesseract.js (codi obert, sense IA generativa ni servidor) */
-/* ---------- OCR ---------- */
+/* ---------- Nivell (corba suau: cada nivell costa una mica més) i colors ---------- */
+function levelOf(xp) { let n = 1, need = 60, base = 0; while (xp >= base + need) { base += need; n++; need = Math.round(need * 1.18); } return { n, pct: Math.round((xp - base) / need * 100), toNext: base + need - xp }; }
+const SUBJECTS = [[/mat(e|è)m/i, "#3b5bdb", "∑"], [/f(í|i)sic|qu(í|i)mic/i, "#7048e8", "⚛"], [/biol|ci(è|e)nc|natura/i, "#2b8a3e", "🌿"], [/hist(ò|o)r|geograf|social|human|filosof|cultura/i, "#d9480f", "🏛"], [/catal|castell|llengu|literat|angl|franc/i, "#c2255c", "✎"], [/tecnol|inform/i, "#0b7285", "⚙"], [/art|m(ú|u)sica|visual/i, "#e67700", "🎨"]];
+function subjectStyle(materia) { const m = SUBJECTS.find(([re]) => re.test(materia || "")); return m ? { c: m[1], ic: m[2] } : { c: "#495057", ic: "📒" }; }
+function ring(pct, size = 56, color = "var(--st-cons)") { const r = size / 2 - 5, C = 2 * Math.PI * r; return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${pct}% de domini"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${(C * pct / 100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/><text x="50%" y="50%" dy=".35em" text-anchor="middle">${pct}%</text></svg>`; }
+
+/* ---------------- OCR al dispositiu ----------------
+   Tesseract.js (codi obert). Sense IA generativa ni servidor.
+   Cadena: foto → retall de la pàgina (4 cantonades, com un escàner) → redreçament de perspectiva
+   → gris "sense retolador" → OCR per paraules
+   → filtre de soroll (fotos, notes al marge) → detecció del retolador (==text marcat==). */
 let tessLoading = null;
 function loadTesseract() {
   if (window.Tesseract) return Promise.resolve(window.Tesseract);
@@ -880,35 +1132,153 @@ function loadTesseract() {
   tessLoading.catch(() => { tessLoading = null; });
   return tessLoading;
 }
-async function enhance(blob) {
-  // Escala de grisos + estirament de contrast + binarització d'Otsu: millora molt l'OCR de fotos
-  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(blob); });
-  const cv = document.createElement("canvas"); cv.width = img.naturalWidth; cv.height = img.naturalHeight;
-  const ctx = cv.getContext("2d"); ctx.drawImage(img, 0, 0);
-  const d = ctx.getImageData(0, 0, cv.width, cv.height), px = d.data, hist = new Array(256).fill(0), g = new Uint8ClampedArray(px.length / 4);
-  for (let i = 0, j = 0; i < px.length; i += 4, j++) { const v = (px[i] * 0.299 + px[i + 1] * 0.587 + px[i + 2] * 0.114) | 0; g[j] = v; hist[v]++; }
-  let total = g.length, sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i];
-  let sumB = 0, wB = 0, best = 0, thr = 128;
-  for (let i = 0; i < 256; i++) { wB += hist[i]; if (!wB) continue; const wF = total - wB; if (!wF) break; sumB += i * hist[i]; const mB = sumB / wB, mF = (sum - sumB) / wF, between = wB * wF * (mB - mF) ** 2; if (between > best) { best = between; thr = i; } }
-  for (let i = 0, j = 0; i < px.length; i += 4, j++) { const v = g[j] > thr ? 255 : 0; px[i] = px[i + 1] = px[i + 2] = v; }
-  ctx.putImageData(d, 0, 0);
-  return await new Promise(r => cv.toBlob(r, "image/png"));
+const loadImage = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+
+/* ---------- Detecció automàtica de la pàgina ----------
+   Pàgina clara sobre fons més fosc: màscara d'Otsu a baixa resolució i les 4 cantonades extremes. */
+function detectPage(img) {
+  const IW = img.naturalWidth || img.width, IH = img.naturalHeight || img.height, S = 320, sc = S / Math.max(IW, IH), w = Math.round(IW * sc), h = Math.round(IH * sc);
+  const cv = document.createElement("canvas"); cv.width = w; cv.height = h; const ctx = cv.getContext("2d"); ctx.drawImage(img, 0, 0, w, h);
+  const d = ctx.getImageData(0, 0, w, h).data, g = new Uint8Array(w * h), hist = new Array(256).fill(0);
+  for (let i = 0, j = 0; i < d.length; i += 4, j++) { const v = Math.max(d[i], d[i + 1], d[i + 2]); g[j] = v; hist[v]++; }
+  const thr = otsuThreshold(hist, g.length);
+  let n = 0, tl = null, tr = null, br = null, bl = null, vtl = 1e9, vtr = -1e9, vbr = -1e9, vbl = 1e9;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (g[y * w + x] <= thr) continue;
+    // ignora píxels clars aïllats: cal un veí clar a dreta i a sota
+    if (x + 2 >= w || y + 2 >= h || g[y * w + x + 2] <= thr || g[(y + 2) * w + x] <= thr) continue;
+    n++;
+    if (x + y < vtl) { vtl = x + y; tl = [x, y]; } if (x - y > vtr) { vtr = x - y; tr = [x, y]; }
+    if (x + y > vbr) { vbr = x + y; br = [x, y]; } if (x - y < vbl) { vbl = x - y; bl = [x, y]; }
+  }
+  const full = [[0, 0], [IW, 0], [IW, IH], [0, IH]];
+  if (!tl || n < w * h * 0.25 || n > w * h * 0.97) return full;
+  // si la part clara toca les vores de la foto, la pàgina omple el quadre: millor no retallar
+  const lit = (x, y) => g[y * w + x] > thr, frac = (len, f) => { let c = 0; for (let i = 0; i < len; i++) if (f(i)) c++; return c / len; };
+  const touching = [frac(w, x => lit(x, 1)), frac(w, x => lit(x, h - 2)), frac(h, y => lit(1, y)), frac(h, y => lit(w - 2, y))].filter(f => f > 0.3).length;
+  if (touching >= 2) return full;
+  const q = [tl, tr, br, bl].map(([x, y]) => [x / sc, y / sc]);
+  return quadArea(q) > 0.3 * IW * IH ? q : full;
 }
-async function runOCR(blobs, lang, onProgress, useEnhance) {
-  const T = await loadTesseract();
-  let cur = 0;
-  const worker = await T.createWorker(lang, 1, { logger: m => { if (m.status === "recognizing text") onProgress((cur + m.progress) / blobs.length, `Llegint la foto ${cur + 1} de ${blobs.length}`); else onProgress(cur / blobs.length, m.status === "loading language traineddata" ? "Descarregant el diccionari de l'idioma (només la primera vegada)" : "Preparant el motor d'OCR"); } });
-  const texts = [];
-  try {
-    for (cur = 0; cur < blobs.length; cur++) {
-      const input = useEnhance ? await enhance(blobs[cur]) : blobs[cur];
-      const { data } = await worker.recognize(input);
-      texts.push({ text: data.text || "", conf: data.confidence || 0 });
+function otsuThreshold(hist, total) {
+  let sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i];
+  let sB = 0, wB = 0, best = 0, t = 128;
+  for (let i = 0; i < 256; i++) { wB += hist[i]; if (!wB) continue; const wF = total - wB; if (!wF) break; sB += i * hist[i]; const mB = sB / wB, mF = (sum - sB) / wF, b = wB * wF * (mB - mF) ** 2; if (b > best) { best = b; t = i; } }
+  return t;
+}
+const quadArea = q => Math.abs(q.reduce((s, [x, y], i) => { const [x2, y2] = q[(i + 1) % 4]; return s + x * y2 - x2 * y; }, 0)) / 2;
+
+/* ---------- Redreçament de perspectiva (homografia) ---------- */
+function homography(src, dst) {
+  // troba H tal que dst = H·src (8 incògnites) per eliminació gaussiana
+  const A = [], b = [];
+  for (let i = 0; i < 4; i++) {
+    const [x, y] = src[i], [u, v] = dst[i];
+    A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.push(u);
+    A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); b.push(v);
+  }
+  for (let c = 0; c < 8; c++) {
+    let p = c; for (let r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    [A[c], A[p]] = [A[p], A[c]]; [b[c], b[p]] = [b[p], b[c]];
+    for (let r = 0; r < 8; r++) { if (r === c) continue; const f = A[r][c] / A[c][c]; for (let k = c; k < 8; k++) A[r][k] -= f * A[c][k]; b[r] -= f * b[c]; }
+  }
+  return [...b.map((v, i) => v / A[i][i]), 1];
+}
+function warpPage(img, quad, targetW = 2600) {
+  const IW = img.naturalWidth || img.width, IH = img.naturalHeight || img.height;
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  const isFull = quad.every(([x, y], i) => dist([x, y], [[0, 0], [IW, 0], [IW, IH], [0, IH]][i]) < Math.max(IW, IH) * 0.015);
+  let flat;
+  if (isFull) flat = img; // la foto ja és la pàgina: no cal redreçar (i així no es perd nitidesa)
+  else {
+    // redreçament a mida real (bilineal 1:1) i ampliació després amb el redimensionat suau del navegador
+    const wq = Math.max(dist(quad[0], quad[1]), dist(quad[3], quad[2])), hq = Math.max(dist(quad[0], quad[3]), dist(quad[1], quad[2]));
+    const W = Math.round(wq), H = Math.round(hq);
+    const sc = document.createElement("canvas"); sc.width = IW; sc.height = IH;
+    const sctx = sc.getContext("2d"); sctx.drawImage(img, 0, 0); const S = sctx.getImageData(0, 0, IW, IH).data;
+    const Hm = homography([[0, 0], [W, 0], [W, H], [0, H]], quad); // sortida → origen
+    flat = document.createElement("canvas"); flat.width = W; flat.height = H;
+    const fctx = flat.getContext("2d"), O = fctx.createImageData(W, H), od = O.data;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const z = Hm[6] * x + Hm[7] * y + 1, sx = (Hm[0] * x + Hm[1] * y + Hm[2]) / z, sy = (Hm[3] * x + Hm[4] * y + Hm[5]) / z;
+      const x0 = Math.floor(sx), y0 = Math.floor(sy), fx = sx - x0, fy = sy - y0, o = (y * W + x) * 4;
+      od[o + 3] = 255;
+      if (x0 < 0 || y0 < 0 || x0 + 1 >= IW || y0 + 1 >= IH) { od[o] = od[o + 1] = od[o + 2] = 255; continue; }
+      const i00 = (y0 * IW + x0) * 4, i10 = i00 + 4, i01 = i00 + IW * 4, i11 = i01 + 4;
+      for (let c = 0; c < 3; c++) od[o + c] = (S[i00 + c] * (1 - fx) + S[i10 + c] * fx) * (1 - fy) + (S[i01 + c] * (1 - fx) + S[i11 + c] * fx) * fy;
     }
-  } finally { await worker.terminate(); }
-  return texts;
+    fctx.putImageData(O, 0, 0);
+  }
+  const fw = flat.naturalWidth || flat.width, fh = flat.naturalHeight || flat.height, k = Math.min(3, targetW / fw);
+  const out = document.createElement("canvas"); out.width = Math.round(fw * k); out.height = Math.round(fh * k);
+  const octx = out.getContext("2d"); octx.imageSmoothingQuality = "high"; octx.drawImage(flat, 0, 0, out.width, out.height);
+  return out;
 }
 
+/* ---------- Imatge per a l'OCR ----------
+   max(R,G,B): el retolador (lila, verd, groc…) queda clar i el text negre continua fosc.
+   (Provat amb fotos reals: millor que binaritzar o estirar el contrast.) */
+function ocrCanvas(color) {
+  const w = color.width, h = color.height, d = color.getContext("2d").getImageData(0, 0, w, h), px = d.data;
+  for (let i = 0; i < px.length; i += 4) { const v = Math.max(px[i], px[i + 1], px[i + 2]); px[i] = px[i + 1] = px[i + 2] = v; }
+  const out = document.createElement("canvas"); out.width = w; out.height = h; out.getContext("2d").putImageData(d, 0, 0);
+  return out;
+}
+/* Fracció del fons d'una paraula que és de color saturat (retolador) */
+function markerRatio(ctx, b) {
+  const w = b.x1 - b.x0, h = b.y1 - b.y0; if (w < 3 || h < 3) return 0;
+  const sat = (d, i) => { const mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]); return mx < 90 ? -1 : (mx - mn) / mx; };
+  // referència: el paper just a sobre de la paraula (la llum càlida o el paper groguenc no compten com a retolador)
+  const sy = Math.max(0, Math.round(b.y0 - h * 0.7)), sh = Math.max(1, Math.round(h * 0.45));
+  const ref = ctx.getImageData(b.x0, sy, w, sh).data, rs = [];
+  for (let i = 0; i < ref.length; i += 4) { const v = sat(ref, i); if (v >= 0) rs.push(v); }
+  rs.sort((x, y) => x - y);
+  const base = rs.length ? rs[Math.floor(rs.length * 0.3)] : 0;
+  const d = ctx.getImageData(b.x0, b.y0, w, h).data; let hl = 0, bg = 0;
+  for (let i = 0; i < d.length; i += 4) { const v = sat(d, i); if (v < 0) continue; bg++; if (v > Math.max(0.18, base + 0.12)) hl++; }
+  return bg ? hl / bg : 0;
+}
+
+/* ---------- Text net a partir de les línies de Tesseract ---------- */
+function linesToText(data, colorCanvas) {
+  const ctx = colorCanvas.getContext("2d");
+  const lines = (data.lines || []).filter(l => l.words && l.words.length);
+  let kept = 0, dropped = 0, marked = 0, prevBottom = null;
+  const hs = lines.map(l => l.bbox.y1 - l.bbox.y0).sort((a, b) => a - b), lineH = hs[Math.floor(hs.length / 2)] || 30;
+  const out = [];
+  for (const l of lines) {
+    const ws = l.words, mean = ws.reduce((s, w) => s + w.confidence, 0) / ws.length, weak = ws.filter(w => w.confidence < 60).length / ws.length;
+    const letters = l.text.replace(/[^A-Za-zÀ-ÿ]/g, "").length / Math.max(1, l.text.replace(/\s/g, "").length);
+    // línies de fotos, collages o notes a mà: confiança baixa o pocs caràcters de text
+    if (mean < 50 || weak > 0.6 || (letters < 0.5 && !/^\s*\d+[.)]/.test(l.text))) { dropped++; continue; }
+    if (/^\s*\d{1,3}\s*$/.test(l.text)) { dropped++; continue; } // número de pàgina
+    kept++;
+    if (prevBottom !== null && l.bbox.y0 - prevBottom > lineH * 0.9) out.push("");
+    prevBottom = l.bbox.y1;
+    const toks = ws.filter(w => w.confidence >= 30).map(w => ({ t: w.text, hl: markerRatio(ctx, w.bbox) > 0.35 }));
+    // un forat d'una sola paraula dins d'un tram marcat també compta com a marcat
+    toks.forEach((k, i) => { if (!k.hl && toks[i - 1] && toks[i + 1] && toks[i - 1].hl && toks[i + 1].hl) k.hl = true; });
+    const parts = toks.map((k, i) => { const start = k.hl && !(toks[i - 1] && toks[i - 1].hl), end = k.hl && !(toks[i + 1] && toks[i + 1].hl); if (start) marked++; return (start ? "==" : "") + k.t + (end ? "==" : ""); });
+    out.push(parts.join(" "));
+  }
+  return { text: out.join("\n"), kept, dropped, marked };
+}
+
+async function runOCR(pages, lang, onProgress) {
+  const T = await loadTesseract();
+  let cur = 0;
+  const worker = await T.createWorker(lang, 1, { logger: m => { if (m.status === "recognizing text") onProgress((cur + m.progress) / pages.length, `Llegint la pàgina ${cur + 1} de ${pages.length}`); else onProgress(cur / pages.length, m.status === "loading language traineddata" ? "Descarregant el diccionari de l'idioma (només la primera vegada)" : "Preparant el motor d'OCR"); } });
+  const res = [];
+  try {
+    for (cur = 0; cur < pages.length; cur++) {
+      const color = pages[cur];
+      const { data } = await worker.recognize(ocrCanvas(color));
+      const r = linesToText(data, color);
+      res.push({ ...r, conf: data.confidence || 0 });
+    }
+  } finally { await worker.terminate(); }
+  return res;
+}
 
 /* Extracció del tema per regles (sense IA) a partir del text dels apunts */
 const STOP = new Set("el la els les l un una uns unes de del dels d i o a al als en amb per pel pels que què qui es és són son se s com més menys molt no hi ha han ho li lo seu seva seus seves aquest aquesta aquests aquestes aquell aquella quan on si també però sense sobre entre fins cap tot tots totes ja pot poden fa fan cal ser estar te té tenen y the of and to is".split(" "));
@@ -961,12 +1331,12 @@ function defFrom(s) {
   s = s.trim().replace(BULLET, "").replace(/\s+/g, " ");
   if (s.length < 14 || isFormulaText(s)) return null;
   let m;
-  const ok = (term, def) => { term = stripArt(term).replace(/[*_]/g, ""); def = def.trim(); if (!term || wc(term) > 5 || term.length > 45 || !/[a-zà-ÿ]/i.test(term) || /^\d/.test(term) || wc(def) < 3 || STOP.has(norm(term))) return null; if (/^(ex|exemple|p\. ex|compte|atenció|nota|ull)$/i.test(term)) return null; return [term, def]; };
+  const ok = (term, def) => { term = stripArt(String(term).replace(/^(?:[^\s]{1,2}\s+)+(?=\S{3,})/, "")).replace(/[*_]/g, ""); if (/^(no|ja|també|encara|només|molt|més|així)\b/i.test(term) || term.split(/\s+/).some(w => w.length === 1 && !/^[aoiey]$/i.test(w))) return null; def = def.trim(); if (!term || wc(term) > 5 || term.length > 45 || !/[a-zà-ÿ]/i.test(term) || /^\d/.test(term) || wc(def) < 3 || STOP.has(norm(term))) return null; if (/^(ex|exemple|p\. ex|compte|atenció|nota|ull|font)$/i.test(term) || /^(això|aquest|aquesta|aquests|aquestes|ell|ella|ells|elles|que|realitat|fet|cas|veritat|problema)\b/i.test(term)) return null; return [term, def]; };
   if ((m = s.match(/^(.{2,48}?)\s*:\s+(.{10,})$/))) return ok(m[1], m[2]);
   if ((m = s.match(/^(.{2,48}?)\s+[–—-]\s+(.{10,})$/))) return ok(m[1], m[2]);
   if ((m = s.match(/^(?:s'anomena|anomenem|es diu|rep el nom de)\s+(.{2,40}?)\s+(?:a la |a l'|al |als |a les |a )(.{10,})$/i))) return ok(m[1], m[2]);
   if ((m = s.match(/^(.{10,}?)\s+(?:s'anomena|s'anomenen|es diu|es diuen|rep el nom de|es coneix com a?)\s+([^,.;]{2,40})\.?$/i))) return ok(m[2], m[1]);
-  if ((m = s.match(/^([^,.;:]{2,45}?)\s+(?:és|són|es defineix com|consisteix en|és a dir)\s+(.{10,})$/i))) return ok(m[1], m[2]);
+  if ((m = s.match(/^([^,.;:]{2,45}?)\s+(?:és|són|es defineix com|consisteix en)\s+(.{10,})$/i)) && /^(un|una|uns|unes|el|la|els|les|l'|aquell|aquella|qualsevol|tot|tota|com|quan|la que|el que)\b/i.test(m[2]) && !/^(molt|més|menys|que|a dir)\b/i.test(m[2])) return ok(m[1], m[2]);
   return null;
 }
 function suspicious(s) {
@@ -981,11 +1351,33 @@ function keywords(def, term) {
   return Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, 3).map(w => (orig.find(o => norm(o) === w) || w).replace(/^[ldsmtn]'/i, ""));
 }
 const UNIT_RANGE = { kg: [0.5, 100, 0.5], g: [1, 1000, 1], m: [1, 1000, 1], km: [1, 500, 1], cm: [1, 200, 1], s: [1, 120, 1], h: [0.5, 10, 0.5], "m/s": [1, 50, 0.5], "km/h": [10, 150, 5], "m/s²": [0.5, 10, 0.1], "m/s2": [0.5, 10, 0.1], n: [1, 500, 1], j: [10, 5000, 10], w: [10, 2000, 10], pa: [100, 100000, 100], l: [0.1, 10, 0.1], "°c": [0, 100, 1], v: [1, 24, 0.5], a: [0.1, 10, 0.1], "ω": [1, 1000, 1] };
+/* ---------- Retolador i soroll ---------- */
+function collectMarks(text) {
+  const t = String(text).replace(/==\s*\n\s*==/g, " ");
+  const out = [];
+  for (const m of t.matchAll(/==([^=]+)==/g)) { const x = m[1].replace(/\s+/g, " ").replace(/^[\s,.;:·-]+|[\s,;:·-]+$/g, "").trim(); const content = norm(x).split(" ").filter(w => w.length > 4 && !STOP.has(w)); if (wc(x) >= 2 && x.length >= 10 && content.length >= 1 && (wc(x) >= 3 || content.length >= 2) && !suspicious(x) && !/^(a dir|es a dir|per tant|que|i|o)\b/i.test(norm(x))) out.push(x); }
+  return [...new Set(out)];
+}
+function stripNoise(text) {
+  const L = String(text).replace(/==/g, "").split("\n");
+  const isIdx = l => /^\s*(\d+(\.\d+)*\.?\s+)?[A-Za-zÀ-ÿ'"][^\d]{2,60}?\s+\d{1,3}\s*$/.test(l);
+  return L.filter((l, i) => {
+    if (/https?:\/\/|www\.|\.com\/|\bFont:/i.test(l)) return false; // peus de foto i fonts
+    if (isIdx(l) && ((L[i - 1] && isIdx(L[i - 1])) || (L[i + 1] && isIdx(L[i + 1])))) return false; // índex
+    return true;
+  }).join("\n");
+}
+const isQuestion = s => { const x = s.replace(/^\s*\d{1,2}\s*[.)]\s*/, "").trim(); return wc(x) >= 5 && (/\?\s*$/.test(x) || (/\b(explica|raona|esbrina|imagina|descriu|compara|justifica|investiga|reflexiona|defineix)\b/i.test(x) && /[:?.]\s*$/.test(x) && /^(imagina|explica|raona|esbrina|busca|investiga|reflexiona|descriu|compara|justifica|defineix|escriu|fes|elabora|pensa)\b/i.test(x) && wc(x) <= 60)); };
+const sentencesOf = s => String(s).split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý«"(])/).map(x => x.trim()).filter(Boolean);
+
 function extractTopic(text, meta) {
+  const marks = collectMarks(text), markN = marks.map(norm);
+  text = stripNoise(text);
   const lines = logicalLines(text), full = cleanText(text);
+  const marked = sent => { const n = " " + norm(sent) + " "; return markN.some(m => n.includes(" " + m + " ")); };
   const t = { titol: meta.titol || "", materia: meta.materia, curs: meta.curs, seccions: [], conceptes: [], formules: [], procediments: [], relacions: [], cronologia: [], errors_tipics: [], preguntes_obertes: [] };
   // títol
-  if (!t.titol) { const h = lines.find(l => l.kind === "h") || lines.find(l => l.text && wc(l.text) <= 8); t.titol = h ? cap1(h.text).slice(0, 70) : "Els meus apunts"; }
+  if (!t.titol) { const h = lines.find(l => l.kind === "h") || lines.find(l => l.text && wc(l.text) <= 8); t.titol = h ? cap1(h.text.replace(/[\s,;:.\-–]+$/, "")).slice(0, 70) : "Els meus apunts"; }
   // llegenda de variables: "m = massa (kg)", "v: velocitat (m/s)"
   const legend = {}, consts = {};
   for (const m of full.matchAll(/\b([A-Za-z][A-Za-z0-9_]{0,2})\s*(?:=|:|→|és|es)\s*(?:la |el |l'|les |els )?([a-zà-ÿç·' ]{3,30}?)\s*\(([^)]{1,12})\)/g)) if (!legend[m[1]]) legend[m[1]] = { nom: m[2].trim(), unitat: m[3].trim() };
@@ -996,11 +1388,21 @@ function extractTopic(text, meta) {
     if (nums.length >= 3) t.procediments.push({ id: "p_" + slug(lastHeading || "procediment"), nom: cap1(lastHeading || "Procediment"), passos: nums.map(x => endDot(cap1(x.text))) });
     listRun = [];
   };
-  const pushPoint = s => { if (!section) { section = { titol: "Apunts", punts: [] }; t.seccions.push(section); } if (section.punts.length < 10) section.punts.push(s.length > 180 ? s.slice(0, 177) + "…" : s); };
+  const pushPoint = s => {
+    if (!section) { section = { titol: "Apunts", punts: [] }; t.seccions.push(section); }
+    let pts = [s];
+    if (s.length > 180) { const ss = sentencesOf(s), mk = ss.filter(marked); pts = mk.length ? mk : ss.slice(0, 1); }
+    for (const x of pts) if (section.punts.length < 10) section.punts.push(x.length > 220 ? x.slice(0, 217) + "…" : x);
+  };
   for (const l of lines) {
     if (l.kind !== "li" && listRun.length) flushList();
     if (l.kind === "blank") continue;
     if (l.kind === "h") { lastHeading = l.text; section = { titol: cap1(l.text), punts: [] }; t.seccions.push(section); continue; }
+    if ((l.kind === "li" || l.kind === "p") && isQuestion(l.text) && l.text.length < 400) {
+      const q = l.text.replace(/^\s*\d{1,2}\s*[.)]\s*/, "").trim();
+      if (!t.preguntes_obertes.some(x => x.pregunta === q)) t.preguntes_obertes.push({ id: "o_" + slug(q), pregunta: q, resposta_model: "", criteris: ["Respon exactament el que es pregunta", "Argumenta la resposta amb idees del tema", "Fa servir algun exemple o dada concreta"] });
+      continue;
+    }
     if (l.kind === "li") listRun.push(l);
     const s = l.text;
     // exemple associat al concepte anterior
@@ -1025,12 +1427,16 @@ function extractTopic(text, meta) {
     // cronologia
     const ym = s.match(/^(?:any\s+)?(-?\d{3,4})\s*[:.\-–—)]?\s+(.{8,})$/) || s.match(/^(.{8,}?)\s*\((\d{3,4})\)\.?$/);
     if (ym) { const yearFirst = /^\D?-?\d/.test(s.replace(/^any\s+/i, "")); const any = yearFirst ? ym[1] : ym[2], fet = yearFirst ? ym[2] : ym[1]; if (+any > 0 && +any < 2100) { t.cronologia.push({ any, fet: endDot(cap1(fet)) }); pushPoint(s); continue; } }
-    // definicions
-    const d = defFrom(s);
-    if (d && !t.conceptes.some(c => norm(c.nom) === norm(d[0]))) {
-      const c = { id: slug(d[0]), nom: d[0].length > 1 && d[0] === d[0].toUpperCase() ? d[0] : d[0].charAt(0).toLowerCase() + d[0].slice(1), definicio: endDot(cap1(d[1])), exemple: "", paraules_clau: keywords(d[1], d[0]), sinonims: [], distractors: [], font: s.length > 140 ? s.slice(0, 137) + "…" : s, pista_conceptual: "" };
-      if (suspicious(s)) { c.dubtos = true; c.motiu = "Possible error de lectura de l'OCR: revisa'l"; }
+    // definicions (la línia sencera i, en paràgrafs, cada frase)
+    const cands = [s, ...(l.kind === "p" && s.length > 120 ? sentencesOf(s) : [])];
+    for (const piece of cands) {
+      const d = defFrom(piece);
+      if (!d || t.conceptes.some(c => norm(c.nom) === norm(d[0]))) continue;
+      const def = d[1].length > 260 ? sentencesOf(d[1])[0] : d[1];
+      const c = { id: slug(d[0]), nom: d[0].length > 1 && d[0] === d[0].toUpperCase() ? d[0] : d[0].charAt(0).toLowerCase() + d[0].slice(1), definicio: endDot(cap1(def)), exemple: "", paraules_clau: keywords(def, d[0]), sinonims: [], distractors: [], font: piece.length > 160 ? piece.slice(0, 157) + "…" : piece, pista_conceptual: "" };
+      if (suspicious(piece)) { c.dubtos = true; c.motiu = "Possible error de lectura de l'OCR: revisa'l"; }
       t.conceptes.push(c); lastConcept = c;
+      if (piece === s) break;
     }
     pushPoint(s);
   }
@@ -1050,8 +1456,61 @@ function extractTopic(text, meta) {
   t.resum = t.conceptes.slice(0, 4).map(c => `${cap1(c.nom)}: ${c.definicio}`).join(" ") || lines.filter(l => l.kind === "p").map(l => l.text).join(" ").slice(0, 500);
   t.conceptes.filter(c => c.paraules_clau.length >= 2).slice(0, 3).forEach(c => t.preguntes_obertes.push({ id: "o_" + c.id, pregunta: `Explica què és ${/^[aeiouàèéíòóú]/i.test(c.nom) ? "l'" : "el/la "}${c.nom}${c.exemple ? " i posa'n un exemple" : ""}.`, resposta_model: c.definicio + (c.exemple ? " Exemple: " + c.exemple : ""), criteris: [...c.paraules_clau.slice(0, 3).map(k => `Fa servir la idea de «${k}»`), ...(c.exemple ? ["Posa un exemple adequat"] : [])], concepte_id: c.id }));
   t.procediments.slice(0, 1).forEach(p => t.preguntes_obertes.push({ id: "o_" + p.id, pregunta: `Descriu els passos per a: ${p.nom.toLowerCase()}.`, resposta_model: p.passos.join(" "), criteris: [`Comença amb: ${p.passos[0]}`, `Acaba amb: ${p.passos[p.passos.length - 1]}`, "Els passos estan en l'ordre correcte"] }));
+  humanities(t, lines, full, marks);
   t.seccions = t.seccions.filter(s => s.punts.length);
   return t;
+}
+
+/* ---------- Text d'humanitats: retolador, dates, grups ---------- */
+const DECADE_WORDS = { vint: 20, trenta: 30, quaranta: 40, cinquanta: 50, seixanta: 60, setanta: 70, vuitanta: 80, noranta: 90 };
+function romanToInt(r) { const v = { I: 1, V: 5, X: 10, L: 50 }; let n = 0; r = r.toUpperCase(); for (let i = 0; i < r.length; i++) { const a = v[r[i]], b = v[r[i + 1]] || 0; n += a < b ? -a : a; } return n; }
+function findDate(sent) {
+  const c = [];
+  let m;
+  const re1 = /\banys\s+(?:19)?([2-9]0)\b/gi; while ((m = re1.exec(sent))) c.push({ i: m.index, len: m[0].length, label: "anys " + m[1], ordre: 1900 + +m[1] + 5 });
+  const re2 = new RegExp("\\banys\\s+(" + Object.keys(DECADE_WORDS).join("|") + ")\\b", "gi"); while ((m = re2.exec(sent))) { const d = DECADE_WORDS[m[1].toLowerCase()]; c.push({ i: m.index, len: m[0].length, label: "anys " + d, ordre: 1900 + d + 5 }); }
+  const re3 = /\b([2-9]0)s\b/g; while ((m = re3.exec(sent))) c.push({ i: m.index, len: m[0].length, label: "anys " + m[1], ordre: 1900 + +m[1] + 5 });
+  const re4 = /\b(?:(?:primera|segona)\s+)?(?:(principis|finals|meitat|mitjan)\s+(?:de l'|del\s+))?segle\s+([IVXL]{1,5})\b/gi;
+  while ((m = re4.exec(sent))) { const n = romanToInt(m[2]); if (n < 1 || n > 21) continue; const q = (m[1] || "").toLowerCase(), half = (/^(primera|segona)/i.exec(m[0]) || [""])[0].toLowerCase(), off = q === "principis" ? 10 : q === "finals" ? 90 : half === "primera" ? 25 : half === "segona" ? 75 : 50; c.push({ i: m.index, len: m[0].length, label: (half ? half + " " : "") + (q ? q + " del " : "") + "segle " + m[2].toUpperCase(), ordre: (n - 1) * 100 + off }); }
+  const re5 = /(^|[^\d.,])(1[0-9]{3}|20[0-4][0-9])(?![\d]|[.,]\d)/g; while ((m = re5.exec(sent))) c.push({ i: m.index + m[1].length, len: m[2].length, label: m[2], ordre: +m[2] });
+  return c.sort((a, b) => a.i - b.i)[0] || null;
+}
+function humanities(t, lines, full, marks) {
+  // idees clau: el que l'alumne ha marcat amb retolador, amb la frase on surt
+  const plain = full.replace(/\s+/g, " "), sents = sentencesOf(plain);
+  // una idea per frase: tots els trossos marcats de la frase; el més llarg serà el buit a completar
+  t.idees_clau = []; const byFrase = new Map();
+  for (const mk of marks) {
+    const nm = norm(mk), frase = sents.find(x => (" " + norm(x) + " ").includes(" " + nm + " "));
+    if (!frase || frase.length > 400) continue;
+    if (!byFrase.has(frase)) byFrase.set(frase, []);
+    const arr = byFrase.get(frase); if (!arr.some(x => norm(x) === nm)) arr.push(mk);
+  }
+  for (const [frase, ms] of byFrase) {
+    const main = ms.slice().sort((a, b) => b.length - a.length)[0];
+    t.idees_clau.push({ id: "k_" + slug(main), text: main, frase, marques: ms });
+    if (t.idees_clau.length >= 25) break;
+  }
+  // dates dins de les frases (anys 70, 1950, segle XIX…)
+  for (const sent of sents) {
+    if (sent.length < 25 || sent.length > 320 || isQuestion(sent) || suspicious(sent)) continue;
+    const d = findDate(sent); if (!d) continue;
+    if (t.cronologia.some(e => e.fet === sent)) continue;
+    t.cronologia.push({ any: d.label, ordre: d.ordre, fet: sent });
+    if (t.cronologia.length >= 18) break;
+  }
+  t.cronologia.forEach(e => { if (e.ordre === undefined) e.ordre = parseFloat(e.any) || 0; });
+  // grups: un títol (o una frase que acaba en «:») seguit de 3 o més elements de llista
+  t.grups = [];
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i]; if (!(l.kind === "h" || (l.kind === "p" && (/:$/.test(l.text) || wc(l.text) <= 4)))) continue;
+    const items = []; let j = i + 1;
+    while (j < lines.length && lines[j].kind === "li") { const x = lines[j].text.split(/:\s/)[0].trim(); if (x && x.length <= 70 && !isQuestion(x)) items.push(x.replace(/[.;,]$/, "")); j++; }
+    if (items.length >= 3) t.grups.push({ id: "g_" + slug(l.text), nom: cap1(l.text.replace(/:$/, "")).slice(0, 80), items: items.slice(0, 20) });
+  }
+  // resum: les frases marcades amb retolador, si n'hi ha
+  const mk = t.idees_clau.map(k => k.frase).filter((x, i, a) => a.indexOf(x) === i);
+  if (mk.length >= 2) t.resum = mk.slice(0, 6).join(" ");
 }
 
 
@@ -1064,36 +1523,41 @@ function viewHome(el) {
   const ts = allTopics(), ws = weekStreak(), g = globalStats();
   const dueTotal = ts.reduce((n, t) => n + topicStats(t).due, 0);
   const pend = S.errors.filter(e => !e.fixed).length;
+  const L = levelOf(S.xp);
   el.innerHTML = `
-  <section class="hero">
-    <div class="card stack">
+  <section class="hero2">
+    <div class="hero-main">
       <span class="eyebrow">De la foto a l'examen</span>
-      <h1>Els teus apunts, convertits en entrenament</h1>
-      <p class="muted">Fes una foto dels apunts: l'app en llegeix el text i el converteix en apunts, simulacions, pràctica amb correcció immediata i un possible examen. Tot funciona al teu mòbil, sense IA i sense comptes.</p>
-      <div class="row"><button class="btn mark" id="newT">Fer foto dels apunts</button>${dueTotal || pend ? `<button class="btn primary" id="quick">Repassos d'avui (${dueTotal + pend})</button>` : ""}</div>
+      <h1>Els teus apunts, <span class="hl">vius</span>.</h1>
+      <p>Fes una foto dels apunts i converteix-los en resum, idees clau, pràctica amb correcció immediata i un possible examen. Sense IA i sense comptes.</p>
+      <div class="row"><button class="btn mark big" id="newT"><span aria-hidden="true">📷</span> Fer foto dels apunts</button>${dueTotal || pend ? `<button class="btn primary big" id="quick">Repassos d'avui · ${dueTotal + pend}</button>` : ""}</div>
     </div>
-    <div class="card stack">
-      <span class="eyebrow">Aquesta setmana</span>
-      <div class="row" style="justify-content:space-between"><span>Dies d'estudi</span><b class="mono">${ws.thisWeek} / 3</b></div>
-      <div class="progress"><span style="width:${Math.min(100, ws.thisWeek / 3 * 100)}%"></span></div>
-      <div class="row" style="justify-content:space-between"><span>Errors per corregir</span><b class="mono">${pend}</b></div>
-      <div class="row" style="justify-content:space-between"><span>Elements dominats</span><b class="mono">${g.dom}</b></div>
-      <div class="row" style="justify-content:space-between"><span>Estrelles</span><b class="mono">${totalStars()} ★</b></div>
-      <p class="small muted">La ratxa és setmanal: n'hi ha prou amb 3 dies. Tens un comodí: una setmana fluixa (amb almenys 1 dia) no et trenca la ratxa.</p>
+    <div class="hero-side">
+      <div class="lvcard"><div class="lvnum"><small>Nivell</small><b>${L.n}</b></div><div class="grow"><div class="row" style="justify-content:space-between"><b>${S.xp} XP</b><span class="small">${L.toNext} XP per al nivell ${L.n + 1}</span></div><div class="xpbar"><span style="width:${L.pct}%"></span></div></div></div>
+      <div class="kpis">
+        <div class="kpi"><b>${ws.thisWeek}<small>/3</small></b><span>dies aquesta setmana</span></div>
+        <div class="kpi"><b>${ws.streak}<small>🔥</small></b><span>setmanes de ratxa</span></div>
+        <div class="kpi"><b>${totalStars()}<small>★</small></b><span>estrelles</span></div>
+        <div class="kpi ${pend ? "alert" : ""}"><b>${pend}</b><span>errors per corregir</span></div>
+      </div>
     </div>
   </section>
   <section class="stack">
     <div class="row" style="justify-content:space-between"><h2>Els teus temes</h2>${LEGEND}</div>
-    <div class="grid">${ts.map(t => { const s = topicStats(t); return `
-      <article class="card topic">
-        <div class="meta">${t.demo ? '<span class="pill">Exemple</span>' : '<span class="pill blue">Dels teus apunts</span>'}<span class="pill">${esc(t.materia)}</span>${s.due ? `<span class="pill mark">${s.due} per repassar</span>` : ""}</div>
-        <div class="row" style="justify-content:space-between"><h3>${esc(t.titol)}</h3>${starsHTML(S.stars[t.id] || 0)}</div>
-        <p class="small muted">${t.conceptes.length} conceptes · ${COMPILED[t.id].formules.length} fórmules · ${t.procediments.length} procediments</p>
-        ${stackedBar(s)}
-        <p class="small"><b>${Math.round(s.score * 100)}%</b> de domini · ${Math.round(s.consolidat * 100)}% consolidat</p>
-        <div class="row"><button class="btn primary small" data-open="${t.id}">Obrir</button><button class="btn small" data-prac="${t.id}">Practicar</button></div>
-      </article>`; }).join("")}</div>
+    <div class="grid topics">${ts.map(t => { const s = topicStats(t), sj = subjectStyle(t.materia), n = [t.conceptes.length && `${t.conceptes.length} conceptes`, COMPILED[t.id].formules.length && `${COMPILED[t.id].formules.length} fórmules`, (t.idees_clau || []).length && `${t.idees_clau.length} idees clau`, t.cronologia.length && `${t.cronologia.length} dates`].filter(Boolean).slice(0, 3).join(" · "); return `
+      <article class="tcard" style="--sj:${sj.c}">
+        <div class="tband"><span class="tic" aria-hidden="true">${sj.ic}</span><span class="small">${esc(t.materia)}${t.curs ? " · " + esc(t.curs) : ""}</span>${t.demo ? '<span class="pill">Exemple</span>' : ""}</div>
+        <div class="tbody">
+          <div class="row" style="justify-content:space-between;flex-wrap:nowrap;align-items:flex-start"><div class="stack" style="gap:6px"><h3>${esc(t.titol)}</h3>${starsHTML(S.stars[t.id] || 0)}</div>${ring(Math.round(s.score * 100), 60, sj.c)}</div>
+          <p class="small muted">${n}</p>
+          ${stackedBar(s)}
+          <div class="row">${s.due ? `<span class="pill mark">${s.due} per repassar</span>` : ""}</div>
+          <div class="row"><button class="btn primary" data-prac="${t.id}">▶ Practicar</button><button class="btn" data-open="${t.id}">Obrir</button></div>
+        </div>
+      </article>`; }).join("")}
+      <button class="tcard add" id="newT2"><span class="plus" aria-hidden="true">+</span><b>Nou tema</b><span class="small muted">Fes fotos dels apunts</span></button></div>
   </section>`;
+  $("#newT2", el).onclick = () => Router.push("nou");
   $("#newT", el).onclick = () => Router.push("nou");
   $$("[data-open]", el).forEach(b => b.onclick = () => { S.active = b.dataset.open; save(); Router.push("tema"); });
   $$("[data-prac]", el).forEach(b => b.onclick = () => { S.active = b.dataset.prac; save(); startPractice([S.active]); Router.push("practica"); });
@@ -1110,8 +1574,10 @@ function viewTopic(el) {
     ["practica", "Practicar", s.due ? `${s.due} repassos pendents` : "Sessió amb correcció immediata"],
     ["examen", boss ? "Repte final" : "Possible examen", boss ? "Desbloquejat: demostra que ho domines" : "Simulacre cronometrat"]
   ];
-  el.innerHTML = `<div class="card stack"><span class="eyebrow">${esc(t.materia)}${t.curs ? " · " + esc(t.curs) : ""}</span><div class="row" style="justify-content:space-between"><h1>${esc(t.titol)}</h1>${starsHTML(S.stars[t.id] || 0)}</div>${stackedBar(s)}<p class="small"><b>${Math.round(s.score * 100)}%</b> de domini · ${s.counts[3]} dominats de ${s.n}</p></div>
-    <div class="tiles">${tiles.map(([id, n, d]) => `<button class="tile" data-to="${id}"><b>${n}</b><span class="small muted">${d}</span></button>`).join("")}</div>`;
+  const sj = subjectStyle(t.materia), icons = { apunts: "📒", lab: "🧪", practica: "🎯", examen: boss ? "🏆" : "📝" };
+  el.innerHTML = `<div class="thead" style="--sj:${sj.c}"><div class="grow stack" style="gap:8px"><span class="eyebrow">${sj.ic} ${esc(t.materia)}${t.curs ? " · " + esc(t.curs) : ""}</span><h1>${esc(t.titol)}</h1>${starsHTML(S.stars[t.id] || 0)}<p class="small">${s.counts[3]} dominats · ${s.counts[2]} consolidats · ${s.n} elements</p></div>${ring(Math.round(s.score * 100), 92, "#fff")}</div>
+    ${stackedBar(s)}
+    <div class="tiles">${tiles.map(([id, n, d]) => `<button class="tile ${id === "practica" ? "hot" : ""} ${id === "examen" && boss ? "boss" : ""}" data-to="${id}"><span class="tic" aria-hidden="true">${icons[id]}</span><b>${n}</b><span class="small muted">${d}</span></button>`).join("")}</div>`;
   $$("[data-to]", el).forEach(b => b.onclick = () => {
     const to = b.dataset.to;
     if (to === "practica") { startPractice([t.id]); Router.push("practica"); }
@@ -1125,7 +1591,7 @@ let coverMode = false;
 function viewNotes(el) {
   const t = topicById(S.active); if (!t) return go("inici");
   const C = COMPILED[t.id], flagged = t.conceptes.filter(c => c.dubtos).length + C.formules.filter(f => f.dubtos).length;
-  const sections = [["resum", "Resum"], ["esquema", "Esquema"], ["glossari", "Glossari"], C.formules.length && ["formules", "Fórmules"], t.procediments.length && ["procediments", "Procediments"], t.relacions.length && ["mapa", "Mapa conceptual"], t.cronologia.length && ["cronologia", "Cronologia"], t.errors_tipics.length && ["compte", "Compte!"]].filter(Boolean);
+  const sections = [["resum", "Resum"], (t.idees_clau || []).length && ["idees", "Idees clau"], ["esquema", "Esquema"], t.conceptes.length && ["glossari", "Glossari"], (t.grups || []).length && ["grups", "Grups"], C.formules.length && ["formules", "Fórmules"], t.procediments.length && ["procediments", "Procediments"], t.relacions.length && ["mapa", "Mapa conceptual"], t.cronologia.length && ["cronologia", "Cronologia"], t.errors_tipics.length && ["compte", "Compte!"]].filter(Boolean);
   el.innerHTML = `
   <div class="card stack">
     <div class="row" style="justify-content:space-between"><div class="stack" style="gap:4px"><span class="eyebrow">${esc(t.materia)} ${t.curs ? "· " + esc(t.curs) : ""}</span><h1>${esc(t.titol)}</h1></div>
@@ -1137,14 +1603,16 @@ function viewNotes(el) {
     <nav class="toc card" aria-label="Seccions">${sections.map(([id, n]) => `<a href="#apunts" data-sec="${id}">${n}</a>`).join("")}</nav>
     <div class="stack">
       <section class="card stack" id="s-resum"><h2>Resum</h2><p>${esc(t.resum)}</p>${recallBox(t, 0)}</section>
+      ${(t.idees_clau || []).length ? `<section class="card stack" id="s-idees"><h2>Idees clau</h2><p class="small muted">El que vas marcar amb retolador, dins la seva frase.</p><ul class="clean ideas">${t.idees_clau.map(k => `<li>${markAll(k.frase, (k.marques && k.marques.length) ? k.marques : [k.text])} ${stateChip(t.id, "k:" + k.id)}</li>`).join("")}</ul></section>` : ""}
       <section class="card stack" id="s-esquema"><h2>Esquema</h2>${t.seccions.map(s => `<div class="stack" style="gap:6px"><h3>${esc(s.titol)}</h3><ul class="clean">${s.punts.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`).join("")}${recallBox(t, 1)}</section>
       <section class="card stack" id="s-glossari"><div class="row" style="justify-content:space-between"><h2>Glossari</h2><label class="row small"><input type="checkbox" id="cover" ${coverMode ? "checked" : ""}> Tapa i recorda</label></div>
         <p class="small muted">${coverMode ? "Intenta recordar cada definició abans de tocar-la per destapar-la." : "Activa «Tapa i recorda» per amagar les definicions i posar-te a prova."}</p>
         <div class="gloss">${t.conceptes.map(c => `<div class="term ${c.dubtos ? "flag" : ""}" data-cid="${c.id}"><h3><span class="hl">${esc(c.nom)}</span> ${stateChip(t.id, "c:" + c.id)}</h3><p class="def ${coverMode ? "covered" : ""}" tabindex="0">${esc(c.definicio)}</p>${c.exemple ? `<p class="small muted">Ex.: ${esc(c.exemple)}</p>` : ""}${c.font ? `<p class="src">«${esc(c.font)}»</p>` : ""}${c.dubtos ? `<p class="small" style="color:var(--warn)"><b>Dubtós:</b> ${esc(c.motiu || "comprova-ho amb la foto")}</p><div class="row"><button class="btn small" data-okc="${c.id}">És correcte</button><button class="btn small ghost" data-rmc="${c.id}">Treure'l</button></div>` : ""}</div>`).join("")}</div></section>
+      ${(t.grups || []).length ? `<section class="card stack" id="s-grups"><h2>Grups</h2><div class="groups">${t.grups.map(g => `<div class="group"><h3>${esc(g.nom)}</h3><ul class="clean">${g.items.map(i => `<li>${esc(i)}</li>`).join("")}</ul></div>`).join("")}</div></section>` : ""}
       ${C.formules.length ? `<section class="card stack" id="s-formules"><h2>Fórmules</h2>${C.formules.map(f => `<div class="stack" style="gap:6px"><h3>${esc(f.nom)}</h3><span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span><p class="small muted">${[`${esc(f.lhs)}: ${esc(f.res.nom)} (${esc(f.res.unitat)})`, ...f.vars.map(v => `${esc(v.simbol)}: ${esc(v.nom)} (${esc(v.unitat)})`), ...f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`)].join(" · ")}</p>${f.errors.length ? `<p class="small"><b>Errors habituals:</b> ${f.errors.map(e => esc(e.explicacio)).join(" ")}</p>` : ""}</div>`).join('<div class="sep"></div>')}<div class="row"><button class="btn small" data-go="lab">Obrir el laboratori</button></div></section>` : ""}
       ${t.procediments.length ? `<section class="card stack" id="s-procediments"><h2>Procediments</h2>${t.procediments.map(p => `<div class="stack" style="gap:6px"><h3>${esc(p.nom)}</h3><ol class="steps">${p.passos.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>`).join("")}</section>` : ""}
       ${t.relacions.length ? `<section class="card stack" id="s-mapa"><h2>Mapa conceptual</h2><div class="map-wrap">${conceptMap(t)}</div></section>` : ""}
-      ${t.cronologia.length ? `<section class="card stack" id="s-cronologia"><h2>Cronologia</h2><div class="tl">${t.cronologia.slice().sort((a, b) => parseFloat(a.any) - parseFloat(b.any)).map(e => `<div><b>${esc(e.any)}</b> · ${esc(e.fet)}</div>`).join("")}</div></section>` : ""}
+      ${t.cronologia.length ? `<section class="card stack" id="s-cronologia"><h2>Cronologia</h2><div class="tl">${t.cronologia.slice().sort((a, b) => a.ordre - b.ordre).map(e => `<div><b>${esc(e.any)}</b> · ${esc(e.fet)}</div>`).join("")}</div></section>` : ""}
       ${t.errors_tipics.length ? `<section class="card stack" id="s-compte"><h2>Compte! Errors típics</h2>${t.errors_tipics.map(e => `<div class="fb bad"><p><b>Error:</b> ${esc(e.afirmacio_erronia)}</p><p><b>En realitat:</b> ${esc(e.correccio)}</p></div>`).join("")}</section>` : ""}
     </div>
   </div>`;
@@ -1180,6 +1648,16 @@ function conceptMap(t) {
   return `<svg width="${W0}" height="${H0}" viewBox="0 0 ${W0} ${H0}" role="img" aria-label="Mapa conceptual"><defs><marker id="ar" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line2)"/></marker></defs>${edges}${ns}</svg>`;
 }
 
+
+/* ressalta (escapant-ho tot) els trossos marcats dins d'una frase */
+function markAll(frase, marks) {
+  const spans = [];
+  for (const m of marks) { const re = new RegExp(m.trim().split(/\s+/).map(reEsc).join("\\s+"), "i"), x = frase.match(re); if (x) spans.push([x.index, x.index + x[0].length]); }
+  spans.sort((a, b) => a[0] - b[0]);
+  let out = "", pos = 0;
+  for (const [a, b] of spans) { if (a < pos) continue; out += esc(frase.slice(pos, a)) + "<mark>" + esc(frase.slice(a, b)) + "</mark>"; pos = b; }
+  return out + esc(frase.slice(pos));
+}
 
 /* ---------- Laboratori (simulacions) ---------- */
 let labState = {};
@@ -1312,7 +1790,7 @@ function viewPractice(el) {
   const st = { attempts: 0, hint: 0, sel: null, order: item.order ? item.order.slice() : null, done: false, conf: null };
   el.innerHTML = `<div class="card qcard ${isGolden(P, P.i) ? "golden" : ""}">
     <div class="qhead"><span class="row"><span class="pill blue">${esc(item.type)}</span><span class="small muted">${esc(item.topic)}</span>${stateChip(item.tid, item.key)}</span><span class="row">${isGolden(P, P.i) ? '<span class="pill gold">Pregunta d\'or</span>' : ""}${P.combo >= 2 ? `<span class="pill mark">Combo x${P.combo}</span>` : ""}<span class="small mono muted">${P.i + 1} / ${P.items.length}</span></span></div>
-    <div class="progress"><span style="width:${P.i / P.items.length * 100}%"></span></div>
+    <div class="progress qprog"><span style="width:${P.i / P.items.length * 100}%"></span></div>
     <div id="qp">${item.prompt}</div>
     <div id="qin"></div>
     <div class="actions" id="qact">
@@ -1373,7 +1851,9 @@ function viewPractice(el) {
     if (item.mode === "mcq" || item.mode === "order") paintInput(r);
     else { const a = $("#ans", qin); if (a) a.disabled = true; }
     $("#qact", el).hidden = true; $("#hintArea", el).innerHTML = "";
-    const nx = $("#next", el); nx.hidden = false; nx.focus(); nx.onclick = () => { P.i++; viewPractice(el); };
+    const card = $(".qcard", el), box = $("#fb .fb", el); card.classList.add("answered", r.ok ? "is-ok" : "is-bad");
+    const nx = $("#next", el); nx.hidden = false; if (box) { box.classList.add("sheet"); box.appendChild(nx); nx.classList.add("big"); nx.textContent = P.i + 1 >= P.items.length ? "Veure el resultat" : "Continuar"; }
+    nx.focus(); nx.onclick = () => { P.i++; viewPractice(el); };
   }
   function flash(msg) { $("#fb", el).innerHTML = `<p class="small muted">${esc(msg)}</p>`; }
   $$("[data-conf]", el).forEach(b => b.onclick = () => submit(b.dataset.conf));
@@ -1564,7 +2044,7 @@ function viewProgress(el) {
   $("#bk", el).onclick =() => saveFile("apunts-vius-copia.json", JSON.stringify(S), "application/json");
   $("#imp", el).onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const o = JSON.parse(await f.text()); if (!o || !o.prog) throw 0; S = migrate(o); Object.values(S.topics).forEach(t => compile(t)); save(); $("#bkOut", el).textContent = "Còpia importada."; render(); } catch { $("#bkOut", el).textContent = "Aquest fitxer no és una còpia vàlida d'Apunts Vius."; } };
 }
-function keyLabel(t, k) { const [kind, id] = k.split(":"); if (kind === "c") return (conceptById(t, id) || {}).nom || id; if (kind === "f") return ((COMPILED[t.id].formules.find(f => f.id === id)) || {}).nom || id; if (kind === "p") return (t.procediments.find(p => p.id === id) || {}).nom || id; if (kind === "e") return "Error: " + ((t.errors_tipics.find(e => e.id === id) || {}).afirmacio_erronia || id).slice(0, 40) + "…"; if (kind === "r") return "Relacions"; if (kind === "t") return "Cronologia"; return k; }
+function keyLabel(t, k) { const [kind, id] = k.split(":"); if (kind === "c") return (conceptById(t, id) || {}).nom || id; if (kind === "f") return ((COMPILED[t.id].formules.find(f => f.id === id)) || {}).nom || id; if (kind === "p") return (t.procediments.find(p => p.id === id) || {}).nom || id; if (kind === "e") return "Error: " + ((t.errors_tipics.find(e => e.id === id) || {}).afirmacio_erronia || id).slice(0, 40) + "…"; if (kind === "r") return "Relacions"; if (kind === "k") return ((t.idees_clau || []).find(x => x.id === id) || {}).text || id; if (kind === "d") { const e = (t.cronologia || []).find(x => x.id === id); return e ? e.any + ": " + e.fet.slice(0, 30) + "…" : id; } if (kind === "g") return "Grup: " + (((t.grups || []).find(x => x.id === id) || {}).nom || id); if (kind === "v") return "Vertader o fals"; if (kind === "t") return "Cronologia"; return k; }
 
 
 /* ---------- Vista: nou tema ---------- */
@@ -1596,8 +2076,8 @@ function viewNew(el) {
     <input type="file" id="fileCam" accept="image/*" capture="environment" hidden>
     <input type="file" id="file" accept="image/*" multiple hidden>
     <div class="thumbs" id="thumbs"></div>
-    <div class="row"><label class="row small"><input type="checkbox" id="enh" checked> Millorar el contrast abans de llegir</label></div>
-    <div class="row"><button class="btn small" id="ocr">Tornar a llegir les fotos</button><span class="small muted" id="ocrMsg"></span></div>
+    <div id="crop"></div>
+    <div class="row"><button class="btn small" id="ocr" ${newState.photos.length ? "" : "hidden"}>Llegir les pàgines pendents</button><span class="small muted" id="ocrMsg"></span></div>
     <div class="progress" id="ocrBar" hidden><span style="width:0%"></span></div>
     <label class="f" for="txt">Text dels apunts <span class="small muted" style="font-weight:400">(corregeix aquí els errors de lectura, o enganxa-hi el text directament)</span></label>
     <textarea id="txt" style="min-height:220px;font-family:var(--f-mono);font-size:.88rem" placeholder="Aquí apareixerà el text llegit de les fotos.">${esc(newState.text)}</textarea>
@@ -1612,16 +2092,16 @@ function viewNew(el) {
   $("#doImp", el).onclick = () => { const out = $("#impOut", el); try { const raw = JSON.parse(($("#imp", el).value.match(/\{[\s\S]*\}/) || [""])[0]); addTopic(raw, out, $("#mat", el).value, $("#curs", el).value); } catch { out.innerHTML = `<div class="fb bad">No és un JSON vàlid. Comprova que l'has copiat sencer.</div>`; } };
   wirePhotos(el);
   $("#ocr", el).onclick = async () => {
-    const todo = newState.photos.filter(p => p.blob && !p.read), blobs = todo.map(p => p.blob), msg = $("#ocrMsg", el), bar = $("#ocrBar", el), btn = $("#ocr", el);
-    if (!blobs.length) { msg.textContent = newState.photos.length ? "Ja s'han llegit totes les fotos." : "Primer fes o tria alguna foto."; return; }
+    const todo = newState.photos.filter(p => p.page && !p.read), msg = $("#ocrMsg", el), bar = $("#ocrBar", el), btn = $("#ocr", el);
+    if (!todo.length) { msg.textContent = newState.photos.length ? "Ja s'han llegit totes les pàgines." : "Primer fes o tria alguna foto."; return; }
     btn.disabled = true; bar.hidden = false;
     try {
-      const res = await runOCR(blobs, $("#lang", el).value, (p, m) => { $("span", bar).style.width = Math.round(p * 100) + "%"; msg.textContent = m; }, $("#enh", el).checked);
+      const res = await runOCR(todo.map(p => p.page), $("#lang", el).value, (pr, m) => { $("span", bar).style.width = Math.round(pr * 100) + "%"; msg.textContent = m; });
       todo.forEach(p => p.read = true);
       const txt = res.map(r => r.text.trim()).join("\n\n");
       newState.text = (newState.text ? newState.text + "\n\n" : "") + txt; $("#txt", el).value = newState.text;
-      const conf = Math.round(res.reduce((s, r) => s + r.conf, 0) / res.length);
-      msg.innerHTML = conf >= 75 ? `Fet. Lectura bona (${conf}% de confiança). Revisa el text i analitza'l.` : `<span style="color:var(--warn)">Lectura dubtosa (${conf}% de confiança). Corregeix el text, o prova amb més llum, més a prop o sense «millorar el contrast».</span>`;
+      const conf = Math.round(res.reduce((a, r) => a + r.conf, 0) / res.length), marked = res.reduce((a, r) => a + r.marked, 0), dropped = res.reduce((a, r) => a + r.dropped, 0);
+      msg.innerHTML = `${conf >= 75 ? "Lectura bona" : '<span style="color:var(--warn)">Lectura dubtosa</span>'} (${conf}% de confiança)${marked ? ` · <b>${marked}</b> fragments marcats amb retolador (entre ==…==)` : ""}${dropped ? ` · ${dropped} línies descartades (fotos o notes a mà)` : ""}. Revisa el text i analitza'l.`;
       $("span", bar).style.width = "100%";
     } catch (e) {
       console.warn(e);
@@ -1632,14 +2112,26 @@ function viewNew(el) {
     const text = $("#txt", el).value.trim(), out = $("#genOut", el);
     if (text.length < 40) { out.innerHTML = `<div class="fb warn">Cal més text per crear un tema.</div>`; return; }
     const d = extractTopic(text, { materia: $("#mat", el).value, curs: $("#curs", el).value });
-    if (d.conceptes.length < 2 && !d.formules.length) { out.innerHTML = `<div class="fb warn"><b>Només s'han detectat ${d.conceptes.length} definicions.</b> Revisa el text: escriu les definicions com «Terme: definició» o «El terme és…» (mira els consells de dalt). També pots afegir conceptes a mà al pas següent.</div><div class="row"><button class="btn small" id="anyway">Continuar igualment</button></div>`; $("#anyway", out).onclick = () => { newState.draft = d; viewNew(el); }; return; }
+    if (d.conceptes.length + d.formules.length + d.idees_clau.length + d.cronologia.length < 3) { out.innerHTML = `<div class="fb warn"><b>Només s'han detectat ${d.conceptes.length} definicions.</b> Revisa el text: escriu les definicions com «Terme: definició» o «El terme és…» (mira els consells de dalt). També pots afegir conceptes a mà al pas següent.</div><div class="row"><button class="btn small" id="anyway">Continuar igualment</button></div>`; $("#anyway", out).onclick = () => { newState.draft = d; viewNew(el); }; return; }
     newState.draft = d; viewNew(el);
   };
 }
 function wirePhotos(el) {
-  const file = $("#file", el), cam = $("#fileCam", el), drop = $("#drop", el), MAX = 10;
-  const paint = () => { $("#thumbs", el).innerHTML = newState.photos.map((p, i) => `<div class="thumb"><img src="${p.url}" alt="Foto ${i + 1}"><div class="tb"><button class="btn small ghost" data-rot="${i}" aria-label="Girar">↻</button><button class="btn small ghost" data-rm="${i}" aria-label="Treure">✕</button></div></div>`).join(""); $$("[data-rot]", el).forEach(b => b.onclick = async () => { const p = newState.photos[+b.dataset.rot]; p.rot = (p.rot + 90) % 360; p.read = false; await prepPhoto(p); paint(); }); $$("[data-rm]", el).forEach(b => b.onclick = () => { newState.photos.splice(+b.dataset.rm, 1); paint(); }); };
-  const add = async files => { for (const f of Array.from(files)) { if (newState.photos.length >= MAX) break; if (!/^image\//.test(f.type)) continue; const p = { file: f, rot: 0 }; try { await prepPhoto(p); newState.photos.push(p); } catch { } } paint(); const cb = $("#cam", el); if (cb && newState.photos.length) cb.lastChild.textContent = "Fer una altra foto"; if (newState.photos.some(p => !p.read)) $("#ocr", el).click(); };
+  const file = $("#file", el), cam = $("#fileCam", el), drop = $("#drop", el), MAX = 12;
+  const paint = () => {
+    $("#thumbs", el).innerHTML = newState.photos.map((p, i) => `<div class="thumb ${p.read ? "done" : ""}"><img src="${p.url}" alt="Pàgina ${i + 1}"><span class="tn">${i + 1}</span><div class="tb"><button class="btn small ghost" data-edit="${i}" aria-label="Retallar de nou">Retallar</button><button class="btn small ghost" data-rm="${i}" aria-label="Treure">✕</button></div></div>`).join("");
+    $$("[data-edit]", el).forEach(b => b.onclick = () => { const p = newState.photos[+b.dataset.edit]; p.read = false; openCrop(el, p, paint); });
+    $$("[data-rm]", el).forEach(b => b.onclick = () => { newState.photos.splice(+b.dataset.rm, 1); paint(); });
+    $("#ocr", el).hidden = !newState.photos.length;
+  };
+  const add = async files => {
+    const fresh = [];
+    for (const f of Array.from(files)) { if (newState.photos.length >= MAX) break; if (!/^image\//.test(f.type)) continue; const p = { file: f, rot: 0 }; try { await prepPhoto(p); newState.photos.push(p); fresh.push(p); } catch (e) { console.warn(e); } }
+    paint(); const cb = $("#cam", el); if (cb && newState.photos.length) cb.lastChild.textContent = "Fer una altra foto";
+    // retall una per una; en acabar, es llegeixen totes
+    const next = () => { const p = fresh.shift(); if (p) openCrop(el, p, () => { paint(); next(); }); else if (newState.photos.some(x => x.page && !x.read)) $("#ocr", el).click(); };
+    next();
+  };
   drop.onclick = () => file.click(); drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") file.click(); };
   $("#cam", el).onclick = () => cam.click(); $("#gal", el).onclick = () => file.click();
   file.onchange = e => { add(e.target.files); e.target.value = ""; }; cam.onchange = e => { add(e.target.files); e.target.value = ""; };
@@ -1648,15 +2140,40 @@ function wirePhotos(el) {
   paint();
 }
 async function prepPhoto(p) {
-  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(p.file); });
-  const max = 2400, sc = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
-  const w = Math.round(img.naturalWidth * sc), hh = Math.round(img.naturalHeight * sc), rot = p.rot % 180 !== 0;
-  const cv = document.createElement("canvas"); cv.width = rot ? hh : w; cv.height = rot ? w : hh;
-  const ctx = cv.getContext("2d"); ctx.translate(cv.width / 2, cv.height / 2); ctx.rotate(p.rot * Math.PI / 180); ctx.drawImage(img, -w / 2, -hh / 2, w, hh);
-  p.blob = await new Promise(r => cv.toBlob(r, "image/jpeg", 0.92));
-  if (p.url) URL.revokeObjectURL(p.url); p.url = URL.createObjectURL(p.blob);
+  if (!p.img) { const u = URL.createObjectURL(p.file); p.img = await loadImage(u); URL.revokeObjectURL(u); }
+  const img = p.img, max = 3200, k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.round(img.naturalWidth * k), h = Math.round(img.naturalHeight * k), rot = p.rot % 180 !== 0;
+  const cv = document.createElement("canvas"); cv.width = rot ? h : w; cv.height = rot ? w : h;
+  const ctx = cv.getContext("2d"); ctx.translate(cv.width / 2, cv.height / 2); ctx.rotate(p.rot * Math.PI / 180); ctx.drawImage(img, -w / 2, -h / 2, w, h);
+  p.src = cv; p.quad = detectPage(cv); p.page = null; p.read = false;
+  p.url = cv.toDataURL("image/jpeg", 0.6);
 }
-
+/* Editor de cantonades: arrossega els 4 punts fins a les cantonades de la pàgina */
+function openCrop(el, p, done) {
+  const box = $("#crop", el);
+  box.innerHTML = `<div class="crop-ed card stack"><div class="row" style="justify-content:space-between"><h3>Ajusta la pàgina</h3><span class="small muted">Arrossega els 4 punts a les cantonades</span></div>
+    <div class="crop-stage"><canvas></canvas><svg><polygon></polygon>${[0, 1, 2, 3].map(i => `<circle r="14" data-h="${i}"></circle>`).join("")}</svg></div>
+    <div class="row"><button class="btn mark" id="cropOk">Redreçar i llegir</button><button class="btn" id="cropRot">Girar 90°</button><button class="btn ghost" id="cropFull">Foto sencera</button></div></div>`;
+  const stage = $(".crop-stage", box), cv = $("canvas", box), svg = $("svg", box), poly = $("polygon", box);
+  const draw = () => {
+    const maxW = stage.clientWidth || 320, maxH = Math.min(innerHeight * 0.62, 640), k = Math.min(maxW / p.src.width, maxH / p.src.height);
+    cv.width = Math.round(p.src.width * k); cv.height = Math.round(p.src.height * k); cv.getContext("2d").drawImage(p.src, 0, 0, cv.width, cv.height);
+    svg.setAttribute("viewBox", `0 0 ${cv.width} ${cv.height}`); svg.style.width = cv.width + "px"; svg.style.height = cv.height + "px";
+    const pts = p.quad.map(([x, y]) => [x * k, y * k]);
+    poly.setAttribute("points", pts.map(q => q.join(",")).join(" "));
+    $$("circle", svg).forEach((c, i) => { c.setAttribute("cx", pts[i][0]); c.setAttribute("cy", pts[i][1]); });
+    return k;
+  };
+  let k = draw(), drag = -1;
+  svg.onpointerdown = e => { const c = e.target.closest("circle"); if (!c) return; drag = +c.dataset.h; svg.setPointerCapture(e.pointerId); e.preventDefault(); };
+  svg.onpointermove = e => { if (drag < 0) return; const r = svg.getBoundingClientRect(), x = Math.max(0, Math.min(cv.width, e.clientX - r.left)), y = Math.max(0, Math.min(cv.height, e.clientY - r.top)); p.quad[drag] = [x / k, y / k]; k = draw(); };
+  svg.onpointerup = svg.onpointercancel = () => { drag = -1; };
+  const finish = () => { p.page = warpPage(p.src, p.quad); p.url = p.page.toDataURL("image/jpeg", 0.6); box.innerHTML = ""; done(); };
+  $("#cropOk", box).onclick = () => { $("#cropOk", box).disabled = true; $("#cropOk", box).textContent = "Redreçant…"; setTimeout(finish, 30); };
+  $("#cropFull", box).onclick = () => { const W = p.src.width, H = p.src.height; p.quad = [[0, 0], [W, 0], [W, H], [0, H]]; k = draw(); };
+  $("#cropRot", box).onclick = async () => { p.rot = (p.rot + 90) % 360; await prepPhoto(p); k = draw(); };
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 /* ---------- Revisió del tema detectat ---------- */
 function viewReview(el) {
@@ -1677,7 +2194,10 @@ function viewReview(el) {
       <div class="tbl"><table class="t"><thead><tr><th>Variable</th><th>Nom</th><th>Unitat</th><th>Mín.</th><th>Màx.</th></tr></thead><tbody>${f.variables.map((v, j) => `<tr data-vj="${j}"><td class="mono">${esc(v.simbol)}</td><td><input type="text" data-v="nom" value="${esc(v.nom)}"></td><td><input type="text" data-v="unitat" value="${esc(v.unitat)}" style="max-width:90px"></td><td><input type="number" data-v="min" value="${v.min}" style="max-width:100px"></td><td><input type="number" data-v="max" value="${v.max}" style="max-width:100px"></td></tr>`).join("")}${(f.constants || []).map(c => `<tr><td class="mono">${esc(c.simbol)}</td><td colspan="4" class="small muted">constant = ${fmt(c.valor)} ${esc(c.unitat)}</td></tr>`).join("")}</tbody></table></div></div>`; }).join("")}</div>
   <div class="card stack"><h2>Procediments</h2><p class="small muted">Un procediment per bloc: primera línia el nom, i després un pas per línia. Separa els blocs amb una línia en blanc.</p>
     <textarea id="rProc" style="min-height:110px">${esc(d.procediments.map(p => [p.nom, ...p.passos].join("\n")).join("\n\n"))}</textarea></div>
-  <div class="card stack"><h2>Cronologia</h2><p class="small muted">Una línia per fet: «any | fet».</p><textarea id="rCron">${esc(d.cronologia.map(e => `${e.any} | ${e.fet}`).join("\n"))}</textarea></div>
+  <div class="card stack"><h2>Idees clau <span class="pill mark">${(d.idees_clau || []).length}</span></h2><p class="small muted">El que estava marcat amb retolador. Una idea per línia: «idea | frase on surt».</p><textarea id="rIdees" style="min-height:120px">${esc((d.idees_clau || []).map(k => `${k.text} | ${k.frase}`).join("\n"))}</textarea></div>
+  <div class="card stack"><h2>Cronologia <span class="pill mark">${d.cronologia.length}</span></h2><p class="small muted">Una línia per fet: «data | fet | ordre» (l'ordre és un any aproximat per ordenar: «anys 70» → 1975).</p><textarea id="rCron" style="min-height:110px">${esc(d.cronologia.map(e => `${e.any} | ${e.fet} | ${e.ordre ?? ""}`).join("\n"))}</textarea></div>
+  <div class="card stack"><h2>Grups per classificar <span class="pill mark">${(d.grups || []).length}</span></h2><p class="small muted">Un grup per línia: «nom del grup: element; element; element». Calen almenys 2 grups.</p><textarea id="rGrups">${esc((d.grups || []).map(g => `${g.nom}: ${g.items.join("; ")}`).join("\n"))}</textarea></div>
+  <div class="card stack"><h2>Preguntes d'examen <span class="pill mark">${d.preguntes_obertes.length}</span></h2><p class="small muted">Una pregunta per línia (les del dossier ja hi són).</p><textarea id="rPreg">${esc(d.preguntes_obertes.map(q => q.pregunta).join("\n"))}</textarea></div>
   <div class="card stack"><h2>Relacions</h2><p class="small muted">Una línia per relació: «concepte | relació | concepte» (p. ex. «força | causa | acceleració»).</p><textarea id="rRel">${esc(d.relacions.map(r => `${r.a} | ${r.tipus} | ${r.b}`).join("\n"))}</textarea></div>
   <div class="card stack"><h2>Errors típics</h2><p class="small muted">Una línia per error: «idea errònia | correcció».</p><textarea id="rErr">${esc(d.errors_tipics.map(e => `${e.afirmacio_erronia} | ${e.correccio}`).join("\n"))}</textarea></div>
   <div class="card stack"><div class="row"><button class="btn mark" id="create">Crear el tema</button><button class="btn ghost" id="backTxt">Tornar al text</button></div><div id="genOut"></div></div>`;
@@ -1691,7 +2211,10 @@ function viewReview(el) {
       else $$("[data-vj]", box).forEach(tr => { const v = f.variables[+tr.dataset.vj]; if (!v) return; v.nom = $("[data-v=nom]", tr).value; v.unitat = $("[data-v=unitat]", tr).value; v.min = +$("[data-v=min]", tr).value; v.max = +$("[data-v=max]", tr).value; v.pas = 0; });
     });
     d.procediments = $("#rProc", el).value.split(/\n\s*\n/).map(b => b.split("\n").map(s => s.trim()).filter(Boolean)).filter(b => b.length >= 4).map(b => ({ id: "p_" + slug(b[0]), nom: b[0], passos: b.slice(1) }));
-    d.cronologia = $("#rCron", el).value.split("\n").map(s => s.split("|").map(x => x.trim())).filter(x => x.length >= 2 && x[0] && x[1]).map(([any, fet]) => ({ any, fet }));
+    d.cronologia = $("#rCron", el).value.split("\n").map(s => s.split("|").map(x => x.trim())).filter(x => x.length >= 2 && x[0] && x[1]).map(([any, fet, o]) => { const f = typeof findDate === "function" ? findDate(any.match(/^\d/) ? any : "els " + any) : null; return { any, fet, ordre: o !== undefined && o !== "" && isFinite(+o) ? +o : (f ? f.ordre : parseFloat(any) || 0) }; });
+    d.idees_clau = $("#rIdees", el).value.split("\n").map(s => s.split("|").map(x => x.trim())).filter(x => x.length >= 2 && x[0] && x[1]).map(([text, frase]) => { const old = (d.idees_clau || []).find(k => k.text === text && k.frase === frase); return { id: "k_" + slug(text), text, frase, marques: old && old.marques ? old.marques : [text] }; });
+    d.grups = $("#rGrups", el).value.split("\n").map(s => s.match(/^([^:]{1,80}):(.+)$/)).filter(Boolean).map(m => ({ id: "g_" + slug(m[1]), nom: m[1].trim(), items: m[2].split(";").map(x => x.trim()).filter(Boolean) })).filter(g => g.items.length >= 2);
+    const oldQ = d.preguntes_obertes; d.preguntes_obertes = $("#rPreg", el).value.split("\n").map(x => x.trim()).filter(x => x.length > 8).map(q => oldQ.find(o => o.pregunta === q) || { id: "o_" + slug(q), pregunta: q, resposta_model: "", criteris: ["Respon exactament el que es pregunta", "Argumenta la resposta amb idees del tema", "Fa servir algun exemple o dada concreta"] });
     d.relacions = $("#rRel", el).value.split("\n").map(s => s.split("|").map(x => x.trim())).filter(x => x.length >= 3 && x.every(Boolean)).map(([a, tipus, b]) => ({ a, tipus, b }));
     d.errors_tipics = $("#rErr", el).value.split("\n").map(s => s.split("|").map(x => x.trim())).filter(x => x.length >= 2 && x[0]).map(([a, c]) => ({ id: "e_" + slug(a), afirmacio_erronia: a, correccio: c || "" }));
   };
@@ -1704,11 +2227,12 @@ function viewReview(el) {
     const topic = { ...d, conceptes: d.conceptes.filter(c => !c.off && c.nom && c.definicio), formules: d.formules.filter(f => !f.off && !fCheck(f)) };
     const names = new Set(topic.conceptes.map(c => norm(c.nom)));
     topic.preguntes_obertes = (d.preguntes_obertes || []).filter(q => !q.concepte_id || topic.conceptes.some(c => c.id === q.concepte_id));
+    const sum = topic.conceptes.length + topic.formules.length + (topic.idees_clau || []).length + topic.cronologia.length;
     topic.relacions = topic.relacions.filter(r => r.a && r.b);
     topic.conceptes.forEach(c => { if (c.dubtos && !suspicious(c.definicio)) { c.dubtos = false; c.motiu = ""; } });
     if (!topic.resum || topic.resum.length < 20) topic.resum = topic.conceptes.slice(0, 4).map(c => `${cap1(c.nom)}: ${c.definicio}`).join(" ");
-    if (!topic.seccions.length) topic.seccions = [{ titol: "Idees clau", punts: topic.conceptes.slice(0, 8).map(c => `${cap1(c.nom)}: ${c.definicio}`) }];
-    if (!names.size && !topic.formules.length) { $("#genOut", el).innerHTML = `<div class="fb warn">Cal com a mínim un concepte o una fórmula.</div>`; return; }
+    if (!topic.seccions.length) topic.seccions = [{ titol: "Idees clau", punts: [...topic.conceptes.slice(0, 8).map(c => `${cap1(c.nom)}: ${c.definicio}`), ...(topic.idees_clau || []).slice(0, 6).map(k => k.frase)] }];
+    if (sum < 2) { $("#genOut", el).innerHTML = `<div class="fb warn">Cal com a mínim un concepte o una fórmula.</div>`; return; }
     const ok = addTopic(topic, $("#genOut", el), topic.materia, topic.curs);
     if (ok) newState = { photos: [], text: "", draft: null };
   };
@@ -1716,10 +2240,10 @@ function viewReview(el) {
 function addTopic(raw, out, mat, curs) {
   const t = normTopic({ ...raw, materia: raw.materia || mat, curs: raw.curs || curs, id: raw.id || slug(raw.titol || "tema") });
   if (S.topics[t.id] || DEMOS.some(d => d.id === t.id)) t.id = t.id + "_" + Date.now().toString(36).slice(-4);
-  if (t.conceptes.length < 2 && !t.formules.length) { out.innerHTML = `<div class="fb bad">El tema té massa poc contingut (${t.conceptes.length} conceptes). Afegeix-ne més.</div>`; return false; }
+  if (t.conceptes.length + t.formules.length + t.idees_clau.length + t.cronologia.length < 2) { out.innerHTML = `<div class="fb bad">El tema té massa poc contingut. Afegeix conceptes, idees clau o dates.</div>`; return false; }
   const C = compile(t);
   S.topics[t.id] = t; S.active = t.id; checkBadges(); save();
-  out.innerHTML = `<div class="fb ok"><h3>Tema creat: ${esc(t.titol)}</h3><p>${t.conceptes.length} conceptes · ${C.formules.length} fórmules · ${t.procediments.length} procediments · ${t.errors_tipics.length} errors típics · ${t.preguntes_obertes.length} preguntes d'examen.</p><div class="row"><button class="btn primary" id="openT">Obrir el tema</button></div></div>`;
+  out.innerHTML = `<div class="fb ok"><h3>Tema creat: ${esc(t.titol)}</h3><p>${t.conceptes.length} conceptes · ${C.formules.length} fórmules · ${t.procediments.length} procediments · ${t.idees_clau.length} idees clau · ${t.cronologia.length} dates · ${t.grups.length} grups · ${t.preguntes_obertes.length} preguntes d'examen.</p><div class="row"><button class="btn primary" id="openT">Obrir el tema</button></div></div>`;
   $("#openT", out).onclick = () => Router.root("inici", "tema");
   return true;
 }
@@ -1766,10 +2290,12 @@ function go(name) { const s = SCREENS[name]; if (s && s.root) Router.root(name);
 function renderStats() {
   const el = $("#stats"); if (!el) return;
   const g = globalStats(), ws = weekStreak();
-  el.innerHTML = `<span class="stat" title="Temari consolidat o dominat"><strong>${Math.round(g.domini * 100)}%</strong></span><span class="stat" title="XP: només per esforç útil"><strong>${S.xp}</strong> XP</span><span class="stat" title="Ratxa setmanal"><strong>${ws.streak}</strong> set.</span>`;
+  const L = levelOf(S.xp);
+  el.innerHTML = `<span class="stat lvl" title="Nivell ${L.n}: ${S.xp} XP"><b class="lv">${L.n}</b><span class="lvbar"><span style="width:${L.pct}%"></span></span></span><span class="stat fire" title="Ratxa setmanal"><strong>${ws.streak}</strong><span aria-hidden="true">🔥</span></span>`;
 }
 function renderChrome() {
   const sc = SCREENS[Router.cur()];
+  document.body.dataset.screen = Router.cur();
   $("#back").hidden = Router.stack.length <= 1;
   $("#title").textContent = sc.root ? "" : sc.title;
   $(".brand").hidden = !sc.root;

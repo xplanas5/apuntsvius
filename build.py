@@ -40,7 +40,7 @@ MANIFEST = {
 
 def script_list() -> list[str]:
     html = (ROOT / "index.html").read_text(encoding="utf-8")
-    return re.findall(r'<script src="(js/[^"]+)"></script>', html)
+    return re.findall(r'<script src="(js/[^"?]+)(?:\?v=[0-9a-f]+)?"></script>', html)
 
 
 def service_worker() -> str:
@@ -104,7 +104,21 @@ def png(size: int) -> bytes:
     return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", raw) + chunk(b"IEND", b"")
 
 
+def stamp_assets() -> None:
+    """Afegeix ?v=<hash> als CSS i JS d'index.html perquè el navegador no faci servir versions antigues."""
+    import hashlib
+    p = ROOT / "index.html"
+    html = p.read_text(encoding="utf-8")
+
+    def h(path: str) -> str:
+        return hashlib.sha1((ROOT / path).read_bytes()).hexdigest()[:8]
+
+    html = re.sub(r'(src|href)="((?:js|css)/[^"?]+)(?:\?v=[0-9a-f]+)?"', lambda m: f'{m.group(1)}="{m.group(2)}?v={h(m.group(2))}"', html)
+    p.write_text(html, encoding="utf-8")
+
+
 def main() -> None:
+    stamp_assets()
     (ROOT / "manifest.json").write_text(json.dumps(MANIFEST, ensure_ascii=False, indent=2), encoding="utf-8")
     (ROOT / "sw.js").write_text(service_worker(), encoding="utf-8")
     (ROOT / "icon-192.png").write_bytes(png(192))

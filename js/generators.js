@@ -151,11 +151,76 @@ function makeItem(tid, key, opts = {}) {
   }
   if (kind === "t") {
     const ev = shuffle(t.cronologia).slice(0, Math.min(5, t.cronologia.length));
-    const sorted = ev.slice().sort((a, b) => parseFloat(a.any) - parseFloat(b.any));
+    const sorted = ev.slice().sort((a, b) => a.ordre - b.ordre);
     let order = shuffle(sorted.map((_, i) => i)); if (order.every((v, i) => v === i)) order = order.reverse();
     return { ...base, label: "Cronologia", type: "Ordena en el temps", mode: "order", prompt: `<p class="muted small">Ordena els fets del més antic al més recent:</p>`, items: sorted.map(e => e.fet), years: sorted.map(e => e.any), order, answerText: sorted.map(e => `${e.any}: ${e.fet}`).join(" · "), explain: "", source: "", hints: ["Pensa quins fets depenen d'altres anteriors.", `El més antic és: «${sorted[0].fet}».`, `Anys: ${sorted.map(e => e.any).join(", ")} (desordenats ja no!).`] };
   }
+  if (kind === "k") return ideaItem(t, id, base, lvl);
+  if (kind === "d") return dateItem(t, id, base);
+  if (kind === "g") return groupItem(t, id, base);
+  if (kind === "v") return truthItem(t, base);
   return null;
+}
+
+/* ---------- Activitats per a text (humanitats) ---------- */
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function blankIn(frase, text) {
+  const re = new RegExp(text.trim().split(/\s+/).map(reEsc).join("\\s+"), "i"), m = frase.match(re);
+  return m ? { before: frase.slice(0, m.index), after: frase.slice(m.index + m[0].length) } : null;
+}
+function ideaItem(t, id, base, lvl) {
+  const k = t.idees_clau.find(x => x.id === id); if (!k) return null;
+  const b = blankIn(k.frase, k.text); if (!b) return null;
+  const others = shuffle(t.idees_clau.filter(x => x.id !== k.id && norm(x.text) !== norm(k.text))).sort((x, y) => Math.abs(wc(x.text) - wc(k.text)) - Math.abs(wc(y.text) - wc(k.text))).slice(0, 3);
+  const prompt = `<p class="muted small">Completa la frase dels teus apunts (és una idea que vas marcar):</p><p class="prompt">${esc(b.before)}<span class="blank">______</span>${esc(b.after)}</p>`;
+  const common = { ...base, label: k.text, type: "Idea clau", prompt, answerText: k.text, explain: k.frase, source: "", hints: [`Té ${wc(k.text)} paraules.`, `Comença per «${k.text.split(/\s+/).slice(0, 1).join(" ")}…».`, `Comença per «${k.text.split(/\s+/).slice(0, 2).join(" ")}…».`] };
+  if (others.length >= 2 && lvl < 2) return { ...common, mode: "mcq", options: shuffle([{ text: k.text, ok: true }, ...others.map(o => ({ text: o.text, why: `Aquesta idea també és dels apunts, però va en una altra frase: «${o.frase.slice(0, 120)}…»` }))]) };
+  const target = norm(k.text), tw = target.split(" ").filter(w => w.length > 3);
+  return { ...common, mode: "text", check: ans => {
+    const a = norm(ans); if (!a) return { ok: false, diag: "Escriu una resposta." };
+    if (a === target || lev(a, target) <= Math.max(2, Math.floor(target.length * 0.2))) return { ok: true };
+    const hit = tw.filter(w => (" " + a + " ").includes(" " + w.slice(0, Math.max(4, w.length - 2)))).length;
+    if (tw.length && hit / tw.length >= 0.7) return { ok: true, note: `Ho has dit amb altres paraules. Als apunts posa: «${k.text}».` };
+    return { ok: false, diag: hit ? `Vas bé (${hit} de ${tw.length} paraules clau), però falta una part de la idea.` : "No és aquesta idea. Rellegeix la frase sencera: de què parla?", kind: "parcial" };
+  } };
+}
+function dateVariants(e, all) {
+  const labels = [...new Set(all.filter(x => x.any !== e.any).map(x => x.any))];
+  const m = e.any.match(/^anys (\d0)$/), y = e.any.match(/^\d{4}$/), sg = e.any.match(/segle ([IVXL]+)$/i);
+  const gen = [];
+  if (m) for (const d of [-20, -10, 10, 20]) { const v = +m[1] + d; if (v >= 10 && v <= 90) gen.push("anys " + v); }
+  if (y) for (const d of [-30, -12, 7, 15, 25]) gen.push(String(+e.any + d));
+  if (sg) { const n = romanToInt(sg[1]), toR = k => ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI"][k]; for (const d of [-2, -1, 1]) if (n + d >= 1 && n + d <= 21) gen.push(e.any.replace(sg[1], toR(n + d))); }
+  return [...new Set([...shuffle(labels), ...shuffle(gen)])].filter(x => x !== e.any).slice(0, 3);
+}
+function dateItem(t, id, base) {
+  const e = t.cronologia.find(x => x.id === id); if (!e) return null;
+  const d = findDate(e.fet);
+  const shown = d && d.len ? esc(e.fet.slice(0, d.i)) + '<span class="blank">______</span>' + esc(e.fet.slice(d.i + d.len)) : esc(e.fet);
+  const opts = dateVariants(e, t.cronologia); if (opts.length < 2) return null;
+  const options = shuffle([{ text: e.any, ok: true }, ...opts.map(o => { const other = t.cronologia.find(x => x.any === o); return { text: o, why: other ? `${o} correspon a un altre fet: «${other.fet.slice(0, 110)}…»` : `No: és ${e.any}. ${Math.abs((parseFloat(o.replace(/\D/g, "")) || 0) - (parseFloat(e.any.replace(/\D/g, "")) || 0)) <= 10 ? "T'has quedat a prop!" : "T'has allunyat força."}` }; })]);
+  return { ...base, label: e.fet.slice(0, 60), type: "Quan va passar?", mode: "mcq", prompt: `<p class="muted small">Quan va passar?</p><p class="prompt">${shown}</p>`, options, answerText: e.any, explain: e.fet, source: "", hints: ["Pensa què va passar abans i què després.", `Ordena mentalment: ${t.cronologia.slice().sort((a, b) => a.ordre - b.ordre).slice(0, 4).map(x => x.any).join(" → ")}…`, "Mira la cronologia de la pestanya Apunts."] };
+}
+function groupItem(t, id, base) {
+  const g = t.grups.find(x => x.id === id); if (!g || t.grups.length < 2) return null;
+  const it = pick(g.items), others = shuffle(t.grups.filter(x => x.id !== g.id)).slice(0, 3);
+  const options = shuffle([{ text: g.nom, ok: true }, ...others.map(o => ({ text: o.nom, why: `«${it}» va a «${g.nom}». A «${o.nom}» hi ha, per exemple: ${o.items.slice(0, 2).join(", ")}.` }))]);
+  return { ...base, label: it, type: "Classifica", mode: "mcq", prompt: `<p class="muted small">On va?</p><p class="prompt big">${esc(it)}</p>`, options, answerText: g.nom, explain: `${g.nom}: ${g.items.join(", ")}.`, source: "", hints: ["Pensa en què tenen en comú els elements de cada grup.", `Al mateix grup hi ha: ${g.items.filter(x => x !== it).slice(0, 2).join(", ")}.`, `Els grups són: ${t.grups.map(x => x.nom).join(" · ")}.`] };
+}
+function truthItem(t, base) {
+  const useDate = t.cronologia.length >= 2 && (t.conceptes.length < 3 || Math.random() < 0.5), isTrue = Math.random() < 0.5;
+  let text, fix;
+  if (useDate) {
+    const e = pick(t.cronologia), d = findDate(e.fet), alt = d && d.len ? dateVariants(e, t.cronologia)[0] : null;
+    if (isTrue || !alt) text = e.fet; else text = e.fet.slice(0, d.i) + alt + e.fet.slice(d.i + d.len);
+    fix = e.fet;
+  } else {
+    const c = pick(t.conceptes), o = pick(t.conceptes.filter(x => x.id !== c.id));
+    text = `${cap1(c.nom)}: ${isTrue ? c.definicio : o.definicio}`; fix = `${cap1(c.nom)}: ${c.definicio}`;
+  }
+  const truth = text === fix;
+  const options = [{ text: "Vertader", ok: truth, why: truth ? "" : `És vertader. Als apunts: «${fix}»` }, { text: "Fals", ok: !truth, why: !truth ? "" : `És fals. El correcte és: «${fix}»` }];
+  return { ...base, label: "Vertader o fals", type: "Vertader o fals", mode: "mcq", prompt: `<p class="muted small">Vertader o fals?</p><p class="prompt">${esc(text)}</p>`, options, answerText: truth ? "Vertader" : "Fals", explain: truth ? "" : "Correcte: " + fix, source: "", hints: ["Fixa't en les dates, els llocs i les paraules clau.", "Una sola paraula canviada fa falsa la frase.", "Compara-ho amb la cronologia i el glossari dels apunts."] };
 }
 function checkMcq(item, idx) { const o = item.options[idx]; if (!o) return { ok: false, diag: "Tria una opció." }; return o.ok ? { ok: true } : { ok: false, diag: o.why || "No és aquesta.", kind: "confusio" }; }
 function checkOrder(item, order) {

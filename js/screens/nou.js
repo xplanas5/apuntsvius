@@ -28,8 +28,8 @@ function viewNew(el) {
     <input type="file" id="fileCam" accept="image/*" capture="environment" hidden>
     <input type="file" id="file" accept="image/*" multiple hidden>
     <div class="thumbs" id="thumbs"></div>
-    <div class="row"><label class="row small"><input type="checkbox" id="enh" checked> Millorar el contrast abans de llegir</label></div>
-    <div class="row"><button class="btn small" id="ocr">Tornar a llegir les fotos</button><span class="small muted" id="ocrMsg"></span></div>
+    <div id="crop"></div>
+    <div class="row"><button class="btn small" id="ocr" ${newState.photos.length ? "" : "hidden"}>Llegir les pàgines pendents</button><span class="small muted" id="ocrMsg"></span></div>
     <div class="progress" id="ocrBar" hidden><span style="width:0%"></span></div>
     <label class="f" for="txt">Text dels apunts <span class="small muted" style="font-weight:400">(corregeix aquí els errors de lectura, o enganxa-hi el text directament)</span></label>
     <textarea id="txt" style="min-height:220px;font-family:var(--f-mono);font-size:.88rem" placeholder="Aquí apareixerà el text llegit de les fotos.">${esc(newState.text)}</textarea>
@@ -44,16 +44,16 @@ function viewNew(el) {
   $("#doImp", el).onclick = () => { const out = $("#impOut", el); try { const raw = JSON.parse(($("#imp", el).value.match(/\{[\s\S]*\}/) || [""])[0]); addTopic(raw, out, $("#mat", el).value, $("#curs", el).value); } catch { out.innerHTML = `<div class="fb bad">No és un JSON vàlid. Comprova que l'has copiat sencer.</div>`; } };
   wirePhotos(el);
   $("#ocr", el).onclick = async () => {
-    const todo = newState.photos.filter(p => p.blob && !p.read), blobs = todo.map(p => p.blob), msg = $("#ocrMsg", el), bar = $("#ocrBar", el), btn = $("#ocr", el);
-    if (!blobs.length) { msg.textContent = newState.photos.length ? "Ja s'han llegit totes les fotos." : "Primer fes o tria alguna foto."; return; }
+    const todo = newState.photos.filter(p => p.page && !p.read), msg = $("#ocrMsg", el), bar = $("#ocrBar", el), btn = $("#ocr", el);
+    if (!todo.length) { msg.textContent = newState.photos.length ? "Ja s'han llegit totes les pàgines." : "Primer fes o tria alguna foto."; return; }
     btn.disabled = true; bar.hidden = false;
     try {
-      const res = await runOCR(blobs, $("#lang", el).value, (p, m) => { $("span", bar).style.width = Math.round(p * 100) + "%"; msg.textContent = m; }, $("#enh", el).checked);
+      const res = await runOCR(todo.map(p => p.page), $("#lang", el).value, (pr, m) => { $("span", bar).style.width = Math.round(pr * 100) + "%"; msg.textContent = m; });
       todo.forEach(p => p.read = true);
       const txt = res.map(r => r.text.trim()).join("\n\n");
       newState.text = (newState.text ? newState.text + "\n\n" : "") + txt; $("#txt", el).value = newState.text;
-      const conf = Math.round(res.reduce((s, r) => s + r.conf, 0) / res.length);
-      msg.innerHTML = conf >= 75 ? `Fet. Lectura bona (${conf}% de confiança). Revisa el text i analitza'l.` : `<span style="color:var(--warn)">Lectura dubtosa (${conf}% de confiança). Corregeix el text, o prova amb més llum, més a prop o sense «millorar el contrast».</span>`;
+      const conf = Math.round(res.reduce((a, r) => a + r.conf, 0) / res.length), marked = res.reduce((a, r) => a + r.marked, 0), dropped = res.reduce((a, r) => a + r.dropped, 0);
+      msg.innerHTML = `${conf >= 75 ? "Lectura bona" : '<span style="color:var(--warn)">Lectura dubtosa</span>'} (${conf}% de confiança)${marked ? ` · <b>${marked}</b> fragments marcats amb retolador (entre ==…==)` : ""}${dropped ? ` · ${dropped} línies descartades (fotos o notes a mà)` : ""}. Revisa el text i analitza'l.`;
       $("span", bar).style.width = "100%";
     } catch (e) {
       console.warn(e);
@@ -64,14 +64,26 @@ function viewNew(el) {
     const text = $("#txt", el).value.trim(), out = $("#genOut", el);
     if (text.length < 40) { out.innerHTML = `<div class="fb warn">Cal més text per crear un tema.</div>`; return; }
     const d = extractTopic(text, { materia: $("#mat", el).value, curs: $("#curs", el).value });
-    if (d.conceptes.length < 2 && !d.formules.length) { out.innerHTML = `<div class="fb warn"><b>Només s'han detectat ${d.conceptes.length} definicions.</b> Revisa el text: escriu les definicions com «Terme: definició» o «El terme és…» (mira els consells de dalt). També pots afegir conceptes a mà al pas següent.</div><div class="row"><button class="btn small" id="anyway">Continuar igualment</button></div>`; $("#anyway", out).onclick = () => { newState.draft = d; viewNew(el); }; return; }
+    if (d.conceptes.length + d.formules.length + d.idees_clau.length + d.cronologia.length < 3) { out.innerHTML = `<div class="fb warn"><b>Només s'han detectat ${d.conceptes.length} definicions.</b> Revisa el text: escriu les definicions com «Terme: definició» o «El terme és…» (mira els consells de dalt). També pots afegir conceptes a mà al pas següent.</div><div class="row"><button class="btn small" id="anyway">Continuar igualment</button></div>`; $("#anyway", out).onclick = () => { newState.draft = d; viewNew(el); }; return; }
     newState.draft = d; viewNew(el);
   };
 }
 function wirePhotos(el) {
-  const file = $("#file", el), cam = $("#fileCam", el), drop = $("#drop", el), MAX = 10;
-  const paint = () => { $("#thumbs", el).innerHTML = newState.photos.map((p, i) => `<div class="thumb"><img src="${p.url}" alt="Foto ${i + 1}"><div class="tb"><button class="btn small ghost" data-rot="${i}" aria-label="Girar">↻</button><button class="btn small ghost" data-rm="${i}" aria-label="Treure">✕</button></div></div>`).join(""); $$("[data-rot]", el).forEach(b => b.onclick = async () => { const p = newState.photos[+b.dataset.rot]; p.rot = (p.rot + 90) % 360; p.read = false; await prepPhoto(p); paint(); }); $$("[data-rm]", el).forEach(b => b.onclick = () => { newState.photos.splice(+b.dataset.rm, 1); paint(); }); };
-  const add = async files => { for (const f of Array.from(files)) { if (newState.photos.length >= MAX) break; if (!/^image\//.test(f.type)) continue; const p = { file: f, rot: 0 }; try { await prepPhoto(p); newState.photos.push(p); } catch { } } paint(); const cb = $("#cam", el); if (cb && newState.photos.length) cb.lastChild.textContent = "Fer una altra foto"; if (newState.photos.some(p => !p.read)) $("#ocr", el).click(); };
+  const file = $("#file", el), cam = $("#fileCam", el), drop = $("#drop", el), MAX = 12;
+  const paint = () => {
+    $("#thumbs", el).innerHTML = newState.photos.map((p, i) => `<div class="thumb ${p.read ? "done" : ""}"><img src="${p.url}" alt="Pàgina ${i + 1}"><span class="tn">${i + 1}</span><div class="tb"><button class="btn small ghost" data-edit="${i}" aria-label="Retallar de nou">Retallar</button><button class="btn small ghost" data-rm="${i}" aria-label="Treure">✕</button></div></div>`).join("");
+    $$("[data-edit]", el).forEach(b => b.onclick = () => { const p = newState.photos[+b.dataset.edit]; p.read = false; openCrop(el, p, paint); });
+    $$("[data-rm]", el).forEach(b => b.onclick = () => { newState.photos.splice(+b.dataset.rm, 1); paint(); });
+    $("#ocr", el).hidden = !newState.photos.length;
+  };
+  const add = async files => {
+    const fresh = [];
+    for (const f of Array.from(files)) { if (newState.photos.length >= MAX) break; if (!/^image\//.test(f.type)) continue; const p = { file: f, rot: 0 }; try { await prepPhoto(p); newState.photos.push(p); fresh.push(p); } catch (e) { console.warn(e); } }
+    paint(); const cb = $("#cam", el); if (cb && newState.photos.length) cb.lastChild.textContent = "Fer una altra foto";
+    // retall una per una; en acabar, es llegeixen totes
+    const next = () => { const p = fresh.shift(); if (p) openCrop(el, p, () => { paint(); next(); }); else if (newState.photos.some(x => x.page && !x.read)) $("#ocr", el).click(); };
+    next();
+  };
   drop.onclick = () => file.click(); drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") file.click(); };
   $("#cam", el).onclick = () => cam.click(); $("#gal", el).onclick = () => file.click();
   file.onchange = e => { add(e.target.files); e.target.value = ""; }; cam.onchange = e => { add(e.target.files); e.target.value = ""; };
@@ -80,12 +92,37 @@ function wirePhotos(el) {
   paint();
 }
 async function prepPhoto(p) {
-  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(p.file); });
-  const max = 2400, sc = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
-  const w = Math.round(img.naturalWidth * sc), hh = Math.round(img.naturalHeight * sc), rot = p.rot % 180 !== 0;
-  const cv = document.createElement("canvas"); cv.width = rot ? hh : w; cv.height = rot ? w : hh;
-  const ctx = cv.getContext("2d"); ctx.translate(cv.width / 2, cv.height / 2); ctx.rotate(p.rot * Math.PI / 180); ctx.drawImage(img, -w / 2, -hh / 2, w, hh);
-  p.blob = await new Promise(r => cv.toBlob(r, "image/jpeg", 0.92));
-  if (p.url) URL.revokeObjectURL(p.url); p.url = URL.createObjectURL(p.blob);
+  if (!p.img) { const u = URL.createObjectURL(p.file); p.img = await loadImage(u); URL.revokeObjectURL(u); }
+  const img = p.img, max = 3200, k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.round(img.naturalWidth * k), h = Math.round(img.naturalHeight * k), rot = p.rot % 180 !== 0;
+  const cv = document.createElement("canvas"); cv.width = rot ? h : w; cv.height = rot ? w : h;
+  const ctx = cv.getContext("2d"); ctx.translate(cv.width / 2, cv.height / 2); ctx.rotate(p.rot * Math.PI / 180); ctx.drawImage(img, -w / 2, -h / 2, w, h);
+  p.src = cv; p.quad = detectPage(cv); p.page = null; p.read = false;
+  p.url = cv.toDataURL("image/jpeg", 0.6);
 }
-
+/* Editor de cantonades: arrossega els 4 punts fins a les cantonades de la pàgina */
+function openCrop(el, p, done) {
+  const box = $("#crop", el);
+  box.innerHTML = `<div class="crop-ed card stack"><div class="row" style="justify-content:space-between"><h3>Ajusta la pàgina</h3><span class="small muted">Arrossega els 4 punts a les cantonades</span></div>
+    <div class="crop-stage"><canvas></canvas><svg><polygon></polygon>${[0, 1, 2, 3].map(i => `<circle r="14" data-h="${i}"></circle>`).join("")}</svg></div>
+    <div class="row"><button class="btn mark" id="cropOk">Redreçar i llegir</button><button class="btn" id="cropRot">Girar 90°</button><button class="btn ghost" id="cropFull">Foto sencera</button></div></div>`;
+  const stage = $(".crop-stage", box), cv = $("canvas", box), svg = $("svg", box), poly = $("polygon", box);
+  const draw = () => {
+    const maxW = stage.clientWidth || 320, maxH = Math.min(innerHeight * 0.62, 640), k = Math.min(maxW / p.src.width, maxH / p.src.height);
+    cv.width = Math.round(p.src.width * k); cv.height = Math.round(p.src.height * k); cv.getContext("2d").drawImage(p.src, 0, 0, cv.width, cv.height);
+    svg.setAttribute("viewBox", `0 0 ${cv.width} ${cv.height}`); svg.style.width = cv.width + "px"; svg.style.height = cv.height + "px";
+    const pts = p.quad.map(([x, y]) => [x * k, y * k]);
+    poly.setAttribute("points", pts.map(q => q.join(",")).join(" "));
+    $$("circle", svg).forEach((c, i) => { c.setAttribute("cx", pts[i][0]); c.setAttribute("cy", pts[i][1]); });
+    return k;
+  };
+  let k = draw(), drag = -1;
+  svg.onpointerdown = e => { const c = e.target.closest("circle"); if (!c) return; drag = +c.dataset.h; svg.setPointerCapture(e.pointerId); e.preventDefault(); };
+  svg.onpointermove = e => { if (drag < 0) return; const r = svg.getBoundingClientRect(), x = Math.max(0, Math.min(cv.width, e.clientX - r.left)), y = Math.max(0, Math.min(cv.height, e.clientY - r.top)); p.quad[drag] = [x / k, y / k]; k = draw(); };
+  svg.onpointerup = svg.onpointercancel = () => { drag = -1; };
+  const finish = () => { p.page = warpPage(p.src, p.quad); p.url = p.page.toDataURL("image/jpeg", 0.6); box.innerHTML = ""; done(); };
+  $("#cropOk", box).onclick = () => { $("#cropOk", box).disabled = true; $("#cropOk", box).textContent = "Redreçant…"; setTimeout(finish, 30); };
+  $("#cropFull", box).onclick = () => { const W = p.src.width, H = p.src.height; p.quad = [[0, 0], [W, 0], [W, H], [0, H]]; k = draw(); };
+  $("#cropRot", box).onclick = async () => { p.rot = (p.rot + 90) % 360; await prepPhoto(p); k = draw(); };
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
+}

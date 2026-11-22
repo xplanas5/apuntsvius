@@ -22,7 +22,7 @@ function viewPractice(el) {
   const st = { attempts: 0, hint: 0, sel: null, order: item.order ? item.order.slice() : null, done: false, conf: null };
   el.innerHTML = `<div class="card qcard ${isGolden(P, P.i) ? "golden" : ""}">
     <div class="qhead"><span class="row"><span class="pill blue">${esc(item.type)}</span><span class="small muted">${esc(item.topic)}</span>${stateChip(item.tid, item.key)}</span><span class="row">${isGolden(P, P.i) ? '<span class="pill gold">Pregunta d\'or</span>' : ""}${P.combo >= 2 ? `<span class="pill mark">Combo x${P.combo}</span>` : ""}<span class="small mono muted">${P.i + 1} / ${P.items.length}</span></span></div>
-    <div class="progress"><span style="width:${P.i / P.items.length * 100}%"></span></div>
+    <div class="progress qprog"><span style="width:${P.i / P.items.length * 100}%"></span></div>
     <div id="qp">${item.prompt}</div>
     <div id="qin"></div>
     <div class="actions" id="qact">
@@ -83,7 +83,9 @@ function viewPractice(el) {
     if (item.mode === "mcq" || item.mode === "order") paintInput(r);
     else { const a = $("#ans", qin); if (a) a.disabled = true; }
     $("#qact", el).hidden = true; $("#hintArea", el).innerHTML = "";
-    const nx = $("#next", el); nx.hidden = false; nx.focus(); nx.onclick = () => { P.i++; viewPractice(el); };
+    const card = $(".qcard", el), box = $("#fb .fb", el); card.classList.add("answered", r.ok ? "is-ok" : "is-bad");
+    const nx = $("#next", el); nx.hidden = false; if (box) { box.classList.add("sheet"); box.appendChild(nx); nx.classList.add("big"); nx.textContent = P.i + 1 >= P.items.length ? "Veure el resultat" : "Continuar"; }
+    nx.focus(); nx.onclick = () => { P.i++; viewPractice(el); };
   }
   function flash(msg) { $("#fb", el).innerHTML = `<p class="small muted">${esc(msg)}</p>`; }
   $$("[data-conf]", el).forEach(b => b.onclick = () => submit(b.dataset.conf));

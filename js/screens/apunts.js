@@ -4,7 +4,7 @@ let coverMode = false;
 function viewNotes(el) {
   const t = topicById(S.active); if (!t) return go("inici");
   const C = COMPILED[t.id], flagged = t.conceptes.filter(c => c.dubtos).length + C.formules.filter(f => f.dubtos).length;
-  const sections = [["resum", "Resum"], ["esquema", "Esquema"], ["glossari", "Glossari"], C.formules.length && ["formules", "Fórmules"], t.procediments.length && ["procediments", "Procediments"], t.relacions.length && ["mapa", "Mapa conceptual"], t.cronologia.length && ["cronologia", "Cronologia"], t.errors_tipics.length && ["compte", "Compte!"]].filter(Boolean);
+  const sections = [["resum", "Resum"], (t.idees_clau || []).length && ["idees", "Idees clau"], ["esquema", "Esquema"], t.conceptes.length && ["glossari", "Glossari"], (t.grups || []).length && ["grups", "Grups"], C.formules.length && ["formules", "Fórmules"], t.procediments.length && ["procediments", "Procediments"], t.relacions.length && ["mapa", "Mapa conceptual"], t.cronologia.length && ["cronologia", "Cronologia"], t.errors_tipics.length && ["compte", "Compte!"]].filter(Boolean);
   el.innerHTML = `
   <div class="card stack">
     <div class="row" style="justify-content:space-between"><div class="stack" style="gap:4px"><span class="eyebrow">${esc(t.materia)} ${t.curs ? "· " + esc(t.curs) : ""}</span><h1>${esc(t.titol)}</h1></div>
@@ -16,14 +16,16 @@ function viewNotes(el) {
     <nav class="toc card" aria-label="Seccions">${sections.map(([id, n]) => `<a href="#apunts" data-sec="${id}">${n}</a>`).join("")}</nav>
     <div class="stack">
       <section class="card stack" id="s-resum"><h2>Resum</h2><p>${esc(t.resum)}</p>${recallBox(t, 0)}</section>
+      ${(t.idees_clau || []).length ? `<section class="card stack" id="s-idees"><h2>Idees clau</h2><p class="small muted">El que vas marcar amb retolador, dins la seva frase.</p><ul class="clean ideas">${t.idees_clau.map(k => `<li>${markAll(k.frase, (k.marques && k.marques.length) ? k.marques : [k.text])} ${stateChip(t.id, "k:" + k.id)}</li>`).join("")}</ul></section>` : ""}
       <section class="card stack" id="s-esquema"><h2>Esquema</h2>${t.seccions.map(s => `<div class="stack" style="gap:6px"><h3>${esc(s.titol)}</h3><ul class="clean">${s.punts.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`).join("")}${recallBox(t, 1)}</section>
       <section class="card stack" id="s-glossari"><div class="row" style="justify-content:space-between"><h2>Glossari</h2><label class="row small"><input type="checkbox" id="cover" ${coverMode ? "checked" : ""}> Tapa i recorda</label></div>
         <p class="small muted">${coverMode ? "Intenta recordar cada definició abans de tocar-la per destapar-la." : "Activa «Tapa i recorda» per amagar les definicions i posar-te a prova."}</p>
         <div class="gloss">${t.conceptes.map(c => `<div class="term ${c.dubtos ? "flag" : ""}" data-cid="${c.id}"><h3><span class="hl">${esc(c.nom)}</span> ${stateChip(t.id, "c:" + c.id)}</h3><p class="def ${coverMode ? "covered" : ""}" tabindex="0">${esc(c.definicio)}</p>${c.exemple ? `<p class="small muted">Ex.: ${esc(c.exemple)}</p>` : ""}${c.font ? `<p class="src">«${esc(c.font)}»</p>` : ""}${c.dubtos ? `<p class="small" style="color:var(--warn)"><b>Dubtós:</b> ${esc(c.motiu || "comprova-ho amb la foto")}</p><div class="row"><button class="btn small" data-okc="${c.id}">És correcte</button><button class="btn small ghost" data-rmc="${c.id}">Treure'l</button></div>` : ""}</div>`).join("")}</div></section>
+      ${(t.grups || []).length ? `<section class="card stack" id="s-grups"><h2>Grups</h2><div class="groups">${t.grups.map(g => `<div class="group"><h3>${esc(g.nom)}</h3><ul class="clean">${g.items.map(i => `<li>${esc(i)}</li>`).join("")}</ul></div>`).join("")}</div></section>` : ""}
       ${C.formules.length ? `<section class="card stack" id="s-formules"><h2>Fórmules</h2>${C.formules.map(f => `<div class="stack" style="gap:6px"><h3>${esc(f.nom)}</h3><span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span><p class="small muted">${[`${esc(f.lhs)}: ${esc(f.res.nom)} (${esc(f.res.unitat)})`, ...f.vars.map(v => `${esc(v.simbol)}: ${esc(v.nom)} (${esc(v.unitat)})`), ...f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`)].join(" · ")}</p>${f.errors.length ? `<p class="small"><b>Errors habituals:</b> ${f.errors.map(e => esc(e.explicacio)).join(" ")}</p>` : ""}</div>`).join('<div class="sep"></div>')}<div class="row"><button class="btn small" data-go="lab">Obrir el laboratori</button></div></section>` : ""}
       ${t.procediments.length ? `<section class="card stack" id="s-procediments"><h2>Procediments</h2>${t.procediments.map(p => `<div class="stack" style="gap:6px"><h3>${esc(p.nom)}</h3><ol class="steps">${p.passos.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>`).join("")}</section>` : ""}
       ${t.relacions.length ? `<section class="card stack" id="s-mapa"><h2>Mapa conceptual</h2><div class="map-wrap">${conceptMap(t)}</div></section>` : ""}
-      ${t.cronologia.length ? `<section class="card stack" id="s-cronologia"><h2>Cronologia</h2><div class="tl">${t.cronologia.slice().sort((a, b) => parseFloat(a.any) - parseFloat(b.any)).map(e => `<div><b>${esc(e.any)}</b> · ${esc(e.fet)}</div>`).join("")}</div></section>` : ""}
+      ${t.cronologia.length ? `<section class="card stack" id="s-cronologia"><h2>Cronologia</h2><div class="tl">${t.cronologia.slice().sort((a, b) => a.ordre - b.ordre).map(e => `<div><b>${esc(e.any)}</b> · ${esc(e.fet)}</div>`).join("")}</div></section>` : ""}
       ${t.errors_tipics.length ? `<section class="card stack" id="s-compte"><h2>Compte! Errors típics</h2>${t.errors_tipics.map(e => `<div class="fb bad"><p><b>Error:</b> ${esc(e.afirmacio_erronia)}</p><p><b>En realitat:</b> ${esc(e.correccio)}</p></div>`).join("")}</section>` : ""}
     </div>
   </div>`;
@@ -59,3 +61,13 @@ function conceptMap(t) {
   return `<svg width="${W0}" height="${H0}" viewBox="0 0 ${W0} ${H0}" role="img" aria-label="Mapa conceptual"><defs><marker id="ar" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line2)"/></marker></defs>${edges}${ns}</svg>`;
 }
 
+
+/* ressalta (escapant-ho tot) els trossos marcats dins d'una frase */
+function markAll(frase, marks) {
+  const spans = [];
+  for (const m of marks) { const re = new RegExp(m.trim().split(/\s+/).map(reEsc).join("\\s+"), "i"), x = frase.match(re); if (x) spans.push([x.index, x.index + x[0].length]); }
+  spans.sort((a, b) => a[0] - b[0]);
+  let out = "", pos = 0;
+  for (const [a, b] of spans) { if (a < pos) continue; out += esc(frase.slice(pos, a)) + "<mark>" + esc(frase.slice(a, b)) + "</mark>"; pos = b; }
+  return out + esc(frase.slice(pos));
+}
