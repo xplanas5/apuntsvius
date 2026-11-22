@@ -29,6 +29,11 @@ function viewNew(el) {
     <input type="file" id="file" accept="image/*" multiple hidden>
     <div class="thumbs" id="thumbs"></div>
     <div id="crop"></div>
+    <div class="ai-box" id="aiBox" hidden>
+      <div class="row" style="justify-content:space-between"><b>✨ Llegir amb Claude</b><span class="pill blue">el teu compte</span></div>
+      <p class="small">Claude llegeix les fotos (també el retolador i la lletra a mà) i prepara directament el tema: idees clau, conceptes, dates, grups i preguntes. Fa servir el teu compte de Claude, sense API. L'OCR local continua disponible a sota.</p>
+      <div class="row"><button class="btn primary big" id="aiRun">Analitzar les fotos amb Claude</button><span class="small muted" id="aiMsg"></span></div>
+    </div>
     <div class="row"><button class="btn small" id="ocr" ${newState.photos.length ? "" : "hidden"}>Llegir les pàgines pendents</button><span class="small muted" id="ocrMsg"></span></div>
     <div class="progress" id="ocrBar" hidden><span style="width:0%"></span></div>
     <label class="f" for="txt">Text dels apunts <span class="small muted" style="font-weight:400">(corregeix aquí els errors de lectura, o enganxa-hi el text directament)</span></label>
@@ -43,6 +48,18 @@ function viewNew(el) {
   $("#mat", el).onchange = e => { const v = e.target.value; $("#lang", el).value = v === "Llengua castellana" ? "spa" : v === "Anglès" ? "eng" : "cat"; };
   $("#doImp", el).onclick = () => { const out = $("#impOut", el); try { const raw = JSON.parse(($("#imp", el).value.match(/\{[\s\S]*\}/) || [""])[0]); addTopic(raw, out, $("#mat", el).value, $("#curs", el).value); } catch { out.innerHTML = `<div class="fb bad">No és un JSON vàlid. Comprova que l'has copiat sencer.</div>`; } };
   wirePhotos(el);
+  claudeVision().then(v => { const box = $("#aiBox", el); if (!v || !box) return; box.hidden = false; newState.useClaude = true; });
+  $("#aiRun", el).onclick = async () => {
+    const pages = newState.photos.filter(p => p.page), msg = $("#aiMsg", el), btn = $("#aiRun", el);
+    if (!pages.length) { msg.textContent = newState.photos.length ? "Primer acaba de retallar les fotos." : "Primer fes o tria alguna foto."; return; }
+    btn.disabled = true;
+    try {
+      const d = await analyzeWithClaude(pages.map(p => p.page), { materia: $("#mat", el).value, curs: $("#curs", el).value }, m => msg.textContent = m);
+      pages.forEach(p => p.read = true);
+      newState.draft = d; viewNew(el);
+    } catch (e) { console.warn(e); msg.innerHTML = `<span style="color:var(--bad)">${esc(claudeErrorMsg(e))}</span>`; }
+    finally { btn.disabled = false; }
+  };
   $("#ocr", el).onclick = async () => {
     const todo = newState.photos.filter(p => p.page && !p.read), msg = $("#ocrMsg", el), bar = $("#ocrBar", el), btn = $("#ocr", el);
     if (!todo.length) { msg.textContent = newState.photos.length ? "Ja s'han llegit totes les pàgines." : "Primer fes o tria alguna foto."; return; }
@@ -81,7 +98,7 @@ function wirePhotos(el) {
     for (const f of Array.from(files)) { if (newState.photos.length >= MAX) break; if (!/^image\//.test(f.type)) continue; const p = { file: f, rot: 0 }; try { await prepPhoto(p); newState.photos.push(p); fresh.push(p); } catch (e) { console.warn(e); } }
     paint(); const cb = $("#cam", el); if (cb && newState.photos.length) cb.lastChild.textContent = "Fer una altra foto";
     // retall una per una; en acabar, es llegeixen totes
-    const next = () => { const p = fresh.shift(); if (p) openCrop(el, p, () => { paint(); next(); }); else if (newState.photos.some(x => x.page && !x.read)) $("#ocr", el).click(); };
+    const next = () => { const p = fresh.shift(); if (p) openCrop(el, p, () => { paint(); next(); }); else if (newState.photos.some(x => x.page && !x.read)) { if (newState.useClaude) { const b = $("#aiBox", el); b.scrollIntoView({ behavior: "smooth", block: "center" }); b.classList.add("pulse"); } else $("#ocr", el).click(); } };
     next();
   };
   drop.onclick = () => file.click(); drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") file.click(); };

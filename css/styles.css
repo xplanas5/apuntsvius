@@ -411,3 +411,6 @@ mark{background:linear-gradient(transparent 10%,var(--mark) 10%,var(--mark) 90%,
 .qcard.answered #fb{order:9}
 .qcard.answered{padding-bottom:22px}
 .blank{color:transparent;user-select:none}
+.ai-box{display:grid;gap:10px;padding:16px;border-radius:18px;border:2px solid var(--blue);background:linear-gradient(135deg,var(--blue-soft),var(--lila-soft))}
+.ai-box.pulse{animation:pulse 1.2s 2}
+@keyframes pulse{50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--blue) 25%,transparent)}}

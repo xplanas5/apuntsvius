@@ -3,7 +3,7 @@
 function viewReview(el) {
   const d = newState.draft;
   const fCheck = f => { try { compileFormula({ ...f, variables: f.variables, constants: f.constants || [], errors: [] }); return ""; } catch (e) { return e.message; } };
-  el.innerHTML = `<div class="card stack"><span class="eyebrow">Revisió</span><h1>Comprova què s'ha detectat</h1><p class="muted">Corregeix, desmarca el que no sigui correcte i afegeix el que falti. Res no es crea fins que no premis «Crear el tema».</p>
+  el.innerHTML = `<div class="card stack"><span class="eyebrow">Revisió</span><h1>Comprova què s'ha detectat</h1>${d.font_lectura === "claude" ? `<p class="small"><span class="pill blue">✨ Llegit amb Claude</span> Revisa-ho igualment: pot haver llegit malament alguna paraula.</p>` : ""}<p class="muted">Corregeix, desmarca el que no sigui correcte i afegeix el que falti. Res no es crea fins que no premis «Crear el tema».</p>
     <label class="f">Títol del tema<input type="text" id="rTitle" value="${esc(d.titol)}"></label></div>
   <div class="card stack"><div class="row" style="justify-content:space-between"><h2>Conceptes (${d.conceptes.length})</h2><button class="btn small" id="addC">+ Afegir concepte</button></div>
     ${d.conceptes.length ? "" : `<p class="small muted">No s'ha detectat cap definició. Afegeix-ne a mà.</p>`}

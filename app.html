@@ -414,6 +414,9 @@ mark{background:linear-gradient(transparent 10%,var(--mark) 10%,var(--mark) 90%,
 .qcard.answered #fb{order:9}
 .qcard.answered{padding-bottom:22px}
 .blank{color:transparent;user-select:none}
+.ai-box{display:grid;gap:10px;padding:16px;border-radius:18px;border:2px solid var(--blue);background:linear-gradient(135deg,var(--blue-soft),var(--lila-soft))}
+.ai-box.pulse{animation:pulse 1.2s 2}
+@keyframes pulse{50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--blue) 25%,transparent)}}
 
 </style>
 <header class="top">
@@ -1514,6 +1517,113 @@ function humanities(t, lines, full, marks) {
 }
 
 
+/* ---------- Lectura amb Claude (opcional) ----------
+   Només quan l'app s'obre com a artifact de claude.ai: la pàgina demana a Claude,
+   amb el compte de qui la fa servir (sense clau d'API), que llegeixi les fotos i
+   en tregui el tema. A GitHub Pages i a l'APK no existeix i s'usa l'OCR local. */
+let _claudeVision = null;
+function claudeVision() {
+  if (_claudeVision) return _claudeVision;
+  _claudeVision = (async () => {
+    try {
+      if (!window.claude || typeof window.claude.use !== "function") return null;
+      const sample = await window.claude.use("sample"); if (!sample) return null;
+      const lim = await sample.limits().catch(() => null);
+      if (!lim || !lim.images) return null;
+      return { sample, lim };
+    } catch { return null; }
+  })();
+  return _claudeVision;
+}
+
+function canvasToBlob(cv, maxSide, maxBytes, types) {
+  const type = types.includes("image/jpeg") ? "image/jpeg" : types[0];
+  return new Promise(async res => {
+    let side = maxSide, q = 0.85, blob = null;
+    for (let i = 0; i < 6; i++) {
+      const k = Math.min(1, side / Math.max(cv.width, cv.height)), c = document.createElement("canvas");
+      c.width = Math.round(cv.width * k); c.height = Math.round(cv.height * k);
+      c.getContext("2d").drawImage(cv, 0, 0, c.width, c.height);
+      blob = await new Promise(r => c.toBlob(r, type, q));
+      if (blob && blob.size <= maxBytes) break;
+      side = Math.round(side * 0.8); q = Math.max(0.6, q - 0.08);
+    }
+    res(blob);
+  });
+}
+
+const CLAUDE_PROMPT = (meta, n, part) => `Ets l'assistent d'una app d'estudi per a alumnes de ${meta.curs} (assignatura: ${meta.materia}). T'envio ${n} foto${n > 1 ? "s" : ""} de pàgines d'apunts o d'un dossier${part ? ` (${part})` : ""}, en ordre. Poden tenir text subratllat amb retolador (groc, lila, verd...), notes a mà al marge, fotos i exercicis.
+
+Llegeix-les amb cura i crea el material d'estudi. Regles:
+- Escriu en català. Fes servir NOMÉS el que diuen els apunts; no inventis dades.
+- Ignora números de pàgina, peus de foto, URL i l'índex.
+- "idees_clau": les frases on hi ha text marcat amb retolador. "frase" és la frase completa tal com surt; "text" és el fragment marcat més important, copiat literalment perquè sigui part exacta de "frase"; "marques" són tots els fragments marcats d'aquesta frase (literals). Si no hi ha res marcat, tria les idees més importants.
+- "conceptes": termes clau amb una definició breu i fidel als apunts, 2-3 "paraules_clau" i, si n'hi ha, un exemple.
+- "cronologia": fets amb data. "any" és la data com surt ("1950", "anys 60", "segona meitat del segle XX"); "ordre" és un any aproximat per ordenar (anys 60 → 1965); "fet" és una frase completa.
+- "grups": llistes classificables (p. ex. una llista per dècades o tipus), cada una amb almenys 2 elements.
+- "formules": només si n'hi ha (ciències). "expressio" com "v = d / t" amb símbols curts; "variables" amb simbol, nom, unitat, min i max raonables.
+- "procediments": llistes de passos numerats, si n'hi ha.
+- "errors_tipics": confusions habituals que els apunts adverteixen, amb "afirmacio_erronia" i "correccio".
+- "preguntes_obertes": les preguntes o exercicis del dossier (tal com surten) i alguna pregunta d'examen raonable, amb "resposta_model" breu i 2-3 "criteris".
+- "seccions": l'esquema dels apunts (títol de cada apartat i 2-6 punts breus).
+- "resum": 4-6 frases.
+- Màxim: 15 conceptes, 20 idees clau, 15 fets de cronologia, 8 preguntes.
+
+Respon NOMÉS amb un objecte JSON amb aquesta forma (deixa en [] el que no hi sigui):
+{"titol":"","resum":"","seccions":[{"titol":"","punts":[""]}],"conceptes":[{"nom":"","definicio":"","exemple":"","paraules_clau":[""]}],"idees_clau":[{"text":"","frase":"","marques":[""]}],"cronologia":[{"any":"","ordre":1950,"fet":""}],"grups":[{"nom":"","items":[""]}],"formules":[{"nom":"","expressio":"","resultat":{"simbol":"","nom":"","unitat":""},"variables":[{"simbol":"","nom":"","unitat":"","min":1,"max":100,"pas":1}],"constants":[]}],"procediments":[{"nom":"","passos":[""]}],"errors_tipics":[{"afirmacio_erronia":"","correccio":""}],"preguntes_obertes":[{"pregunta":"","resposta_model":"","criteris":[""]}]}`;
+
+async function analyzeWithClaude(canvases, meta, onMsg) {
+  const v = await claudeVision(); if (!v) throw { code: "unavailable" };
+  const per = Math.max(1, Math.min(v.lim.images.maxCount || 1, 6)), chunks = [];
+  for (let i = 0; i < canvases.length; i += per) chunks.push(canvases.slice(i, i + per));
+  const parts = [];
+  for (let c = 0; c < chunks.length; c++) {
+    onMsg(`Preparant les fotos${chunks.length > 1 ? ` (bloc ${c + 1} de ${chunks.length})` : ""}…`);
+    const blobs = [];
+    for (const cv of chunks[c]) blobs.push(await canvasToBlob(cv, 2000, v.lim.images.maxInputBytes || 4e6, v.lim.images.mediaTypes || ["image/jpeg"]));
+    onMsg(`Claude està llegint ${blobs.length} pàgin${blobs.length > 1 ? "es" : "a"}… (pot trigar un minut)`);
+    const part = chunks.length > 1 ? `bloc ${c + 1} de ${chunks.length} del mateix tema` : "";
+    parts.push(await v.sample.json(CLAUDE_PROMPT(meta, blobs.length, part), { images: blobs, modelTier: "default" }));
+  }
+  return mergeClaudeParts(parts, meta);
+}
+
+function mergeClaudeParts(parts, meta) {
+  const A = x => Array.isArray(x) ? x : [], keys = ["seccions", "conceptes", "idees_clau", "cronologia", "grups", "formules", "procediments", "errors_tipics", "preguntes_obertes"];
+  const out = { titol: "", resum: "", materia: meta.materia, curs: meta.curs, relacions: [] };
+  keys.forEach(k => out[k] = []);
+  for (const p of parts) {
+    if (!p || typeof p !== "object") continue;
+    if (!out.titol && typeof p.titol === "string") out.titol = p.titol;
+    if (typeof p.resum === "string") out.resum = (out.resum ? out.resum + " " : "") + p.resum;
+    keys.forEach(k => out[k].push(...A(p[k])));
+  }
+  // forma mínima que esperen la revisió i els generadors
+  const s = x => typeof x === "string" ? x.trim() : (x == null ? "" : String(x));
+  out.conceptes = out.conceptes.filter(c => c && s(c.nom) && s(c.definicio)).map(c => ({ id: slug(s(c.nom)), nom: s(c.nom), definicio: endDot(cap1(s(c.definicio))), exemple: s(c.exemple), paraules_clau: A(c.paraules_clau).map(s).filter(Boolean).slice(0, 4), sinonims: [], distractors: [], font: "", pista_conceptual: "" }));
+  out.idees_clau = out.idees_clau.filter(k => k && s(k.text) && s(k.frase)).map(k => { let text = s(k.text), frase = s(k.frase); if (!blankIn(frase, text)) frase = frase.includes(text) ? frase : frase + " (" + text + ")"; return { id: "k_" + slug(text), text, frase, marques: A(k.marques).map(s).filter(m => m && frase.includes(m)) }; });
+  out.cronologia = out.cronologia.filter(e => e && s(e.any) && s(e.fet)).map(e => { const f = findDate(/^\d/.test(s(e.any)) ? s(e.any) : "els " + s(e.any)); return { any: s(e.any), ordre: isFinite(+e.ordre) && e.ordre !== "" ? +e.ordre : (f ? f.ordre : parseFloat(e.any) || 0), fet: endDot(cap1(s(e.fet))) }; });
+  out.grups = out.grups.filter(g => g && s(g.nom) && A(g.items).length >= 2).map(g => ({ id: "g_" + slug(s(g.nom)), nom: s(g.nom), items: A(g.items).map(s).filter(Boolean) }));
+  out.procediments = out.procediments.filter(p => p && s(p.nom) && A(p.passos).length >= 2).map(p => ({ id: "p_" + slug(s(p.nom)), nom: s(p.nom), passos: A(p.passos).map(x => endDot(cap1(s(x)))) }));
+  out.errors_tipics = out.errors_tipics.filter(e => e && s(e.afirmacio_erronia) && s(e.correccio)).map(e => ({ id: "e_" + slug(s(e.afirmacio_erronia)), afirmacio_erronia: s(e.afirmacio_erronia), correccio: s(e.correccio) }));
+  out.preguntes_obertes = out.preguntes_obertes.filter(q => q && s(q.pregunta)).map(q => ({ id: "o_" + slug(s(q.pregunta)), pregunta: s(q.pregunta), resposta_model: s(q.resposta_model), criteris: A(q.criteris).map(s).filter(Boolean).slice(0, 4) }));
+  out.seccions = out.seccions.filter(x => x && s(x.titol)).map(x => ({ titol: s(x.titol), punts: A(x.punts).map(s).filter(Boolean).slice(0, 10) }));
+  out.formules = out.formules.filter(f => f && s(f.expressio)).map(f => ({ id: "f_" + slug(s(f.expressio)), nom: s(f.nom) || s(f.expressio), expressio: s(f.expressio), resultat: f.resultat && typeof f.resultat === "object" ? { simbol: s(f.resultat.simbol), nom: s(f.resultat.nom), unitat: s(f.resultat.unitat) } : { simbol: s(f.expressio).split("=")[0].trim(), nom: "", unitat: "" }, variables: A(f.variables).filter(x => x && s(x.simbol)).map(x => ({ simbol: s(x.simbol), nom: s(x.nom) || s(x.simbol), unitat: s(x.unitat), min: +x.min || 1, max: +x.max || 100, pas: +x.pas || 1 })), constants: A(f.constants).filter(x => x && s(x.simbol) && isFinite(+x.valor)).map(x => ({ simbol: s(x.simbol), nom: s(x.nom), valor: +x.valor, unitat: s(x.unitat) })), errors: [] }));
+  if (!out.titol) out.titol = "Els meus apunts";
+  out.font_lectura = "claude";
+  return out;
+}
+
+function claudeErrorMsg(e) {
+  const c = e && e.code;
+  if (c === "not_granted") return "Cal que permetis que aquesta pàgina faci servir Claude (ho demana la primera vegada). Si ho has denegat, torna a obrir la pàgina.";
+  if (c === "rate_limited") return "Has arribat al límit d'ús del teu compte de Claude. Torna-ho a provar més tard o fes servir l'OCR.";
+  if (c === "image_rejected") return "Claude no ha acceptat alguna de les fotos (massa grans o massa fotos). Prova amb menys pàgines.";
+  if (c === "invalid_json") return "La resposta de Claude no s'ha pogut llegir bé. Torna-ho a provar, potser amb menys pàgines alhora.";
+  if (c === "unavailable" || c === "images_unavailable") return "Aquesta opció només funciona quan obres l'app des de claude.ai.";
+  return "No s'ha pogut completar l'anàlisi amb Claude" + (e && e.message ? `: ${e.message}` : ".");
+}
+
 /* ---------- Pantalla: Inici ---------- */
 function stackedBar(s) { const n = s.n || 1; return `<div class="bar" role="img" aria-label="${s.counts[3]} dominats, ${s.counts[2]} consolidats, ${s.counts[1]} en pràctica, ${s.counts[0]} nous"><span style="width:${s.counts[3] / n * 100}%;background:var(--st-dom)"></span><span style="width:${s.counts[2] / n * 100}%;background:var(--st-cons)"></span><span style="width:${s.counts[1] / n * 100}%;background:var(--st-prac)"></span></div>`; }
 const LEGEND = `<div class="legend"><span><i style="background:var(--st-new)"></i>nou</span><span><i style="background:var(--st-prac)"></i>en pràctica</span><span><i style="background:var(--st-cons)"></i>consolidat</span><span><i style="background:var(--st-dom)"></i>dominat</span></div>`;
@@ -2077,6 +2187,11 @@ function viewNew(el) {
     <input type="file" id="file" accept="image/*" multiple hidden>
     <div class="thumbs" id="thumbs"></div>
     <div id="crop"></div>
+    <div class="ai-box" id="aiBox" hidden>
+      <div class="row" style="justify-content:space-between"><b>✨ Llegir amb Claude</b><span class="pill blue">el teu compte</span></div>
+      <p class="small">Claude llegeix les fotos (també el retolador i la lletra a mà) i prepara directament el tema: idees clau, conceptes, dates, grups i preguntes. Fa servir el teu compte de Claude, sense API. L'OCR local continua disponible a sota.</p>
+      <div class="row"><button class="btn primary big" id="aiRun">Analitzar les fotos amb Claude</button><span class="small muted" id="aiMsg"></span></div>
+    </div>
     <div class="row"><button class="btn small" id="ocr" ${newState.photos.length ? "" : "hidden"}>Llegir les pàgines pendents</button><span class="small muted" id="ocrMsg"></span></div>
     <div class="progress" id="ocrBar" hidden><span style="width:0%"></span></div>
     <label class="f" for="txt">Text dels apunts <span class="small muted" style="font-weight:400">(corregeix aquí els errors de lectura, o enganxa-hi el text directament)</span></label>
@@ -2091,6 +2206,18 @@ function viewNew(el) {
   $("#mat", el).onchange = e => { const v = e.target.value; $("#lang", el).value = v === "Llengua castellana" ? "spa" : v === "Anglès" ? "eng" : "cat"; };
   $("#doImp", el).onclick = () => { const out = $("#impOut", el); try { const raw = JSON.parse(($("#imp", el).value.match(/\{[\s\S]*\}/) || [""])[0]); addTopic(raw, out, $("#mat", el).value, $("#curs", el).value); } catch { out.innerHTML = `<div class="fb bad">No és un JSON vàlid. Comprova que l'has copiat sencer.</div>`; } };
   wirePhotos(el);
+  claudeVision().then(v => { const box = $("#aiBox", el); if (!v || !box) return; box.hidden = false; newState.useClaude = true; });
+  $("#aiRun", el).onclick = async () => {
+    const pages = newState.photos.filter(p => p.page), msg = $("#aiMsg", el), btn = $("#aiRun", el);
+    if (!pages.length) { msg.textContent = newState.photos.length ? "Primer acaba de retallar les fotos." : "Primer fes o tria alguna foto."; return; }
+    btn.disabled = true;
+    try {
+      const d = await analyzeWithClaude(pages.map(p => p.page), { materia: $("#mat", el).value, curs: $("#curs", el).value }, m => msg.textContent = m);
+      pages.forEach(p => p.read = true);
+      newState.draft = d; viewNew(el);
+    } catch (e) { console.warn(e); msg.innerHTML = `<span style="color:var(--bad)">${esc(claudeErrorMsg(e))}</span>`; }
+    finally { btn.disabled = false; }
+  };
   $("#ocr", el).onclick = async () => {
     const todo = newState.photos.filter(p => p.page && !p.read), msg = $("#ocrMsg", el), bar = $("#ocrBar", el), btn = $("#ocr", el);
     if (!todo.length) { msg.textContent = newState.photos.length ? "Ja s'han llegit totes les pàgines." : "Primer fes o tria alguna foto."; return; }
@@ -2129,7 +2256,7 @@ function wirePhotos(el) {
     for (const f of Array.from(files)) { if (newState.photos.length >= MAX) break; if (!/^image\//.test(f.type)) continue; const p = { file: f, rot: 0 }; try { await prepPhoto(p); newState.photos.push(p); fresh.push(p); } catch (e) { console.warn(e); } }
     paint(); const cb = $("#cam", el); if (cb && newState.photos.length) cb.lastChild.textContent = "Fer una altra foto";
     // retall una per una; en acabar, es llegeixen totes
-    const next = () => { const p = fresh.shift(); if (p) openCrop(el, p, () => { paint(); next(); }); else if (newState.photos.some(x => x.page && !x.read)) $("#ocr", el).click(); };
+    const next = () => { const p = fresh.shift(); if (p) openCrop(el, p, () => { paint(); next(); }); else if (newState.photos.some(x => x.page && !x.read)) { if (newState.useClaude) { const b = $("#aiBox", el); b.scrollIntoView({ behavior: "smooth", block: "center" }); b.classList.add("pulse"); } else $("#ocr", el).click(); } };
     next();
   };
   drop.onclick = () => file.click(); drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") file.click(); };
@@ -2179,7 +2306,7 @@ function openCrop(el, p, done) {
 function viewReview(el) {
   const d = newState.draft;
   const fCheck = f => { try { compileFormula({ ...f, variables: f.variables, constants: f.constants || [], errors: [] }); return ""; } catch (e) { return e.message; } };
-  el.innerHTML = `<div class="card stack"><span class="eyebrow">Revisió</span><h1>Comprova què s'ha detectat</h1><p class="muted">Corregeix, desmarca el que no sigui correcte i afegeix el que falti. Res no es crea fins que no premis «Crear el tema».</p>
+  el.innerHTML = `<div class="card stack"><span class="eyebrow">Revisió</span><h1>Comprova què s'ha detectat</h1>${d.font_lectura === "claude" ? `<p class="small"><span class="pill blue">✨ Llegit amb Claude</span> Revisa-ho igualment: pot haver llegit malament alguna paraula.</p>` : ""}<p class="muted">Corregeix, desmarca el que no sigui correcte i afegeix el que falti. Res no es crea fins que no premis «Crear el tema».</p>
     <label class="f">Títol del tema<input type="text" id="rTitle" value="${esc(d.titol)}"></label></div>
   <div class="card stack"><div class="row" style="justify-content:space-between"><h2>Conceptes (${d.conceptes.length})</h2><button class="btn small" id="addC">+ Afegir concepte</button></div>
     ${d.conceptes.length ? "" : `<p class="small muted">No s'ha detectat cap definició. Afegeix-ne a mà.</p>`}
