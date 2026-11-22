@@ -333,7 +333,12 @@ function migrate(o) {
   if (!o || typeof o !== "object") return null;
   let s = { ...o }; if (!s.v) s.v = 1;
   while (s.v < STATE_VERSION && MIGRATIONS[s.v]) s = MIGRATIONS[s.v](s);
-  return { ...freshState(), ...s, v: STATE_VERSION };
+  // Els temes poden venir d'una còpia importada: es reconstrueixen sempre (ids segurs, camps netejats)
+  const topics = {};
+  for (const raw of Object.values(s.topics && typeof s.topics === "object" ? s.topics : {})) { try { const t = normTopic(raw); topics[t.id] = t; } catch { } }
+  const out = { ...freshState(), ...s, topics, v: STATE_VERSION };
+  if (out.active && !topics[out.active] && !String(out.active).startsWith("demo_")) out.active = null;
+  return out;
 }
 function loadState() {
   let o = lsGet();
@@ -363,11 +368,11 @@ function normTopic(raw) {
     distractors: arr(c.distractors).map(d => typeof d === "string" ? { text: d, per_que: "" } : { text: String(d.text || ""), per_que: String(d.per_que || "") }).filter(d => d.text),
     font: String(c.font || ""), pista_conceptual: String(c.pista_conceptual || ""), dubtos: !!c.dubtos, motiu: String(c.motiu || "") }));
   t.formules = arr(t.formules).map(f => ({ ...f, id: uid(f.id || f.nom, "f"), variables: arr(f.variables), constants: arr(f.constants), errors: arr(f.errors), dubtos: !!f.dubtos }));
-  t.procediments = arr(t.procediments).filter(p => arr(p.passos).length >= 3).map(p => ({ id: uid(p.id || p.nom, "p"), nom: String(p.nom || "Procediment"), passos: arr(p.passos).map(String), concepte_id: p.concepte_id || "", dubtos: !!p.dubtos }));
+  t.procediments = arr(t.procediments).filter(p => arr(p.passos).length >= 3).map(p => ({ id: uid(p.id || p.nom, "p"), nom: String(p.nom || "Procediment"), passos: arr(p.passos).map(String), concepte_id: p.concepte_id ? slug(p.concepte_id) : "", dubtos: !!p.dubtos }));
   t.relacions = arr(t.relacions).filter(r => r.a && r.b && r.tipus).map(r => ({ a: String(r.a), tipus: String(r.tipus), b: String(r.b) }));
   t.cronologia = arr(t.cronologia).filter(e => e.fet && e.any !== undefined).map(e => ({ any: String(e.any), fet: String(e.fet) }));
-  t.errors_tipics = arr(t.errors_tipics).filter(e => e.afirmacio_erronia).map(e => ({ id: uid(e.id || e.afirmacio_erronia, "e"), afirmacio_erronia: String(e.afirmacio_erronia), correccio: String(e.correccio || ""), concepte_id: e.concepte_id || "", dubtos: !!e.dubtos }));
-  t.preguntes_obertes = arr(t.preguntes_obertes).filter(q => q.pregunta).map(q => ({ id: uid(q.id || q.pregunta, "o"), pregunta: String(q.pregunta), resposta_model: String(q.resposta_model || ""), criteris: arr(q.criteris).map(String), concepte_id: q.concepte_id || "" }));
+  t.errors_tipics = arr(t.errors_tipics).filter(e => e.afirmacio_erronia).map(e => ({ id: uid(e.id || e.afirmacio_erronia, "e"), afirmacio_erronia: String(e.afirmacio_erronia), correccio: String(e.correccio || ""), concepte_id: e.concepte_id ? slug(e.concepte_id) : "", dubtos: !!e.dubtos }));
+  t.preguntes_obertes = arr(t.preguntes_obertes).filter(q => q.pregunta).map(q => ({ id: uid(q.id || q.pregunta, "o"), pregunta: String(q.pregunta), resposta_model: String(q.resposta_model || ""), criteris: arr(q.criteris).map(String), concepte_id: q.concepte_id ? slug(q.concepte_id) : "" }));
   t.creat = t.creat || now();
   return t;
 }
@@ -376,7 +381,9 @@ function compileFormula(f) {
   if (parts.length !== 2) throw new Error("Cal la forma R = expressió");
   const lhs = parts[0].trim(); if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(lhs)) throw new Error("El resultat ha de ser un símbol");
   const tree = parseExpr(parts[1]);
-  const consts = {}; f.constants.forEach(c => { if (c.simbol) consts[c.simbol] = Number(c.valor); });
+  const ID = /^[A-Za-z_][A-Za-z0-9_]*$/; // només identificadors: els símbols van a atributs i ids de l'HTML
+  f = { ...f, constants: (f.constants || []).filter(c => ID.test(String(c.simbol || ""))), variables: (f.variables || []).filter(v => ID.test(String(v.simbol || ""))) };
+  const consts = {}; f.constants.forEach(c => { consts[c.simbol] = Number(c.valor); });
   const vars = f.variables.filter(v => v.simbol && isFinite(+v.min) && isFinite(+v.max) && +v.max > +v.min).map(v => ({ simbol: v.simbol, nom: v.nom || v.simbol, unitat: v.unitat || "", min: +v.min, max: +v.max, pas: +v.pas > 0 ? +v.pas : 0 }));
   const need = varsOf(tree); for (const s of need) if (!(s in consts) && !vars.find(v => v.simbol === s)) throw new Error("Falta la variable " + s);
   if (!vars.length) throw new Error("Cap variable");
@@ -670,11 +677,11 @@ function makeItem(tid, key, opts = {}) {
       const given = [...f.vars.filter(v => v.simbol !== target).map(v => `${esc(v.nom)} (${esc(v.simbol)}) = ${valU(f, v.simbol, env[v.simbol])}`), `${esc(f.res.nom)} (${esc(f.lhs)}) = ${valU(f, f.lhs, R)}`];
       const extra = []; f.vars.filter(v => v.simbol !== target).forEach(o => { extra.push({ v: R * env[o.simbol], why: `Has multiplicat ${f.lhs} per ${o.simbol}. Per aïllar ${target}, el que multiplica passa dividint (i al revés).` }, { v: R / env[o.simbol], why: `Has dividit ${f.lhs} entre ${o.simbol}, però en aquesta fórmula s'aïlla d'una altra manera. Revisa on és ${target}.` }, { v: env[o.simbol] / R, why: `Has invertit la divisió. Aïlla ${target} pas a pas.` }); });
       const extraOk = extra.filter(e => Math.abs(e.v - truth) / Math.abs(truth) > 0.02);
-      return { ...base, label: f.nom, type: "Aïlla i calcula", mode: "number", unit: unitOf(f, target), prompt: `<p class="muted small">${esc(f.nom)}</p><p class="prompt">Dades: ${given.join(" · ")}${f.constList.length ? " · " + f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`).join(" · ") : ""}</p><p class="prompt">Calcula <b>${esc(nameOf(f, target))} (${esc(target)})</b>.</p>`, check: ans => { const n = parseNum(ans); const envA = { ...env, [target]: n }; const back = evalTree(f.tree, envA); if (isFinite(back) && Math.abs(back - R) / Math.abs(R) <= 0.02) return { ok: true }; return diagNumber(n, truth, extraOk); }, answerText: `${fmt(truth)} ${unitOf(f, target)}`, explain: `${esc(f.lhs)} = ${prettyExpr(f.src)} → s'aïlla ${esc(target)}.`, source: co ? co.font : "", hints: [co ? (co.pista_conceptual || "Quina magnitud et demanen?") : "Quina magnitud et demanen i quines dades tens?", `Fes servir <span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span> i aïlla ${esc(target)} abans de substituir.`, workedExample(f, target)], formula: f, raw: true };
+      return { ...base, label: f.nom, type: "Aïlla i calcula", mode: "number", unit: unitOf(f, target), prompt: `<p class="muted small">${esc(f.nom)}</p><p class="prompt">Dades: ${given.join(" · ")}${f.constList.length ? " · " + f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`).join(" · ") : ""}</p><p class="prompt">Calcula <b>${esc(nameOf(f, target))} (${esc(target)})</b>.</p>`, check: ans => { const n = parseNum(ans); const envA = { ...env, [target]: n }; const back = evalTree(f.tree, envA); if (isFinite(back) && Math.abs(back - R) / Math.abs(R) <= 0.02) return { ok: true }; return diagNumber(n, truth, extraOk); }, answerText: `${fmt(truth)} ${unitOf(f, target)}`, explain: `${esc(f.lhs)} = ${prettyExpr(f.src)} → s'aïlla ${esc(target)}.`, source: co ? co.font : "", hints: [esc(co ? (co.pista_conceptual || "Quina magnitud et demanen?") : "Quina magnitud et demanen i quines dades tens?"), `Fes servir <span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span> i aïlla ${esc(target)} abans de substituir.`, workedExample(f, target)], formula: f, raw: true };
     }
     const extra = f.errors.map(e => { try { return { v: evalTree(e.tree, env), why: e.explicacio }; } catch { return null; } }).filter(e => e && Math.abs(e.v - R) / Math.max(Math.abs(R), 1e-12) > 0.02);
     const given = f.vars.map(v => `${esc(v.nom)} (${esc(v.simbol)}) = ${valU(f, v.simbol, env[v.simbol])}`);
-    return { ...base, label: f.nom, type: "Calcula", mode: "number", unit: f.res.unitat, prompt: `<p class="muted small">${esc(f.nom)}</p><p class="prompt">Dades: ${given.join(" · ")}${f.constList.length ? " · " + f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`).join(" · ") : ""}</p><p class="prompt">Calcula <b>${esc(f.res.nom)} (${esc(f.lhs)})</b>.</p>`, check: ans => diagNumber(parseNum(ans), R, extra), answerText: `${fmt(R)} ${f.res.unitat}`, explain: `${esc(f.lhs)} = ${prettyExpr(f.src)} = ${prettyExpr(f.src.replace(/[A-Za-z_][A-Za-z0-9_]*/g, s => (s in env) ? fmt(env[s]) : s))} = ${fmt(R)} ${esc(f.res.unitat)}`, source: co ? co.font : "", hints: [co ? (co.pista_conceptual || `Què és ${f.res.nom}?`) : `Què és ${f.res.nom}?`, `Fórmula: <span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span>. Comprova que les dades són en unitats del SI.`, workedExample(f)], formula: f, raw: true };
+    return { ...base, label: f.nom, type: "Calcula", mode: "number", unit: f.res.unitat, prompt: `<p class="muted small">${esc(f.nom)}</p><p class="prompt">Dades: ${given.join(" · ")}${f.constList.length ? " · " + f.constList.map(c => `${esc(c.simbol)} = ${fmt(c.valor)} ${esc(c.unitat || "")}`).join(" · ") : ""}</p><p class="prompt">Calcula <b>${esc(f.res.nom)} (${esc(f.lhs)})</b>.</p>`, check: ans => diagNumber(parseNum(ans), R, extra), answerText: `${fmt(R)} ${f.res.unitat}`, explain: `${esc(f.lhs)} = ${prettyExpr(f.src)} = ${prettyExpr(f.src.replace(/[A-Za-z_][A-Za-z0-9_]*/g, s => (s in env) ? fmt(env[s]) : s))} = ${fmt(R)} ${esc(f.res.unitat)}`, source: co ? co.font : "", hints: [esc(co ? (co.pista_conceptual || `Què és ${f.res.nom}?`) : `Què és ${f.res.nom}?`), `Fórmula: <span class="formula">${esc(f.lhs)} = ${prettyExpr(f.src)}</span>. Comprova que les dades són en unitats del SI.`, workedExample(f)], formula: f, raw: true };
   }
   if (kind === "p") {
     const p = t.procediments.find(x => x.id === id); if (!p) return null;
@@ -1380,7 +1387,7 @@ function viewPractice(el) {
   };
   function renderHints() {
     const names = ["Pista conceptual", "Pista de procediment", "Exemple semblant"];
-    $("#hintArea", el).innerHTML = `<div class="fb hint">${item.hints.slice(0, st.hint).map((hh, i) => `<p><b>${names[i]}:</b> ${item.raw || i === 2 ? hh : esc(hh)}</p>`).join("")}<p class="small muted">${st.hint < 3 ? "Amb pista l'encert suma menys XP, però compta com a pràctica." : "Ja has vist totes les pistes. La resposta l'has de trobar tu."}</p></div>`;
+    $("#hintArea", el).innerHTML = `<div class="fb hint">${item.hints.slice(0, st.hint).map((hh, i) => `<p><b>${names[i]}:</b> ${item.raw ? hh : esc(hh)}</p>`).join("")}<p class="small muted">${st.hint < 3 ? "Amb pista l'encert suma menys XP, però compta com a pràctica." : "Ja has vist totes les pistes. La resposta l'has de trobar tu."}</p></div>`;
     if (st.hint >= 3) $("#hintBtn", el).disabled = true;
   }
   $("#report", el).onclick = () => { (S.reported[item.tid] = S.reported[item.tid] || {})[item.key] = { t: now(), type: item.type }; save(); $("#fb", el).innerHTML = `<div class="fb warn">Gràcies. Aquest element no tornarà a sortir. Pots revisar-lo als Apunts. <button class="btn small" id="skip">Saltar</button></div>`; $("#skip", el).onclick = () => { P.i++; viewPractice(el); }; };

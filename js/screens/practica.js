@@ -97,7 +97,7 @@ function viewPractice(el) {
   };
   function renderHints() {
     const names = ["Pista conceptual", "Pista de procediment", "Exemple semblant"];
-    $("#hintArea", el).innerHTML = `<div class="fb hint">${item.hints.slice(0, st.hint).map((hh, i) => `<p><b>${names[i]}:</b> ${item.raw || i === 2 ? hh : esc(hh)}</p>`).join("")}<p class="small muted">${st.hint < 3 ? "Amb pista l'encert suma menys XP, però compta com a pràctica." : "Ja has vist totes les pistes. La resposta l'has de trobar tu."}</p></div>`;
+    $("#hintArea", el).innerHTML = `<div class="fb hint">${item.hints.slice(0, st.hint).map((hh, i) => `<p><b>${names[i]}:</b> ${item.raw ? hh : esc(hh)}</p>`).join("")}<p class="small muted">${st.hint < 3 ? "Amb pista l'encert suma menys XP, però compta com a pràctica." : "Ja has vist totes les pistes. La resposta l'has de trobar tu."}</p></div>`;
     if (st.hint >= 3) $("#hintBtn", el).disabled = true;
   }
   $("#report", el).onclick = () => { (S.reported[item.tid] = S.reported[item.tid] || {})[item.key] = { t: now(), type: item.type }; save(); $("#fb", el).innerHTML = `<div class="fb warn">Gràcies. Aquest element no tornarà a sortir. Pots revisar-lo als Apunts. <button class="btn small" id="skip">Saltar</button></div>`; $("#skip", el).onclick = () => { P.i++; viewPractice(el); }; };

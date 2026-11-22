@@ -21,7 +21,12 @@ function migrate(o) {
   if (!o || typeof o !== "object") return null;
   let s = { ...o }; if (!s.v) s.v = 1;
   while (s.v < STATE_VERSION && MIGRATIONS[s.v]) s = MIGRATIONS[s.v](s);
-  return { ...freshState(), ...s, v: STATE_VERSION };
+  // Els temes poden venir d'una còpia importada: es reconstrueixen sempre (ids segurs, camps netejats)
+  const topics = {};
+  for (const raw of Object.values(s.topics && typeof s.topics === "object" ? s.topics : {})) { try { const t = normTopic(raw); topics[t.id] = t; } catch { } }
+  const out = { ...freshState(), ...s, topics, v: STATE_VERSION };
+  if (out.active && !topics[out.active] && !String(out.active).startsWith("demo_")) out.active = null;
+  return out;
 }
 function loadState() {
   let o = lsGet();
@@ -51,11 +56,11 @@ function normTopic(raw) {
     distractors: arr(c.distractors).map(d => typeof d === "string" ? { text: d, per_que: "" } : { text: String(d.text || ""), per_que: String(d.per_que || "") }).filter(d => d.text),
     font: String(c.font || ""), pista_conceptual: String(c.pista_conceptual || ""), dubtos: !!c.dubtos, motiu: String(c.motiu || "") }));
   t.formules = arr(t.formules).map(f => ({ ...f, id: uid(f.id || f.nom, "f"), variables: arr(f.variables), constants: arr(f.constants), errors: arr(f.errors), dubtos: !!f.dubtos }));
-  t.procediments = arr(t.procediments).filter(p => arr(p.passos).length >= 3).map(p => ({ id: uid(p.id || p.nom, "p"), nom: String(p.nom || "Procediment"), passos: arr(p.passos).map(String), concepte_id: p.concepte_id || "", dubtos: !!p.dubtos }));
+  t.procediments = arr(t.procediments).filter(p => arr(p.passos).length >= 3).map(p => ({ id: uid(p.id || p.nom, "p"), nom: String(p.nom || "Procediment"), passos: arr(p.passos).map(String), concepte_id: p.concepte_id ? slug(p.concepte_id) : "", dubtos: !!p.dubtos }));
   t.relacions = arr(t.relacions).filter(r => r.a && r.b && r.tipus).map(r => ({ a: String(r.a), tipus: String(r.tipus), b: String(r.b) }));
   t.cronologia = arr(t.cronologia).filter(e => e.fet && e.any !== undefined).map(e => ({ any: String(e.any), fet: String(e.fet) }));
-  t.errors_tipics = arr(t.errors_tipics).filter(e => e.afirmacio_erronia).map(e => ({ id: uid(e.id || e.afirmacio_erronia, "e"), afirmacio_erronia: String(e.afirmacio_erronia), correccio: String(e.correccio || ""), concepte_id: e.concepte_id || "", dubtos: !!e.dubtos }));
-  t.preguntes_obertes = arr(t.preguntes_obertes).filter(q => q.pregunta).map(q => ({ id: uid(q.id || q.pregunta, "o"), pregunta: String(q.pregunta), resposta_model: String(q.resposta_model || ""), criteris: arr(q.criteris).map(String), concepte_id: q.concepte_id || "" }));
+  t.errors_tipics = arr(t.errors_tipics).filter(e => e.afirmacio_erronia).map(e => ({ id: uid(e.id || e.afirmacio_erronia, "e"), afirmacio_erronia: String(e.afirmacio_erronia), correccio: String(e.correccio || ""), concepte_id: e.concepte_id ? slug(e.concepte_id) : "", dubtos: !!e.dubtos }));
+  t.preguntes_obertes = arr(t.preguntes_obertes).filter(q => q.pregunta).map(q => ({ id: uid(q.id || q.pregunta, "o"), pregunta: String(q.pregunta), resposta_model: String(q.resposta_model || ""), criteris: arr(q.criteris).map(String), concepte_id: q.concepte_id ? slug(q.concepte_id) : "" }));
   t.creat = t.creat || now();
   return t;
 }
@@ -64,7 +69,9 @@ function compileFormula(f) {
   if (parts.length !== 2) throw new Error("Cal la forma R = expressió");
   const lhs = parts[0].trim(); if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(lhs)) throw new Error("El resultat ha de ser un símbol");
   const tree = parseExpr(parts[1]);
-  const consts = {}; f.constants.forEach(c => { if (c.simbol) consts[c.simbol] = Number(c.valor); });
+  const ID = /^[A-Za-z_][A-Za-z0-9_]*$/; // només identificadors: els símbols van a atributs i ids de l'HTML
+  f = { ...f, constants: (f.constants || []).filter(c => ID.test(String(c.simbol || ""))), variables: (f.variables || []).filter(v => ID.test(String(v.simbol || ""))) };
+  const consts = {}; f.constants.forEach(c => { consts[c.simbol] = Number(c.valor); });
   const vars = f.variables.filter(v => v.simbol && isFinite(+v.min) && isFinite(+v.max) && +v.max > +v.min).map(v => ({ simbol: v.simbol, nom: v.nom || v.simbol, unitat: v.unitat || "", min: +v.min, max: +v.max, pas: +v.pas > 0 ? +v.pas : 0 }));
   const need = varsOf(tree); for (const s of need) if (!(s in consts) && !vars.find(v => v.simbol === s)) throw new Error("Falta la variable " + s);
   if (!vars.length) throw new Error("Cap variable");
